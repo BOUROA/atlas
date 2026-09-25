@@ -1,0 +1,90 @@
+/* Atlas v2 · «Hoy en clase he visto…» (diálogo, atajo N). Prefijo classlog-.
+   Solo tokens de src/styles/tokens.css. */
+@layer components {
+  .classlog-body { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+
+  .classlog-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    height: 40px;
+    border-radius: var(--r-ctl);
+    border: 1px solid var(--line);
+    background: var(--well);
+  }
+  .classlog-search svg { width: 16px; height: 16px; color: var(--text-3); flex: none; }
+  .classlog-search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 14px; color: var(--text); }
+
+  .classlog-search-results { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; padding: 4px; border-radius: var(--r-ctl); background: var(--well); }
+  .classlog-search-empty { padding: 10px 12px; font-size: 13px; color: var(--text-3); }
+
+  .classlog-subjects :is(.ui-seg) { flex-wrap: wrap; }
+
+  .classlog-units { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; padding-right: 2px; }
+  .classlog-unit {
+    border: 1px solid var(--line);
+    border-radius: var(--r-ctl);
+    background: var(--well);
+    overflow: hidden;
+  }
+  .classlog-unit-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .classlog-unit-summary::-webkit-details-marker { display: none; }
+  .classlog-unit-summary:hover { background: var(--hover); }
+  .classlog-unit[open] .classlog-unit-summary { border-bottom: 1px solid var(--line); }
+  .classlog-unit-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .classlog-unit-title svg { flex: none; transition: transform var(--dur) var(--ease); color: var(--text-3); }
+  .classlog-unit[open] .classlog-unit-title svg { transform: rotate(90deg); }
+  .classlog-unit-badge { font-family: var(--mono); font-size: 10.5px; color: var(--gold-fg); }
+  .classlog-unit-current { color: var(--gold-fg); }
+
+  .classlog-concepts { display: flex; flex-direction: column; padding: 6px; }
+  .classlog-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 8px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .classlog-check:hover { background: var(--hover-2); }
+  .classlog-check input { width: 16px; height: 16px; accent-color: var(--gold); flex: none; }
+  .classlog-check b { font-weight: 500; color: var(--text); }
+  .classlog-check span.classlog-check-note { color: var(--text-3); font-size: 12px; }
+
+  .classlog-advance {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--r-ctl);
+    background: var(--gold-soft);
+    box-shadow: inset 0 0 0 1px var(--gold-line);
+    font-size: 13px;
+    color: var(--gold-fg);
+  }
+  .classlog-advance input { accent-color: var(--gold); }
+
+  .classlog-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; flex-wrap: wrap; }
+  .classlog-count { font-size: 13px; color: var(--text-3); white-space: nowrap; }
+  .classlog-count b { color: var(--text); font-family: var(--mono); }
+
+  @media (max-width: 480px) {
+    .classlog-foot { justify-content: center; }
+    .classlog-foot > div { width: 100%; flex-direction: column-reverse; }
+    .classlog-foot .ui-btn { width: 100%; }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "subjectId": "probabilidad",
+  "units": [
+    {
+      "id": "probabilidad.t1",
+      "number": 1,
+      "title": "Sucesos y probabilidad",
+      "summary": "Espacio muestral, sucesos, axiomas de Kolmogórov y regla de Laplace."
+    },
+    {
+      "id": "probabilidad.t2",
+      "number": 2,
+      "title": "Probabilidad condicionada",
+      "summary": "Probabilidad condicionada, teorema de la probabilidad total y teorema de Bayes."
+    }
+  ],
+  "concepts": [
+    {
+      "id": "prob.sample_space",
+      "name": "Espacio muestral y sucesos",
+      "aliases": [
+        "espacio muestral",
+        "suceso"
+      ],
+      "unitId": "probabilidad.t1",
+      "order": 1,
+      "kind": "concepto",
+      "difficulty": 1,
+      "summary": "Conjunto de resultados posibles de un experimento aleatorio; un suceso es un subconjunto suyo.",
+      "intuition": "",
+      "definition": "",
+      "formulas": [],
+      "example": null,
+      "mistakes": [],
+      "questions": [],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "prob.axioms",
+      "name": "Axiomas de Kolmogórov",
+      "aliases": [
+        "axiomas de la probabilidad"
+      ],
+      "unitId": "probabilidad.t1",
+      "order": 2,
+      "kind": "definicion",
+      "difficulty": 2,
+      "summary": "Una probabilidad es no negativa, vale 1 en el espacio muestral y es aditiva sobre sucesos incompatibles.",
+      "intuition": "",
+      "definition": "",
+      "formulas": [],
+      "example": null,
+      "mistakes": [],
+      "questions": [],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "prob.laplace",
+      "name": "Regla de Laplace",
+      "aliases": [
+        "casos favorables entre casos posibles"
+      ],
+      "unitId": "probabilidad.t1",
+      "order": 3,
+      "kind": "metodo",
+      "difficulty": 1,
+      "summary": "Con resultados equiprobables, la probabilidad de un suceso es casos favorables entre casos posibles.",
+      "intuition": "",
+      "definition": "",
+      "formulas": [],
+      "example": null,
+      "mistakes": [],
+      "questions": [],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "prob.conditional",
+      "name": "Probabilidad condicionada",
+      "aliases": [
+        "probabilidad condicional"
+      ],
+      "unitId": "probabilidad.t2",
+      "order": 1,
+      "kind": "definicion",
+      "difficulty": 2,
+      "summary": "P(A|B) = P(A∩B)/P(B): la probabilidad de A cuando se sabe que ha ocurrido B.",
+      "intuition": "",
+      "definition": "",
+      "formulas": [],
+      "example": null,
+      "mistakes": [],
+      "questions": [],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "prob.total",
+      "name": "Teorema de la probabilidad total",
+      "aliases": [
+        "probabilidad total"
+      ],
+      "unitId": "probabilidad.t2",
+      "order": 2,
+      "kind": "teorema",
+      "difficulty": 2,
+      "summary": "Si B₁…Bₙ forman una partición, P(A) = Σ P(A|Bᵢ)·P(Bᵢ).",
+      "intuition": "",
+      "definition": "",
+      "formulas": [],
+      "example": null,
+      "mistakes": [],
+      "questions": [],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "prob.bayes",
+      "name": "Teorema de Bayes",
+      "aliases": [
+        "regla de Bayes"
+      ],
+      "unitId": "probabilidad.t2",
+      "order": 3,
+      "kind": "teorema",
+      "difficulty": 3,
+      "summary": "Invierte la condición: P(Bᵢ|A) = P(A|Bᵢ)·P(Bᵢ)/P(A).",
+      "intuition": "",
+      "definition": "",
+      "formulas": [],
+      "example": null,
+      "mistakes": [],
+      "questions": [],
+      "alsoIn": [],
+      "syllabus": true
+    }
+  ],
+  "relations": [
+    {
+      "source": "prob.axioms",
+      "target": "prob.sample_space",
+      "type": "requires",
+      "reason": "Los axiomas asignan probabilidades a los sucesos del espacio muestral."
+    },
+    {
+      "source": "prob.laplace",
+      "target": "prob.axioms",
+      "type": "requires",
+      "reason": "La regla de Laplace es un caso particular de los axiomas con resultados equiprobables."
+    },
+    {
+      "source": "prob.conditional",
+      "target": "prob.axioms",
+      "type": "requires",
+      "reason": "La probabilidad condicionada se define a partir de una probabilidad ya dada."
+    },
+    {
+      "source": "prob.total",
+      "target": "prob.conditional",
+      "type": "requires",
+      "reason": "Cada sumando es una probabilidad condicionada por un elemento de la partición."
+    },
+    {
+      "source": "prob.bayes",
+      "target": "prob.total",
+      "type": "requires",
+      "reason": "El denominador de Bayes se calcula con la probabilidad total."
+    },
+    {
+      "source": "prob.bayes",
+      "target": "prob.conditional",
+      "type": "related",
+      "reason": "Bayes relaciona P(A|B) con P(B|A)."
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas · Misiones · Camino · Escalera</title>
+<!-- Maqueta B2 de «Camino» (docs/superpowers/specs/2026-09-25-mision-del-dia-camino.md §4): escalera de niveles. Un peldaño por nivel (0–7), sus pasos como fichas, el nivel actual desplegado. Estilo «Compacta con iconos»; datos reales de content/calculo.json, content/trials/calculo.json y content/expeditions.json; notas y niveles de ejemplo. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --serif:"Cormorant Garamond","Iowan Old Style",Georgia,serif;
+  --sans:"Hanken Grotesk",system-ui,sans-serif;
+  --mono:"DM Mono",ui-monospace,monospace;
+  --ink-0:#070B18; --ink-1:#0B1122; --ink-2:#111A31; --ink-3:#18223D;
+  --line:rgba(170,188,235,.10); --line-2:rgba(170,188,235,.18);
+  --text:#ECE6D6; --text-2:#A9B1C9; --text-3:#8189A8; --text-4:#454E6C;
+  --gold:#F3B64A; --gold-hi:#FFD68A; --gold-lo:#B7802A; --gold-ink:#1C1405;
+  --frost:#8DB4E8; --ember:#F08A6C; --star:#FFF6E4;
+  --gold-fg:var(--gold-hi); --frost-fg:#A9C4EC; --ember-fg:#F4A58C;
+  --s-ia:#BFA2F2; --s-calculo:#6FD5C8; --s-logica:#97AAFB; --s-algebra:#95D69A; --s-programacion:#F6A98C;
+  --s-algoritmia:#D2D67C; --s-estructuras:#74C3EC; --s-computacion:#E59BD8; --s-operativos:#F4A3B5; --s-preprocesamiento:#E8C79A;
+  --surface:linear-gradient(180deg,rgba(24,34,63,.66),rgba(15,22,43,.66));
+  --well:rgba(7,11,24,.32);
+  --hover:rgba(255,255,255,.035); --hover-2:rgba(255,255,255,.06); --track:rgba(255,255,255,.07);
+  --shadow-card:inset 0 1px 0 rgba(255,255,255,.045),0 30px 60px -34px rgba(0,0,0,.7);
+  --hero-bg:radial-gradient(520px 300px at 4% 104%,rgba(243,182,74,.16),transparent 62%),radial-gradient(520px 420px at 96% -4%,rgba(92,124,226,.22),transparent 62%),linear-gradient(158deg,#18244A 0%,#111A37 52%,#0E1530 100%);
+  --hero-border:rgba(243,182,74,.24);
+  --hero-shadow:inset 0 1px 0 rgba(255,236,200,.08),0 0 0 1px rgba(243,182,74,.05),0 40px 80px -40px rgba(0,0,0,.8),0 0 120px -60px rgba(243,182,74,.5);
+  --btn-gold-bg:linear-gradient(180deg,#FFD27C 0%,#F4B447 55%,#E9A536 100%);
+  --btn-gold-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,220,150,.6),0 12px 30px -8px rgba(243,182,74,.6),0 0 70px -12px rgba(243,182,74,.55);
+  --gold-soft:color-mix(in oklab,var(--gold) 11%,transparent); --gold-line:color-mix(in oklab,var(--gold) 30%,transparent);
+  --frost-soft:color-mix(in oklab,var(--frost) 10%,transparent); --frost-line:color-mix(in oklab,var(--frost) 26%,transparent);
+  --ember-soft:color-mix(in oklab,var(--ember) 9%,transparent); --ember-line:color-mix(in oklab,var(--ember) 26%,transparent);
+  --r-card:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink-0)}
+body{font-family:var(--sans);font-size:14.5px;line-height:1.45;color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;font-variant-numeric:lining-nums;
+  background:radial-gradient(1100px 640px at 8% -8%,rgba(56,84,162,.34),transparent 62%),radial-gradient(900px 620px at 104% 24%,rgba(96,64,150,.16),transparent 60%),radial-gradient(900px 520px at 46% 108%,rgba(243,182,74,.05),transparent 60%),linear-gradient(180deg,#0B1226 0%,#0A0F1F 55%,#090D1B 100%)}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0}
+body::before{background-image:radial-gradient(1px 1px at 23px 41px,rgba(255,255,255,.55),transparent 70%),radial-gradient(1px 1px at 157px 213px,rgba(255,255,255,.35),transparent 70%),radial-gradient(1.4px 1.4px at 311px 97px,rgba(255,236,200,.65),transparent 70%),radial-gradient(1px 1px at 88px 301px,rgba(200,215,255,.45),transparent 70%),radial-gradient(1px 1px at 246px 22px,rgba(255,255,255,.3),transparent 70%),radial-gradient(1px 1px at 199px 144px,rgba(255,255,255,.25),transparent 70%),radial-gradient(1.2px 1.2px at 12px 188px,rgba(210,225,255,.5),transparent 70%),radial-gradient(1px 1px at 330px 260px,rgba(255,255,255,.3),transparent 70%);background-size:347px 347px;opacity:.55}
+body::after{background-image:radial-gradient(1.6px 1.6px at 61px 77px,rgba(255,240,210,.8),transparent 70%),radial-gradient(1px 1px at 402px 190px,rgba(255,255,255,.5),transparent 70%),radial-gradient(1.3px 1.3px at 270px 455px,rgba(190,210,255,.7),transparent 70%),radial-gradient(1px 1px at 488px 38px,rgba(255,255,255,.45),transparent 70%),radial-gradient(1px 1px at 139px 390px,rgba(255,255,255,.4),transparent 70%);background-size:523px 523px;opacity:.5}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.mono-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);line-height:1.3}
+.is-gold{color:var(--gold-fg)}
+
+.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:middle}
+.i-12{width:12px;height:12px;stroke-width:2}
+.i-14{width:14px;height:14px;stroke-width:1.75}
+.i-20{width:20px;height:20px;stroke-width:1.5}
+.i-24{width:24px;height:24px;stroke-width:1.5}
+.info{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:var(--text-3)}
+.kbd{display:inline-flex;align-items:center;justify-content:center;min-width:20px;padding:3px 6px 2px;font-family:var(--mono);font-size:10.5px;line-height:1.1;color:var(--text-2);background:var(--hover-2);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:6px}
+
+.t{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-2);white-space:nowrap;line-height:1.2}
+.t .i{width:14px;height:14px;color:var(--text-3)}
+.t b{font-weight:600;color:var(--text)}
+.t.gold,.t.gold .i,.t.gold b{color:var(--gold-fg)}
+.t.frost,.t.frost .i{color:var(--frost-fg)}
+.t.ember,.t.ember .i{color:var(--ember-fg)}
+.t.pill{padding:3px 9px 3px 7px;border-radius:999px}
+.t.pill.gold{background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line)}
+.t.pill.ember{background:var(--ember-soft);box-shadow:inset 0 0 0 1px var(--ember-line)}
+.t.pill.quiet{background:var(--hover);box-shadow:inset 0 0 0 1px var(--line)}
+.code{display:inline-flex;align-items:center;gap:5px;padding:2px 6px 1px 5px;border-radius:6px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--c);background:color-mix(in oklab,var(--c) 14%,transparent);line-height:1.4}
+.code::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--c)}
+.sep{width:3px;height:3px;border-radius:50%;background:var(--text-4);flex:none}
+
+/* Barra superior */
+.top{position:sticky;top:0;z-index:30;background:color-mix(in oklab,var(--ink-1) 74%,transparent);backdrop-filter:blur(16px) saturate(140%);border-bottom:1px solid var(--line)}
+.top-in{max-width:1440px;height:66px;margin:0 auto;padding:0 40px;display:flex;align-items:center;gap:26px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.02em}
+.nav{display:flex;gap:4px}
+.nav a{position:relative;display:inline-flex;align-items:center;gap:8px;padding:8px 15px;border-radius:999px;font-size:14.5px;font-weight:500;color:var(--text-2);white-space:nowrap}
+.nav a.on{color:var(--text);background:color-mix(in oklab,var(--gold) 9%,transparent);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--gold) 22%,transparent)}
+.nav a.on::after{content:"";position:absolute;left:50%;bottom:-19px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px 2px rgba(243,182,74,.6)}
+.count{padding:2px 6px 1px;border-radius:999px;font-family:var(--mono);font-size:10.5px;line-height:1.3;color:var(--gold-fg);background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line)}
+.search{flex:1;max-width:420px;height:40px;display:flex;align-items:center;gap:10px;padding:0 10px 0 14px;border-radius:12px;border:1px solid var(--line);background:var(--hover);color:var(--text-3);font-size:13.5px}
+.search span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 13px 0 10px;border-radius:999px;border:1px solid var(--line);background:var(--hover);font-size:13px;color:var(--text-2);white-space:nowrap}
+.chip b{color:var(--text);font-weight:600}
+.chip .gold{color:var(--gold-fg)}
+.save{width:7px;height:7px;border-radius:50%;background:color-mix(in oklab,var(--gold) 70%,var(--text-3));margin:0 6px}
+.icon-btn{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;color:var(--text-2)}
+.lvl{font-family:var(--mono);font-size:10px;color:var(--gold-fg)}
+
+/* Página */
+main{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:36px 40px 40px}
+.hello{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:4px 2px 24px}
+.eyebrow{display:flex;align-items:center;gap:10px}
+.h1{margin-top:10px;font-family:var(--serif);font-weight:500;font-size:44px;line-height:1.04}
+.h1 .mk{position:relative;white-space:nowrap}
+.h1 .mk::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--gold-hi) 60%,transparent);opacity:.75}
+.tutor{margin-top:10px;font-family:var(--serif);font-style:italic;font-weight:500;font-size:19px;color:var(--text-2)}
+.tutor b{font-weight:600;color:var(--text)}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.stat{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 14px 0 12px;border-radius:12px;background:var(--hover);box-shadow:inset 0 0 0 1px var(--line);font-size:12.5px;color:var(--text-3)}
+.stat .i{color:var(--text-3)}
+.stat b{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--text);line-height:1}
+.stat.frost .i,.stat.frost b{color:var(--frost-fg)}
+.btn{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 15px;border-radius:12px;font-size:13.5px;font-weight:500;color:var(--text-2);background:var(--hover);box-shadow:inset 0 0 0 1px var(--line-2);white-space:nowrap}
+.btn .i{color:var(--text-3)}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:28px;align-items:start}
+.col{display:flex;flex-direction:column;gap:24px;min-width:0}
+.card{position:relative;border-radius:var(--r-card);border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-card);padding:24px 26px}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.card-h h2{font-family:var(--serif);font-weight:600;font-size:25px;line-height:1.05}
+.card-h .act{margin-left:auto;display:flex;align-items:center;gap:16px}
+.link{display:inline-flex;align-items:center;gap:6px;color:var(--gold-fg);font-size:13px;font-weight:600;white-space:nowrap}
+.link .i{width:14px;height:14px}
+.hero{overflow:hidden;border-color:var(--hero-border);background:var(--hero-bg);box-shadow:var(--hero-shadow);padding:26px 28px 22px}
+.hero-grat{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-body{position:relative}
+.hero-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hero-top .tokens{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-gold{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 16px 0 7px;border-radius:12px;font-weight:700;font-size:14.5px;color:var(--gold-ink);background:var(--btn-gold-bg);box-shadow:var(--btn-gold-shadow);white-space:nowrap}
+.btn-gold .disc{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(28,20,5,.14)}
+.btn-gold .disc .i{width:12px;height:12px;fill:currentColor;stroke-width:1.5}
+.btn-gold .kbd{color:rgba(28,20,5,.72);background:rgba(28,20,5,.1);border-color:rgba(28,20,5,.22)}
+
+/* ───────── Misiones › Camino: común ───────── */
+main{padding-top:26px}
+.mtabs{display:flex;align-items:center;gap:6px;padding-bottom:0;border-bottom:1px solid var(--line)}
+.mtabs a{position:relative;display:inline-flex;align-items:center;gap:8px;padding:12px 14px 14px;font-size:14.5px;font-weight:500;color:var(--text-3);white-space:nowrap}
+.mtabs a .i{color:var(--text-3)}
+.mtabs a small{font-family:var(--mono);font-size:10.5px;color:var(--text-4)}
+.mtabs a.on{color:var(--text)}
+.mtabs a.on .i{color:var(--gold-fg)}
+.mtabs a.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--gold-lo),var(--gold-hi));box-shadow:0 0 10px rgba(243,182,74,.6)}
+.mtabs .new{padding:1px 6px 0;border-radius:999px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-fg);background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line)}
+.mtabs .aside{margin-left:auto}
+
+/* ficha de nivel: 7 segmentos */
+.lv7{display:flex;gap:3px}
+.lv7 i{width:14px;height:5px;border-radius:2px;background:var(--track)}
+.lv7 i.on{background:linear-gradient(90deg,var(--gold-lo),var(--gold-hi));box-shadow:0 0 8px -2px rgba(243,182,74,.6)}
+.lv7 i.nx{background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line)}
+
+.stars{display:inline-flex;gap:2px}
+.stars .i{width:12px;height:12px;stroke-width:1.6;color:var(--text-4)}
+.stars .i.on{color:var(--gold-hi);fill:var(--gold-hi)}
+
+/* panel lateral */
+.side{display:flex;flex-direction:column;gap:20px;min-width:0}
+.subj{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+.lvring{position:relative;display:grid;place-items:center;width:76px;height:76px}
+.lvring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.lvring b{font-family:var(--serif);font-size:34px;font-weight:600;line-height:1;color:var(--gold-hi);text-shadow:0 0 24px rgba(243,182,74,.45)}
+.subj h2{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1}
+.subj .lvn{display:flex;align-items:center;gap:10px;margin-top:9px}
+.kv{display:flex;align-items:center;gap:18px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.kv .t b{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1}
+.here{border-color:var(--hero-border);background:var(--hero-bg);box-shadow:var(--hero-shadow)}
+.here h3{margin-top:12px;display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.05}
+.here h3 .i{color:var(--text-2)}
+.here .meta{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-top:12px}
+.here .ms{display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border-radius:12px;background:var(--well);box-shadow:inset 0 0 0 1px var(--line)}
+.here .ms .lv7{margin-left:auto}
+.here .cta{display:flex;align-items:center;gap:10px;margin-top:18px}
+.here .btn-gold{height:48px;padding:0 20px 0 11px;font-size:15.5px;border-radius:14px}
+.here .btn-gold .disc{width:28px;height:28px}
+.here .btn-gold .disc .i{width:13px;height:13px}
+.climb{list-style:none;margin-top:4px}
+.climb li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+.climb li:first-child{border-top:0}
+.climb li > .i{color:var(--text-3);width:15px;height:15px}
+.climb .nm{font-weight:600}
+.climb .nm small{font-weight:400;color:var(--text-3);margin-left:6px;font-size:12.5px}
+.climb .rt{font-family:var(--mono);font-size:11.5px;color:var(--text-3)}
+.climb li.max .nm{color:var(--gold-fg)}
+.totals{display:flex;align-items:center;gap:14px;margin-top:10px;padding-top:12px;border-top:1px dashed var(--line-2)}
+/* ───────── Camino · escalera ───────── */
+.esc{display:grid;grid-template-columns:292px minmax(0,1fr);gap:28px;margin-top:24px;align-items:start}
+/* selector vertical */
+.subs{padding:14px 12px}
+.subs .mono-label{padding:4px 10px 10px}
+.sl{list-style:none}
+.s{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:9px 10px;border-radius:12px}
+.s .d{width:7px;height:7px;border-radius:50%}
+.s .nm{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s .ln{grid-column:2;font-family:var(--mono);font-size:10.5px;color:var(--text-3)}
+.s .lvn{grid-row:1 / span 2;grid-column:3;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.s .lvn b{font-family:var(--serif);font-size:20px;font-weight:600;line-height:.9;color:var(--text-2)}
+.s .lv7 i{width:6px;height:4px;border-radius:1px}
+.s.zero .lvn b,.s.zero .ln{color:var(--text-4)}
+.s.on{background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line)}
+.s.on .nm{color:var(--text);font-weight:600}
+.s.on .ln{color:var(--gold-fg)}
+.s.on .lvn b{color:var(--gold-hi)}
+
+/* cabecera de la asignatura */
+.head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;padding:20px 24px}
+.head .lvring{width:68px;height:68px}
+.head .lvring b{font-size:30px}
+.head h2{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1}
+.head .lvn{display:flex;align-items:center;gap:12px;margin-top:8px}
+.head .kvs{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.head .kvs .row{display:flex;align-items:center;gap:16px}
+.head .kvs .t b{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1}
+.nextpill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 10px;border-radius:999px;background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line);font-size:13px;color:var(--text-2);white-space:nowrap}
+.nextpill .i{width:14px;height:14px;color:var(--gold-fg)}
+.nextpill b{color:var(--gold-fg);font-weight:600}
+
+/* escalera */
+.ladder{margin-top:20px;padding:10px 24px 12px}
+.tiers{list-style:none;position:relative}
+.tier{position:relative;display:grid;grid-template-columns:44px 190px minmax(0,1fr) 118px;gap:18px;align-items:center;padding:14px 0}
+.tier + .tier{border-top:1px solid var(--line)}
+/* raíl */
+.tier::before{content:"";position:absolute;left:21px;top:0;bottom:0;width:2px;background:repeating-linear-gradient(180deg,var(--line-2) 0 4px,transparent 4px 9px)}
+.tier:first-child::before{top:50%}
+.tier:last-child::before{bottom:50%}
+.tier.done::before{background:linear-gradient(180deg,var(--gold-lo),var(--gold-hi));opacity:.9}
+.tier.cur::before{bottom:50%;background:linear-gradient(180deg,var(--gold-hi),var(--gold))}
+.tier.cur::after{content:"";position:absolute;left:21px;top:50%;bottom:0;width:2px;background:repeating-linear-gradient(180deg,var(--line-2) 0 4px,transparent 4px 9px)}
+.rung{position:relative;z-index:1;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--ink-3),var(--ink-1));box-shadow:inset 0 0 0 1px var(--line-2);font-family:var(--serif);font-size:20px;font-weight:600;color:var(--text-3)}
+.tier.done .rung{background:radial-gradient(circle at 40% 35%,var(--gold-hi),var(--gold) 70%);color:var(--gold-ink);box-shadow:0 0 18px -6px rgba(243,182,74,.85)}
+.tier.cur .rung{width:52px;height:52px;margin-left:-4px;font-size:25px;color:var(--gold-hi);box-shadow:inset 0 0 0 1.5px var(--gold),0 0 0 6px rgba(243,182,74,.08),0 0 30px -4px rgba(243,182,74,.7)}
+.tier.max .rung{box-shadow:inset 0 0 0 1px var(--gold-line),0 0 0 4px rgba(10,15,31,1),0 0 0 5px var(--gold-line)}
+.tier.lock .rung{color:var(--text-4)}
+.tier.zero{padding:8px 0}
+.tier.zero .rung{width:26px;height:26px;margin-left:9px;font-size:14px}
+.th b{display:block;font-family:var(--serif);font-size:21px;font-weight:600;line-height:1.05}
+.th small{display:block;margin-top:4px;font-family:var(--mono);font-size:10.5px;color:var(--text-3)}
+.tier.done .th b{color:var(--text-2)}
+.tier.cur .th b{font-size:24px;color:var(--text)}
+.tier.cur .th small{color:var(--gold-fg)}
+.tier.up .th b,.tier.lock .th b{color:var(--text-2)}
+.tier.zero .th b{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text-3)}
+.tr{justify-self:end}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.nc{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 10px 0 9px;border-radius:9px;background:var(--hover);box-shadow:inset 0 0 0 1px var(--line);font-size:12.5px;color:var(--text-2);white-space:nowrap}
+.nc .i{width:14px;height:14px;color:var(--text-3)}
+.nc .k{font-family:var(--mono);font-size:11px;color:var(--text)}
+.nc .stars .i{width:10px;height:10px}
+.nc.ok{background:linear-gradient(180deg,rgba(243,182,74,.07),rgba(243,182,74,.03));box-shadow:inset 0 0 0 1px rgba(243,182,74,.18)}
+.nc.lk{opacity:.7}
+.nc .r{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.nc.sum{background:transparent;box-shadow:inset 0 0 0 1px var(--gold-line)}
+
+/* nivel actual, desplegado */
+.now{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 16px 14px 14px;border-radius:16px;border:1px solid var(--hero-border);background:var(--hero-bg);box-shadow:var(--hero-shadow)}
+.now .ic{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--ink-3),var(--ink-1));box-shadow:inset 0 0 0 1px var(--gold-line),0 0 20px -6px rgba(243,182,74,.7);color:var(--gold-fg)}
+.now .ic .i{width:20px;height:20px;stroke-width:1.5}
+.now h3{font-family:var(--serif);font-weight:600;font-size:22px;line-height:1.05;margin-top:4px}
+.now .meta{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;margin-top:8px}
+.now .btn-gold{height:46px;padding:0 18px 0 10px;font-size:15px;border-radius:13px}
+.now .btn-gold .disc{width:27px;height:27px}
+.caption{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:18px 40px 40px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--text-3);border-top:1px dashed var(--line-2)}
+.caption b{color:var(--gold-fg);font-weight:500}
+
+@media (max-width:1200px){.cam{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<!--SPRITE:START-->
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+<symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-circle-play" viewBox="0 0 24 24"><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"/><circle cx="12" cy="12" r="10"/></symbol>
+<symbol id="i-clipboard-list" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></symbol>
+<symbol id="i-graduation-cap" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+<symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="i-mountain" viewBox="0 0 24 24"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+<symbol id="i-rocket" viewBox="0 0 24 24"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></symbol>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></symbol>
+<symbol id="i-telescope" viewBox="0 0 24 24"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.747 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z"/><path d="m6.158 8.633 1.114 4.456"/><path d="m8 21 3.105-6.21"/><circle cx="12" cy="13" r="2"/></symbol>
+</svg>
+<!--SPRITE:END-->
+<!-- iconos usados desde el script: #i-star #i-lock #i-check #i-clock -->
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#"><svg width="26" height="26" viewBox="-13 -13 26 26" aria-hidden="true"><circle r="12" fill="#F3B64A" opacity=".14"/><circle r="8.5" fill="none" stroke="#F3B64A" stroke-opacity=".45" stroke-width=".8"/><path d="M0-10.5C.7-3.2 3.2-.7 10.5 0 3.2.7.7 3.2 0 10.5-.7 3.2-3.2.7-10.5 0-3.2-.7-.7-3.2 0-10.5Z" fill="#FFD68A"/><circle r="1.6" fill="#FFF6E4"/></svg><span>Atlas</span></a>
+    <nav class="nav"><a href="#">Hoy <span class="count num">1/5</span></a><a href="#">Asignaturas</a><a href="#">Mapa</a><a class="on" href="#">Misiones</a><a href="#">Progreso</a></nav>
+    <div class="search"><svg class="i i-14"><use href="#i-search"/></svg><span>Buscar conceptos, asignaturas o misiones…</span><span class="kbd" style="flex:none">Ctrl</span><span class="kbd" style="flex:none">K</span></div>
+    <div class="right">
+      <i class="save"></i>
+      <span class="chip"><svg class="i" style="color:var(--text-3)"><use href="#i-flame"/></svg><b class="num">65</b> días</span>
+      <span class="chip"><span class="lvl">13</span><span class="gold">Protoestrella</span></span>
+      <span class="icon-btn" title="Tema"><svg class="i"><use href="#i-contrast"/></svg></span>
+      <span class="icon-btn" title="Ajustes"><svg class="i"><use href="#i-settings"/></svg></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <nav class="mtabs" aria-label="Misiones">
+    <a href="#"><svg class="i"><use href="#i-graduation-cap"/></svg>Principales <small class="num">10</small></a>
+    <a href="#"><svg class="i"><use href="#i-clipboard-list"/></svg>Pruebas <small class="num">56</small></a>
+    <a href="#"><svg class="i"><use href="#i-rocket"/></svg>Élite <small class="num">36</small></a>
+    <a href="#"><svg class="i"><use href="#i-telescope"/></svg>Estrellas guía <small class="num">43</small></a>
+    <a class="on" href="#"><svg class="i"><use href="#i-route"/></svg>Camino <span class="new">nuevo</span></a>
+  </nav>
+
+  <div class="esc">
+    <!-- Selector: las diez asignaturas con su nivel -->
+    <section class="card subs" aria-label="Asignatura">
+      <p class="mono-label">Asignaturas · nivel</p>
+      <ul class="sl" id="sl"></ul>
+    </section>
+
+    <div>
+      <section class="card head">
+        <span class="lvring"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="34" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/><circle cx="38" cy="38" r="34" fill="none" stroke="#FFD68A" stroke-width="4" stroke-linecap="round" stroke-dasharray="61 213.6" style="filter:drop-shadow(0 0 5px rgba(243,182,74,.6))"/></svg><b class="num">2</b></span>
+        <div>
+          <h2>Cálculo</h2>
+          <div class="lvn"><span class="mono-label is-gold">Nivel 2 · Controles</span><span class="lv7" title="Nivel 2 de 7"><i class="on"></i><i class="on"></i><i class="nx"></i><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <div class="kvs">
+          <span class="nextpill"><svg class="i"><use href="#i-flag"/></svg>Siguiente <b>Nivel 3 · Parcial</b></span>
+          <span class="row">
+            <span class="t" title="Estrellas de nota"><svg class="i"><use href="#i-star"/></svg><b class="num">20</b> / 33</span>
+            <span class="t" title="Pasos hechos"><svg class="i"><use href="#i-check"/></svg><b class="num">12</b> / 21</span>
+            <span class="t" title="Hasta el Máximo (Final B ≥ 7)"><svg class="i"><use href="#i-clock"/></svg><b class="num">≈ 10 h</b> al Máximo</span>
+          </span>
+        </div>
+      </section>
+
+      <section class="card ladder" aria-label="Escalera de niveles">
+        <ol class="tiers">
+          <li class="tier done zero">
+            <span class="rung num">0</span>
+            <span class="th"><b>Sin empezar</b></span>
+            <span></span>
+            <span></span>
+          </li>
+          <li class="tier done">
+            <span class="rung num">1</span>
+            <span class="th"><b>Base</b><small>≥ 50 % temas listos</small></span>
+            <span class="chips"><span class="nc ok"><svg class="i"><use href="#i-bookmark"/></svg><span class="k num">11 / 11</span>temas ≥ 70 %</span></span>
+            <span class="tr t gold"><svg class="i"><use href="#i-check"/></svg>Hecho</span>
+          </li>
+          <li class="tier done">
+            <span class="rung num">2</span>
+            <span class="th"><b>Controles</b><small>los 11, con ≥ 7</small></span>
+            <span class="chips" id="ctrls"></span>
+            <span class="tr t gold"><svg class="i"><use href="#i-star"/></svg><b class="num" style="color:inherit">20</b> / 33</span>
+          </li>
+          <li class="tier cur">
+            <span class="rung num">3</span>
+            <span class="th"><b>Parcial</b><small>parcial A con ≥ 7</small></span>
+            <div class="now">
+              <span class="ic"><svg class="i"><use href="#i-hourglass"/></svg></span>
+              <div>
+                <span class="t gold"><svg class="i"><use href="#i-map-pin"/></svg><b>Estás aquí</b></span>
+                <h3>Simulacro de parcial A</h3>
+                <div class="meta">
+                  <span class="t"><svg class="i"><use href="#i-clock"/></svg><span class="num">100′ + 15′</span></span>
+                  <span class="t"><svg class="i"><use href="#i-bookmark"/></svg>Temas 0–5</span>
+                  <span class="t gold"><svg class="i"><use href="#i-circle-play"/></svg>Listo · <b class="num">78 %</b></span>
+                </div>
+              </div>
+              <a class="btn-gold" href="#"><span class="disc"><svg class="i"><use href="#i-play"/></svg></span>Empezar simulacro</a>
+            </div>
+            <span class="tr t"><svg class="i"><use href="#i-clock"/></svg><span class="num">115′</span></span>
+          </li>
+          <li class="tier up">
+            <span class="rung num">4</span>
+            <span class="th"><b>Parcial exigente</b><small>parcial B con ≥ 7</small></span>
+            <span class="chips"><span class="nc"><svg class="i"><use href="#i-hourglass"/></svg>Simulacro de parcial B<span class="r num">120′ · 64 %</span></span></span>
+            <span class="tr t"><svg class="i"><use href="#i-clock"/></svg><span class="num">135′</span></span>
+          </li>
+          <li class="tier up">
+            <span class="rung num">5</span>
+            <span class="th"><b>Final</b><small>final A con ≥ 7</small></span>
+            <span class="chips"><span class="nc"><svg class="i"><use href="#i-hourglass"/></svg>Simulacro de final A<span class="r num">150′ · 41 %</span></span></span>
+            <span class="tr t"><svg class="i"><use href="#i-clock"/></svg><span class="num">165′</span></span>
+          </li>
+          <li class="tier up max">
+            <span class="rung num">6</span>
+            <span class="th"><b>Máximo</b><small>final B con ≥ 7</small></span>
+            <span class="chips"><span class="nc"><svg class="i"><use href="#i-hourglass"/></svg>Simulacro de final B<span class="r num">180′ · 35 %</span></span></span>
+            <span class="tr t"><svg class="i"><use href="#i-clock"/></svg><span class="num">195′</span></span>
+          </li>
+          <li class="tier lock">
+            <span class="rung num">7</span>
+            <span class="th"><b>Élite</b><small>la cumbre, con ≥ 7</small></span>
+            <span class="chips">
+              <span class="nc lk"><svg class="i"><use href="#i-rocket"/></svg>6.006 · Quiz 2</span>
+              <span class="nc lk"><svg class="i"><use href="#i-rocket"/></svg>18.01SC · Parcial 2</span>
+              <span class="nc lk"><svg class="i"><use href="#i-rocket"/></svg>18.01SC · Parcial 3</span>
+              <span class="nc lk"><svg class="i"><use href="#i-mountain"/></svg>18.01SC · Final<span class="r">cumbre</span></span>
+            </span>
+            <span class="tr t"><svg class="i"><use href="#i-lock"/></svg>tras el Máximo</span>
+          </li>
+        </ol>
+      </section>
+    </div>
+  </div>
+</main>
+
+<p class="caption">Maqueta «Camino · escalera» · Misiones › Camino · Cálculo, estado de ejemplo en <b>Nivel 2</b> (11 controles superados) para enseñar todos los estados · se lee de arriba abajo, un peldaño por nivel · una sola acción dorada: <b>Empezar simulacro</b></p>
+
+<script>
+const ico = (n, cls = "") => `<svg class="i ${cls}"><use href="#i-${n}"/></svg>`;
+const L = ["Sin empezar", "Base", "Controles", "Parcial", "Parcial exigente", "Final", "Máximo", "Élite"];
+const W = [["algebra","Álgebra",1],["calculo","Cálculo",2],["operativos","Métodos operativos",1],["logica","Lógica",1],["computacion","Computación",0],["programacion","Programación",1],["estructuras","Estructuras",0],["algoritmia","Algoritmia",0],["ia","IA",1],["preprocesamiento","Preprocesamiento",0]];
+document.getElementById("sl").innerHTML = W.map(([id, name, lv]) => `
+  <li><a class="s ${id === "calculo" ? "on" : ""} ${lv === 0 ? "zero" : ""}" href="#">
+    <i class="d" style="background:var(--s-${id})"></i><span class="nm">${name}</span>
+    <span class="lvn"><b class="num">${lv}</b><span class="lv7">${[1,2,3,4,5,6,7].map((i) => `<i class="${i <= lv ? "on" : i === lv + 1 && id === "calculo" ? "nx" : ""}"></i>`).join("")}</span></span>
+    <span class="ln">${L[lv]}</span>
+  </a></li>`).join("");
+
+// Controles de Cálculo: [tema, nota, estrellas] (títulos reales en content/trials/calculo.json)
+const T = [["Bases","10",3],["Funciones, límites y continuidad","8,4",1],["Derivadas","9,1",2],["Aplicaciones de la derivada","7,6",1],["Integral definida","8,8",2],["Integral indefinida y métodos de integración","9,6",3],["Sucesiones y series","7,2",1],["Funciones de varias variables","8,0",1],["Aritmética del computador y errores","9,5",3],["Resolución numérica de ecuaciones","8,6",2],["Interpolación e integración numérica","7,9",1]];
+document.getElementById("ctrls").innerHTML = T.map(([name, g, s], i) => `
+  <span class="nc ok" title="Control · ${name} · nota ${g}"><span class="k">T${i}</span><span class="stars">${[0,1,2].map((j) => ico("star", j < s ? "on" : "")).join("")}</span></span>`).join("");
+</script>
+</body>
+</html>

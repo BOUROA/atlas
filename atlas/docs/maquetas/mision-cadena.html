@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas · Misión de hoy · Cadena</title>
+<!-- Maqueta A2 de «Misión del día» (docs/superpowers/specs/2026-09-25-mision-del-dia-camino.md): cadena de misiones.
+     Estilo «Compacta con iconos» (hoy-iconos.html): mismos tokens, fichas, códigos y vocabulario de iconos.
+     Día de ejemplo: jueves 19-11-2026 · foco ALG · CAL · LOG · presupuesto 4 h. Iconos lucide reales (sprite desde node_modules/lucide-react). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --serif:"Cormorant Garamond","Iowan Old Style",Georgia,serif;
+  --sans:"Hanken Grotesk",system-ui,sans-serif;
+  --mono:"DM Mono",ui-monospace,monospace;
+  --ink-0:#070B18; --ink-1:#0B1122; --ink-2:#111A31; --ink-3:#18223D;
+  --line:rgba(170,188,235,.10); --line-2:rgba(170,188,235,.18);
+  --text:#ECE6D6; --text-2:#A9B1C9; --text-3:#8189A8; --text-4:#454E6C;
+  --gold:#F3B64A; --gold-hi:#FFD68A; --gold-lo:#B7802A; --gold-ink:#1C1405;
+  --frost:#8DB4E8; --ember:#F08A6C; --star:#FFF6E4;
+  --gold-fg:var(--gold-hi); --frost-fg:#A9C4EC; --ember-fg:#F4A58C;
+  --s-ia:#BFA2F2; --s-calculo:#6FD5C8; --s-logica:#97AAFB; --s-algebra:#95D69A; --s-programacion:#F6A98C;
+  --s-algoritmia:#D2D67C; --s-estructuras:#74C3EC; --s-computacion:#E59BD8; --s-operativos:#F4A3B5; --s-preprocesamiento:#E8C79A;
+  --surface:linear-gradient(180deg,rgba(24,34,63,.66),rgba(15,22,43,.66));
+  --well:rgba(7,11,24,.32);
+  --hover:rgba(255,255,255,.035); --hover-2:rgba(255,255,255,.06); --track:rgba(255,255,255,.07);
+  --shadow-card:inset 0 1px 0 rgba(255,255,255,.045),0 30px 60px -34px rgba(0,0,0,.7);
+  --hero-bg:radial-gradient(520px 300px at 4% 104%,rgba(243,182,74,.16),transparent 62%),radial-gradient(520px 420px at 96% -4%,rgba(92,124,226,.22),transparent 62%),linear-gradient(158deg,#18244A 0%,#111A37 52%,#0E1530 100%);
+  --hero-border:rgba(243,182,74,.24);
+  --hero-shadow:inset 0 1px 0 rgba(255,236,200,.08),0 0 0 1px rgba(243,182,74,.05),0 40px 80px -40px rgba(0,0,0,.8),0 0 120px -60px rgba(243,182,74,.5);
+  --btn-gold-bg:linear-gradient(180deg,#FFD27C 0%,#F4B447 55%,#E9A536 100%);
+  --btn-gold-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,220,150,.6),0 12px 30px -8px rgba(243,182,74,.6),0 0 70px -12px rgba(243,182,74,.55);
+  --gold-soft:color-mix(in oklab,var(--gold) 11%,transparent); --gold-line:color-mix(in oklab,var(--gold) 30%,transparent);
+  --frost-soft:color-mix(in oklab,var(--frost) 10%,transparent); --frost-line:color-mix(in oklab,var(--frost) 26%,transparent);
+  --ember-soft:color-mix(in oklab,var(--ember) 9%,transparent); --ember-line:color-mix(in oklab,var(--ember) 26%,transparent);
+  --r-card:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink-0)}
+body{font-family:var(--sans);font-size:14.5px;line-height:1.45;color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;font-variant-numeric:lining-nums;
+  background:radial-gradient(1100px 640px at 8% -8%,rgba(56,84,162,.34),transparent 62%),radial-gradient(900px 620px at 104% 24%,rgba(96,64,150,.16),transparent 60%),radial-gradient(900px 520px at 46% 108%,rgba(243,182,74,.05),transparent 60%),linear-gradient(180deg,#0B1226 0%,#0A0F1F 55%,#090D1B 100%)}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0}
+body::before{background-image:radial-gradient(1px 1px at 23px 41px,rgba(255,255,255,.55),transparent 70%),radial-gradient(1px 1px at 157px 213px,rgba(255,255,255,.35),transparent 70%),radial-gradient(1.4px 1.4px at 311px 97px,rgba(255,236,200,.65),transparent 70%),radial-gradient(1px 1px at 88px 301px,rgba(200,215,255,.45),transparent 70%),radial-gradient(1px 1px at 246px 22px,rgba(255,255,255,.3),transparent 70%),radial-gradient(1px 1px at 199px 144px,rgba(255,255,255,.25),transparent 70%),radial-gradient(1.2px 1.2px at 12px 188px,rgba(210,225,255,.5),transparent 70%),radial-gradient(1px 1px at 330px 260px,rgba(255,255,255,.3),transparent 70%);background-size:347px 347px;opacity:.55}
+body::after{background-image:radial-gradient(1.6px 1.6px at 61px 77px,rgba(255,240,210,.8),transparent 70%),radial-gradient(1px 1px at 402px 190px,rgba(255,255,255,.5),transparent 70%),radial-gradient(1.3px 1.3px at 270px 455px,rgba(190,210,255,.7),transparent 70%),radial-gradient(1px 1px at 488px 38px,rgba(255,255,255,.45),transparent 70%),radial-gradient(1px 1px at 139px 390px,rgba(255,255,255,.4),transparent 70%);background-size:523px 523px;opacity:.5}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.mono-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);line-height:1.3}
+.is-gold{color:var(--gold-fg)}
+
+.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:middle}
+.i-12{width:12px;height:12px;stroke-width:2}
+.i-14{width:14px;height:14px;stroke-width:1.75}
+.i-20{width:20px;height:20px;stroke-width:1.5}
+.i-24{width:24px;height:24px;stroke-width:1.5}
+.info{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:var(--text-3)}
+.kbd{display:inline-flex;align-items:center;justify-content:center;min-width:20px;padding:3px 6px 2px;font-family:var(--mono);font-size:10.5px;line-height:1.1;color:var(--text-2);background:var(--hover-2);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:6px}
+
+.t{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-2);white-space:nowrap;line-height:1.2}
+.t .i{width:14px;height:14px;color:var(--text-3)}
+.t b{font-weight:600;color:var(--text)}
+.t.gold,.t.gold .i,.t.gold b{color:var(--gold-fg)}
+.t.frost,.t.frost .i{color:var(--frost-fg)}
+.t.ember,.t.ember .i{color:var(--ember-fg)}
+.t.pill{padding:3px 9px 3px 7px;border-radius:999px}
+.t.pill.gold{background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line)}
+.t.pill.ember{background:var(--ember-soft);box-shadow:inset 0 0 0 1px var(--ember-line)}
+.t.pill.quiet{background:var(--hover);box-shadow:inset 0 0 0 1px var(--line)}
+.code{display:inline-flex;align-items:center;gap:5px;padding:2px 6px 1px 5px;border-radius:6px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--c);background:color-mix(in oklab,var(--c) 14%,transparent);line-height:1.4}
+.code::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--c)}
+.sep{width:3px;height:3px;border-radius:50%;background:var(--text-4);flex:none}
+
+/* Barra superior */
+.top{position:sticky;top:0;z-index:30;background:color-mix(in oklab,var(--ink-1) 74%,transparent);backdrop-filter:blur(16px) saturate(140%);border-bottom:1px solid var(--line)}
+.top-in{max-width:1440px;height:66px;margin:0 auto;padding:0 40px;display:flex;align-items:center;gap:26px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.02em}
+.nav{display:flex;gap:4px}
+.nav a{position:relative;display:inline-flex;align-items:center;gap:8px;padding:8px 15px;border-radius:999px;font-size:14.5px;font-weight:500;color:var(--text-2);white-space:nowrap}
+.nav a.on{color:var(--text);background:color-mix(in oklab,var(--gold) 9%,transparent);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--gold) 22%,transparent)}
+.nav a.on::after{content:"";position:absolute;left:50%;bottom:-19px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px 2px rgba(243,182,74,.6)}
+.count{padding:2px 6px 1px;border-radius:999px;font-family:var(--mono);font-size:10.5px;line-height:1.3;color:var(--gold-fg);background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold-line)}
+.search{flex:1;max-width:420px;height:40px;display:flex;align-items:center;gap:10px;padding:0 10px 0 14px;border-radius:12px;border:1px solid var(--line);background:var(--hover);color:var(--text-3);font-size:13.5px}
+.search span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 13px 0 10px;border-radius:999px;border:1px solid var(--line);background:var(--hover);font-size:13px;color:var(--text-2);white-space:nowrap}
+.chip b{color:var(--text);font-weight:600}
+.chip .gold{color:var(--gold-fg)}
+.save{width:7px;height:7px;border-radius:50%;background:color-mix(in oklab,var(--gold) 70%,var(--text-3));margin:0 6px}
+.icon-btn{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;color:var(--text-2)}
+.lvl{font-family:var(--mono);font-size:10px;color:var(--gold-fg)}
+
+/* Página */
+main{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:36px 40px 40px}
+.hello{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:4px 2px 24px}
+.eyebrow{display:flex;align-items:center;gap:10px}
+.h1{margin-top:10px;font-family:var(--serif);font-weight:500;font-size:44px;line-height:1.04}
+.h1 .mk{position:relative;white-space:nowrap}
+.h1 .mk::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--gold-hi) 60%,transparent);opacity:.75}
+.tutor{margin-top:10px;font-family:var(--serif);font-style:italic;font-weight:500;font-size:19px;color:var(--text-2)}
+.tutor b{font-weight:600;color:var(--text)}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.stat{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 14px 0 12px;border-radius:12px;background:var(--hover);box-shadow:inset 0 0 0 1px var(--line);font-size:12.5px;color:var(--text-3)}
+.stat .i{color:var(--text-3)}
+.stat b{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--text);line-height:1}
+.stat.frost .i,.stat.frost b{color:var(--frost-fg)}
+.btn{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 15px;border-radius:12px;font-size:13.5px;font-weight:500;color:var(--text-2);background:var(--hover);box-shadow:inset 0 0 0 1px var(--line-2);white-space:nowrap}
+.btn .i{color:var(--text-3)}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:28px;align-items:start}
+.col{display:flex;flex-direction:column;gap:24px;min-width:0}
+.card{position:relative;border-radius:var(--r-card);border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-card);padding:24px 26px}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.card-h h2{font-family:var(--serif);font-weight:600;font-size:25px;line-height:1.05}
+.card-h .act{margin-left:auto;display:flex;align-items:center;gap:16px}
+.link{display:inline-flex;align-items:center;gap:6px;color:var(--gold-fg);font-size:13px;font-weight:600;white-space:nowrap}
+.link .i{width:14px;height:14px}
+.hero{overflow:hidden;border-color:var(--hero-border);background:var(--hero-bg);box-shadow:var(--hero-shadow);padding:26px 28px 22px}
+.hero-grat{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-body{position:relative}
+.hero-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hero-top .tokens{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-gold{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 16px 0 7px;border-radius:12px;font-weight:700;font-size:14.5px;color:var(--gold-ink);background:var(--btn-gold-bg);box-shadow:var(--btn-gold-shadow);white-space:nowrap}
+.btn-gold .disc{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(28,20,5,.14)}
+.btn-gold .disc .i{width:12px;height:12px;fill:currentColor;stroke-width:1.5}
+.btn-gold .kbd{color:rgba(28,20,5,.72);background:rgba(28,20,5,.1);border-color:rgba(28,20,5,.22)}
+
+/* ───────── Misión de hoy · cadena ───────── */
+.chain{padding:24px 28px 20px}
+.chain .hero-top .tokens{gap:18px}
+.quest{display:flex;align-items:flex-start;margin-top:30px}
+.lk{flex:1;min-width:26px;height:2px;margin-top:29px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--line-2) 0 6px,transparent 6px 11px)}
+.lk.lit{background:linear-gradient(90deg,var(--gold-lo),var(--gold-hi));box-shadow:0 0 10px rgba(243,182,74,.45)}
+.nd{position:relative;width:118px;flex:none;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.md{position:relative;display:grid;place-items:center;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--ink-3),var(--ink-1));box-shadow:inset 0 0 0 1px var(--line-2);color:var(--text-2)}
+.md .i{width:22px;height:22px;stroke-width:1.5}
+.md .bdg{position:absolute;top:-6px;right:-10px;padding:2px 6px 1px;border-radius:999px;font-family:var(--mono);font-size:10px;line-height:1.3;color:var(--text-2);background:var(--ink-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.md .bdg.gold{color:var(--gold-fg);box-shadow:inset 0 0 0 1px var(--gold-line);background:#1A1A24}
+.nd.done .md{background:radial-gradient(circle at 40% 35%,var(--gold-hi),var(--gold) 70%);color:var(--gold-ink);box-shadow:0 0 22px -6px rgba(243,182,74,.85)}
+.nd.done .md .i{stroke-width:2.2}
+.nd-t{display:flex;flex-direction:column;align-items:center;gap:6px}
+.nd-t b{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1}
+.nd.done .nd-t b{color:var(--text-2)}
+.nd-m{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--text-3);white-space:nowrap}
+.nd-n{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text-4)}
+/* recompensa del día */
+.nd.prize .md{width:60px;height:60px;background:radial-gradient(circle at 50% 50%,rgba(243,182,74,.16),rgba(11,17,34,.9) 70%);box-shadow:inset 0 0 0 1px var(--gold-line)}
+.nd.prize .md::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px dashed var(--gold-line)}
+.nd.prize .nd-t b{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text-2)}
+
+/* nodo actual, desplegado */
+.cur{position:relative;flex:none;width:430px;margin-top:-18px;padding:18px 20px 18px 18px;border-radius:18px;background:linear-gradient(180deg,rgba(243,182,74,.10),rgba(243,182,74,.03));box-shadow:inset 0 0 0 1px var(--gold-line),0 20px 40px -24px rgba(0,0,0,.8)}
+.cur-h{display:grid;grid-template-columns:60px minmax(0,1fr);gap:16px;align-items:center}
+.cur .md{color:var(--gold-fg);box-shadow:inset 0 0 0 1px var(--gold-line),0 0 26px -6px rgba(243,182,74,.8)}
+.cur .md svg.arc{position:absolute;inset:-4px;width:68px;height:68px;transform:rotate(-90deg)}
+.cur .nd-n{position:static;transform:none;color:var(--gold-fg)}
+.cur h3{margin-top:5px;font-family:var(--serif);font-weight:600;font-size:30px;line-height:1}
+.cur-m{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-top:14px}
+.cur-p{display:flex;align-items:center;gap:12px;margin-top:12px}
+.cur-p .pb{flex:1;height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.cur-p .pb b{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-lo),var(--gold-hi));box-shadow:0 0 10px rgba(243,182,74,.5)}
+.cur-p .n{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+.cur-p .n b{color:var(--text);font-weight:500}
+.cur-cta{display:flex;align-items:center;gap:12px;margin-top:16px}
+
+/* mañana: la cadena siguiente, apagada */
+.tmrw{display:flex;align-items:center;gap:18px;margin-top:22px;padding-top:16px;border-top:1px dashed var(--line-2)}
+.tmrw-l{display:flex;align-items:center;gap:8px}
+.mini{display:flex;align-items:center;opacity:.72}
+.mini .lk{min-width:0;flex:none;width:22px;margin-top:0}
+.mn{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 10px 0 5px;border-radius:999px;background:var(--hover);box-shadow:inset 0 0 0 1px var(--line-2);font-size:12px;color:var(--text-2);white-space:nowrap}
+.mn .c{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink-1);box-shadow:inset 0 0 0 1px var(--line-2)}
+.mn .c .i{width:12px;height:12px;stroke-width:2;color:var(--text-3)}
+.mn.pz{padding:0 5px;border-radius:50%;width:30px;justify-content:center;background:transparent;box-shadow:inset 0 0 0 1px var(--gold-line)}
+.tmrw .link{margin-left:auto}
+
+/* móvil: tira de nodos + panel del actual */
+.quest-m{display:none}
+
+.lower{margin-top:24px}
+
+/* Cola (lo que sigue) */
+.tabs{display:flex;gap:2px;padding:3px;border-radius:12px;background:var(--well);box-shadow:inset 0 0 0 1px var(--line)}
+.tabs a{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;font-size:13px;color:var(--text-3)}
+.tabs a .i{width:14px;height:14px}
+.tabs a.on{color:var(--text);background:var(--hover-2)}
+.tabs small{font-family:var(--mono);font-size:10.5px}
+.tabs a.on small{color:var(--gold-fg)}
+.queue{list-style:none}
+.queue li{border-top:1px solid var(--line)}
+.queue li:first-child{border-top:0}
+.q{display:grid;grid-template-columns:26px minmax(0,1fr) 64px 40px;gap:14px;align-items:center;padding:12px 6px;border-radius:12px}
+.q-n{font-family:var(--mono);font-size:12px;color:var(--text-4);align-self:start;padding-top:5px}
+.q-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+.q-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.q-name{font-family:var(--serif);font-weight:600;font-size:19px;line-height:1.15}
+.q-why{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.q-state{display:flex;flex-direction:column;gap:6px}
+.lvl3{display:flex;gap:3px}
+.lvl3 i{width:7px;height:7px;transform:rotate(45deg);box-shadow:inset 0 0 0 1px var(--text-4)}
+.fresh{height:3px;border-radius:2px;background:var(--track)}
+.q-t{font-family:var(--mono);font-size:12px;color:var(--text-2);text-align:right}
+.foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:14px;border-top:1px dashed var(--line-2)}
+.fade{position:relative}
+.fade::after{content:"";position:absolute;left:0;right:0;bottom:0;height:90px;border-radius:0 0 var(--r-card) var(--r-card);background:linear-gradient(180deg,transparent,rgba(10,15,31,.92));pointer-events:none}
+
+/* Lateral: jugador */
+.player-h{display:flex;align-items:center;gap:14px}
+.emblem{display:grid;place-items:center;width:60px;height:60px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 30%,var(--ink-3),var(--ink-1));box-shadow:inset 0 0 0 1px var(--gold-line),0 0 22px -8px rgba(243,182,74,.6)}
+.player-h h3{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1;margin-top:3px}
+.player-h .t{margin-left:auto}
+.xpbar{position:relative;height:7px;margin-top:18px;border-radius:4px;background:var(--track)}
+.xpbar b{position:absolute;inset:0 auto 0 0;width:19.4%;border-radius:4px;background:linear-gradient(90deg,var(--gold-lo),var(--gold-hi));box-shadow:0 0 12px -2px rgba(243,182,74,.6)}
+.xpbar em{position:absolute;top:0;bottom:0;left:19.4%;width:4.5%;border-radius:0 4px 4px 0;background:repeating-linear-gradient(135deg,rgba(255,214,138,.55) 0 3px,rgba(255,214,138,.18) 3px 6px)}
+.xpl{display:flex;justify-content:space-between;margin-top:8px}
+.pstats{display:flex;align-items:center;gap:22px;margin-top:16px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.pstat{display:flex;align-items:center;gap:8px}
+.pstat b{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1}
+.pstat .t{font-size:12px}
+.week{display:flex;align-items:center;gap:6px;margin-top:14px}
+.dd{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-family:var(--mono);font-size:10px;color:var(--text-4);box-shadow:inset 0 0 0 1px var(--line-2)}
+.dd.ok{color:var(--gold-ink);background:radial-gradient(circle at 40% 35%,var(--gold-hi),var(--gold) 70%);font-weight:600;box-shadow:none}
+.dd.now{color:var(--gold-fg);box-shadow:inset 0 0 0 1.4px var(--gold)}
+.dd.fut{opacity:.45}
+.week .t{margin-left:auto}
+.moon{color:var(--frost)!important}
+.steps{list-style:none}
+.steps li{border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0}
+.step{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:4px 10px;align-items:start;padding:11px 4px;border-radius:10px}
+.step > .i{margin-top:1px;color:var(--text-2)}
+.step .tt{font-size:13.5px;font-weight:600;line-height:1.35}
+.step .mt{grid-column:2;display:flex;align-items:center;gap:8px}
+
+.caption{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:18px 40px 40px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--text-3);border-top:1px dashed var(--line-2)}
+.caption b{color:var(--gold-fg);font-weight:500}
+
+@media (max-width:1200px){.grid{grid-template-columns:minmax(0,1fr)}.cur{width:380px}.nd{width:100px}}
+@media (max-width:760px){
+  .top-in{padding:0 16px;height:56px;gap:12px}
+  .nav,.search,.right .chip,.save{display:none}
+  .brand{font-size:24px}
+  main{padding:24px 16px}
+  .h1{font-size:34px}
+  .tutor{font-size:18px}
+  .stats{gap:8px}
+  .stat{height:34px;padding:0 11px 0 9px}
+  .stat b{font-size:18px}
+  .hello .btn{display:none}
+  .grid,.col{gap:18px}
+  .lower{margin-top:18px}
+  .card{padding:20px 18px}
+  .chain{padding:20px 16px 16px}
+  .hero-top .tokens{margin-left:0;width:100%;gap:8px 14px;margin-top:8px}
+  .quest{display:none}
+  .quest-m{display:block;margin-top:22px}
+  .strip{display:flex;align-items:flex-start;padding:0 2px}
+  .strip .lk{min-width:6px;margin-top:19px}
+  .sn{width:40px;flex:none;display:flex;flex-direction:column;align-items:center;gap:7px}
+  .sn .md{width:40px;height:40px}
+  .sn .md .i{width:16px;height:16px}
+  .sn .md svg.arc{position:absolute;inset:-4px;width:48px;height:48px;transform:rotate(-90deg)}
+  .sn small{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--text-3);white-space:nowrap}
+  .sn.now .md{color:var(--gold-fg);box-shadow:inset 0 0 0 1px var(--gold-line),0 0 18px -4px rgba(243,182,74,.8)}
+  .sn.now small{color:var(--gold-fg)}
+  .sn.done .md{background:radial-gradient(circle at 40% 35%,var(--gold-hi),var(--gold) 70%);color:var(--gold-ink);box-shadow:0 0 16px -6px rgba(243,182,74,.85)}
+  .sn.done .md .i{stroke-width:2.4}
+  .sn.prize .md{background:transparent;box-shadow:inset 0 0 0 1px var(--gold-line);color:var(--gold-fg)}
+  .sn.prize small{color:var(--gold-fg)}
+  .quest-m .cur{width:auto;margin-top:16px;padding:16px}
+  .quest-m .cur::before{content:"";position:absolute;top:-6px;left:15px;width:11px;height:11px;transform:rotate(45deg);background:#262A36;box-shadow:inset 1px 1px 0 var(--gold-line)}
+  .quest-m .cur h3{font-size:27px}
+  .cur-m{margin-top:10px}
+  .cur-cta{flex-wrap:wrap}
+  .tmrw{flex-wrap:wrap;gap:10px 12px}
+  .mini{width:100%;opacity:.72}
+  .mini .lk{width:8px}
+  .mn{padding:0 6px;gap:5px}
+  .mn:not(.rv) .c{display:none}
+  .tmrw .link{margin-left:0}
+  .tmrw-l{flex:1}
+  .card-h .act{margin-left:0;width:100%}
+  .tabs{width:100%}
+  .tabs a{flex:1;justify-content:center;padding:6px 6px}
+  .q{grid-template-columns:22px minmax(0,1fr) 34px;gap:10px}
+  .q-state{display:none}
+  .caption{padding:16px}
+}
+</style>
+</head>
+<body>
+<!--SPRITE:START-->
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+<symbol id="i-book-open" viewBox="0 0 24 24"><path d="M12 5v16"/><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"/></symbol>
+<symbol id="i-book-open-check" viewBox="0 0 24 24"><path d="M12 5v16"/><path d="m16 12 2 2 4-4"/><path d="M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"/></symbol>
+<symbol id="i-calendar-check" viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="m9 15 2 2 4-4"/></symbol>
+<symbol id="i-calendar-clock" viewBox="0 0 24 24"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v3"/><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338"/><path d="M3 9h5.859"/><path d="M8 2v3"/><circle cx="16" cy="16" r="6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-clipboard-check" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></symbol>
+<symbol id="i-lock-open" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
+<symbol id="i-notebook-pen" viewBox="0 0 24 24"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+<symbol id="i-refresh-ccw" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></symbol>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-snowflake" viewBox="0 0 24 24"><path d="m10 20-1.25-2.5L6 18"/><path d="M10 4 8.75 6.5 6 6"/><path d="m14 20 1.25-2.5L18 18"/><path d="m14 4 1.25 2.5L18 6"/><path d="m17 21-3-6h-4"/><path d="m17 3-3 6 1.5 3"/><path d="M2 12h6.5L10 9"/><path d="m20 10-1.5 2 1.5 2"/><path d="M22 12h-6.5L14 15"/><path d="m4 10 1.5 2L4 14"/><path d="m7 21 3-6-1.5-3"/><path d="m7 3 3 6h4"/></symbol>
+<symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></symbol>
+<symbol id="i-waypoints" viewBox="0 0 24 24"><path d="m10.586 5.414-5.172 5.172"/><path d="m18.586 13.414-5.172 5.172"/><path d="M6 12h12"/><circle cx="12" cy="20" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="4" cy="12" r="2"/></symbol>
+</svg>
+<!--SPRITE:END-->
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#"><svg width="26" height="26" viewBox="-13 -13 26 26" aria-hidden="true"><circle r="12" fill="#F3B64A" opacity=".14"/><circle r="8.5" fill="none" stroke="#F3B64A" stroke-opacity=".45" stroke-width=".8"/><path d="M0-10.5C.7-3.2 3.2-.7 10.5 0 3.2.7.7 3.2 0 10.5-.7 3.2-3.2.7-10.5 0-3.2-.7-.7-3.2 0-10.5Z" fill="#FFD68A"/><circle r="1.6" fill="#FFF6E4"/></svg><span>Atlas</span></a>
+    <nav class="nav"><a class="on" href="#">Hoy <span class="count num">1/5</span></a><a href="#">Asignaturas</a><a href="#">Mapa</a><a href="#">Misiones</a><a href="#">Progreso</a></nav>
+    <div class="search"><svg class="i i-14"><use href="#i-search"/></svg><span>Buscar conceptos, asignaturas o misiones…</span><span class="kbd" style="flex:none">Ctrl</span><span class="kbd" style="flex:none">K</span></div>
+    <div class="right">
+      <i class="save"></i>
+      <span class="chip"><svg class="i" style="color:var(--text-3)"><use href="#i-flame"/></svg><b class="num">65</b> días</span>
+      <span class="chip"><span class="lvl">13</span><span class="gold">Protoestrella</span></span>
+      <span class="icon-btn" title="Tema"><svg class="i"><use href="#i-contrast"/></svg></span>
+      <span class="icon-btn" title="Ajustes"><svg class="i"><use href="#i-settings"/></svg></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hello">
+    <div>
+      <p class="mono-label eyebrow">Semana 10 / 20 <span class="sep"></span> Primer cuatrimestre</p>
+      <h1 class="h1">Jueves, <span class="mk">19 de noviembre</span></h1>
+      <p class="tutor">Buenos días, Hugo. Hoy toca <b>Álgebra, Cálculo y Lógica</b>.</p>
+      <div class="stats">
+        <span class="stat" title="Conceptos vistos"><svg class="i"><use href="#i-book-open-check"/></svg><b class="num">183</b>/ 870 vistos</span>
+        <span class="stat" title="Temario encendido (nivel ≥ 2)"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><path d="M0-6C.4-1.8 1.8-.4 6 0 1.8.4.4 1.8 0 6-.4 1.8-1.8.4-6 0-1.8-.4-.4-1.8 0-6Z" fill="#FFD68A"/></svg><b class="num">69</b>encendidas · 8 %</span>
+        <span class="stat frost" title="Conceptos por debajo de la retención deseada"><svg class="i"><use href="#i-snowflake"/></svg><b class="num">5</b>se enfrían</span>
+        <span class="stat" title="Media diaria de estudio este mes"><svg class="i"><use href="#i-clock"/></svg><b class="num">3 h 48</b>/ día</span>
+      </div>
+    </div>
+    <a class="btn" href="#"><svg class="i"><use href="#i-notebook-pen"/></svg>Registrar clase <span class="kbd">N</span></a>
+  </section>
+
+  <!-- Misión de hoy como cadena de misiones: el nodo en curso se despliega; los hechos llevan check; al final, la recompensa del día. -->
+  <section class="card hero chain" aria-label="Misión de hoy">
+    <svg class="hero-grat" viewBox="0 0 1360 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g fill="none" stroke="rgba(170,192,245,.065)" stroke-width="1"><ellipse cx="1180" cy="120" rx="330" ry="330"/><ellipse cx="1180" cy="120" rx="210" ry="330"/><ellipse cx="1180" cy="120" rx="90" ry="330"/><path d="M850 120H1510M880 20Q1180 -10 1480 20M880 230Q1180 262 1480 230"/></g>
+      <g fill="#FFF3DA"><circle cx="980" cy="40" r="1.2" opacity=".7"/><circle cx="1246" cy="84" r="1" opacity=".5"/><circle cx="1112" cy="300" r="1.3" opacity=".6"/><circle cx="640" cy="30" r="1" opacity=".4"/><circle cx="760" cy="360" r="1.1" opacity=".45"/></g>
+    </svg>
+    <div class="hero-body">
+      <div class="hero-top">
+        <p class="mono-label is-gold">✦ Misión de hoy</p>
+        <button class="info" title="Plan cerrado al empezar el día; cada misión se marca sola al hacerla. Lo que no termines pasa a mañana, sin culpa."><svg class="i i-14"><use href="#i-info"/></svg></button>
+        <div class="tokens">
+          <span class="t"><svg class="i"><use href="#i-check"/></svg><b class="num">1</b> / 5 hechas</span>
+          <span class="t" title="Plan de hoy / presupuesto diario"><svg class="i"><use href="#i-clock"/></svg><b class="num">3 h 01</b> / 4 h</span>
+          <span class="t" title="Asignaturas en foco (rotación)"><svg class="i"><use href="#i-layers"/></svg><span class="code" style="--c:var(--s-algebra)">ALG</span><span class="code" style="--c:var(--s-calculo)">CAL</span><span class="code" style="--c:var(--s-logica)">LOG</span></span>
+          <span class="t"><svg class="i"><use href="#i-flame"/></svg>racha <b class="num">→ 66</b></span>
+        </div>
+      </div>
+
+      <!-- Escritorio: cadena en línea -->
+      <div class="quest">
+        <div class="cur">
+          <div class="cur-h">
+            <span class="md"><svg class="arc" viewBox="0 0 68 68" aria-hidden="true"><circle cx="34" cy="34" r="32.5" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="2.5"/><circle cx="34" cy="34" r="32.5" fill="none" stroke="#FFD68A" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="70 204.2"/></svg><svg class="i"><use href="#i-refresh-ccw"/></svg></span>
+            <div><p class="mono-label nd-n">01 · en curso</p><h3>Calentamiento</h3></div>
+          </div>
+          <div class="cur-m"><span class="t"><b class="num">35</b> repasos</span><span class="t"><svg class="i"><use href="#i-layers"/></svg><b class="num">9</b> asignaturas</span><span class="t"><svg class="i"><use href="#i-clock"/></svg><span class="num">50′</span></span></div>
+          <div class="cur-p"><span class="pb"><b style="width:34%"></b></span><span class="n num"><b>12</b> / 35</span></div>
+          <div class="cur-cta">
+            <a class="btn-gold" href="#"><span class="disc"><svg class="i"><use href="#i-play"/></svg></span>Seguir <span class="kbd">S</span></a>
+            <span class="t"><svg class="i"><use href="#i-flag"/></svg>Después: Avance <span class="code" style="--c:var(--s-algebra)">ALG</span></span>
+          </div>
+        </div>
+        <i class="lk lit"></i>
+        <div class="nd done">
+          <span class="nd-n">02</span>
+          <span class="md"><svg class="i"><use href="#i-check"/></svg></span>
+          <span class="nd-t"><b>Refuerzo</b><span class="nd-m"><span class="code" style="--c:var(--s-calculo)">CAL</span>4 fallados</span></span>
+        </div>
+        <i class="lk"></i>
+        <div class="nd">
+          <span class="nd-n">03</span>
+          <span class="md"><svg class="i"><use href="#i-book-open"/></svg><span class="bdg num" title="6 nuevos">6</span></span>
+          <span class="nd-t"><b>Avance</b><span class="nd-m"><span class="code" style="--c:var(--s-algebra)">ALG</span>T5 · 36′</span></span>
+        </div>
+        <i class="lk"></i>
+        <div class="nd">
+          <span class="nd-n">04</span>
+          <span class="md"><svg class="i"><use href="#i-book-open"/></svg><span class="bdg num" title="5 nuevos">5</span></span>
+          <span class="nd-t"><b>Avance</b><span class="nd-m"><span class="code" style="--c:var(--s-logica)">LOG</span>T3 · 30′</span></span>
+        </div>
+        <i class="lk"></i>
+        <div class="nd">
+          <span class="nd-n">05</span>
+          <span class="md"><svg class="i"><use href="#i-clipboard-check"/></svg><span class="bdg gold num" title="Listo · preparación 82 %">82 %</span></span>
+          <span class="nd-t"><b>Demuestra</b><span class="nd-m"><span class="code" style="--c:var(--s-calculo)">CAL</span>T2 · 55′</span></span>
+        </div>
+        <i class="lk"></i>
+        <div class="nd prize" title="Día redondo: todas las misiones hechas antes de acabar el día">
+          <span class="md"><svg class="i"><use href="#i-calendar-check"/></svg></span>
+          <span class="nd-t"><b>Día redondo</b><span class="t gold"><svg class="i"><use href="#i-sparkles"/></svg><b class="num">+60 XP</b></span></span>
+        </div>
+      </div>
+
+      <!-- Móvil: tira de nodos + el actual desplegado debajo -->
+      <div class="quest-m">
+        <div class="strip">
+          <span class="sn now"><span class="md"><svg class="arc" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="2"/><circle cx="24" cy="24" r="22.5" fill="none" stroke="#FFD68A" stroke-width="2" stroke-linecap="round" stroke-dasharray="48.1 141.4"/></svg><svg class="i"><use href="#i-refresh-ccw"/></svg></span><small class="num">12/35</small></span>
+          <i class="lk lit"></i>
+          <span class="sn done"><span class="md"><svg class="i"><use href="#i-check"/></svg></span><small>CAL</small></span>
+          <i class="lk"></i>
+          <span class="sn"><span class="md"><svg class="i"><use href="#i-book-open"/></svg></span><small>ALG</small></span>
+          <i class="lk"></i>
+          <span class="sn"><span class="md"><svg class="i"><use href="#i-book-open"/></svg></span><small>LOG</small></span>
+          <i class="lk"></i>
+          <span class="sn"><span class="md"><svg class="i"><use href="#i-clipboard-check"/></svg></span><small>CAL</small></span>
+          <i class="lk"></i>
+          <span class="sn prize"><span class="md"><svg class="i"><use href="#i-calendar-check"/></svg></span><small class="num">+60</small></span>
+        </div>
+        <div class="cur">
+          <p class="mono-label nd-n">01 · en curso</p>
+          <h3>Calentamiento</h3>
+          <div class="cur-m"><span class="t"><b class="num">35</b> repasos</span><span class="t"><svg class="i"><use href="#i-layers"/></svg><b class="num">9</b> asignaturas</span><span class="t"><svg class="i"><use href="#i-clock"/></svg><span class="num">50′</span></span></div>
+          <div class="cur-p"><span class="pb"><b style="width:34%"></b></span><span class="n num"><b>12</b> / 35</span></div>
+          <div class="cur-cta">
+            <a class="btn-gold" href="#"><span class="disc"><svg class="i"><use href="#i-play"/></svg></span>Seguir</a>
+            <span class="t"><svg class="i"><use href="#i-flag"/></svg>Después: Avance <span class="code" style="--c:var(--s-algebra)">ALG</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tmrw">
+        <span class="tmrw-l"><span class="t"><svg class="i"><use href="#i-calendar-clock"/></svg><b>Mañana</b></span><span class="t num">vie 20</span></span>
+        <span class="mini" title="Previsión: la rotación de mañana y los repasos que vencen">
+          <span class="mn rv"><span class="c"><svg class="i"><use href="#i-refresh-ccw"/></svg></span><span class="num">≈ 30</span></span><i class="lk"></i>
+          <span class="mn"><span class="c"><svg class="i"><use href="#i-book-open"/></svg></span><span class="code" style="--c:var(--s-estructuras)">EDA</span></span><i class="lk"></i>
+          <span class="mn"><span class="c"><svg class="i"><use href="#i-book-open"/></svg></span><span class="code" style="--c:var(--s-calculo)">CAL</span></span><i class="lk"></i>
+          <span class="mn"><span class="c"><svg class="i"><use href="#i-book-open"/></svg></span><span class="code" style="--c:var(--s-computacion)">TC</span></span><i class="lk"></i>
+          <span class="mn pz"><svg class="i i-12" style="color:var(--gold-fg)"><use href="#i-calendar-check"/></svg></span>
+        </span>
+        <a class="link" href="#"><svg class="i"><use href="#i-route"/></svg>Camino<svg class="i"><use href="#i-chevron-right"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid lower">
+    <section class="card fade" aria-label="En la cola">
+      <div class="card-h">
+        <h2>En la cola</h2>
+        <button class="info" title="Estudio libre, fuera del plan. Orden: examen cercano × lo que desbloquea × riesgo de olvido"><svg class="i i-14"><use href="#i-info"/></svg></button>
+        <div class="act">
+          <nav class="tabs"><a class="on" href="#"><svg class="i"><use href="#i-list"/></svg>Todo <small class="num">170</small></a><a href="#"><svg class="i"><use href="#i-refresh-ccw"/></svg>Repasos <small class="num">105</small></a><a href="#"><svg class="i"><use href="#i-book-open"/></svg>Nuevos <small class="num">65</small></a></nav>
+        </div>
+      </div>
+      <ol class="queue" id="queue"></ol>
+    </section>
+
+    <aside class="col">
+      <section class="card" aria-label="Tu nivel">
+        <div class="player-h">
+          <span class="emblem"><svg width="36" height="36" viewBox="-17 -17 34 34" aria-hidden="true"><circle r="15" fill="none" stroke="#F3B64A" stroke-opacity=".35"/><ellipse rx="14" ry="4.4" fill="none" stroke="#FFD68A" stroke-width="1.2" transform="rotate(-20)"/><circle r="6" fill="none" stroke="#FFD68A" stroke-width="1.3"/><circle r="2.2" fill="#FFF6E4"/></svg></span>
+          <div><p class="mono-label is-gold">Protoestrella</p><h3>Nivel 13</h3></div>
+          <span class="t gold" title="XP total"><svg class="i"><use href="#i-sparkles"/></svg><b class="num">34.196</b></span>
+        </div>
+        <div class="xpbar" title="Rayado: XP del plan de hoy"><b></b><em></em></div>
+        <div class="xpl"><span class="t"><b class="num">1412</b> / 7269 XP</span><span class="t num">→ 14</span></div>
+        <div class="pstats">
+          <div class="pstat"><svg class="i i-20" style="color:var(--text-3)"><use href="#i-flame"/></svg><b class="num">65</b><span class="t">días · pendiente</span></div>
+          <div class="pstat"><svg class="i i-20 moon"><use href="#i-moon"/></svg><b class="num">1</b><span class="t">comodín</span></div>
+        </div>
+        <div class="week"><span class="dd ok">L</span><span class="dd ok">M</span><span class="dd ok">X</span><span class="dd now">J</span><span class="dd fut">V</span><span class="dd fut">S</span><span class="dd fut">D</span><span class="t"><svg class="i"><use href="#i-calendar-check"/></svg><b class="num">2</b> redondos</span></div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<p class="caption">Maqueta «Misión · cadena» · jueves 19-11-2026 · foco ALG · CAL · LOG · plan <b>3 h 01</b> de 4 h · 5 misiones en cadena + recompensa · mañana, apagada · una sola acción dorada: <b>Seguir</b></p>
+
+<script>
+const ico = (n, cls = "") => `<svg class="i ${cls}"><use href="#i-${n}"/></svg>`;
+const C = { ALG: "algebra", CAL: "calculo", LOG: "logica", FPR: "programacion", IAC: "ia", MOE: "operativos", TC: "computacion", EDA: "estructuras", ALC: "algoritmia", PMD: "preprocesamiento" };
+const code = (c) => `<span class="code" style="--c:var(--s-${C[c]})">${c}</span>`;
+const Q = [
+  ["Monotonía", "CAL", "Máximos y mínimos", "MOE · PMD +6"],
+  ["Funciones", "FPR", "Abstracción", "base de 6"],
+  ["Ámbito de variables", "FPR", "Modularidad", "PMD · ALC +6"],
+];
+document.getElementById("queue").innerHTML = Q.map(([name, s, unlock, dep], i) => `
+  <li><a class="q" href="#">
+    <span class="q-n num">${String(i + 1).padStart(2, "0")}</span>
+    <span class="q-main">
+      <span class="q-top"><span class="q-name">${name}</span>${code(s)}<span class="t">${ico("book-open")}nuevo</span></span>
+      <span class="q-why"><span class="t pill gold">${ico("lock-open")}para ${unlock}</span><span class="t">${ico("waypoints")}${dep.startsWith("base") ? dep : "lo usan " + dep}</span></span>
+    </span>
+    <span class="q-state" title="Sin ver"><span class="lvl3"><i></i><i></i><i></i></span><span class="fresh"></span></span>
+    <span class="q-t num">6′</span>
+  </a></li>`).join("");
+</script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+/* Atlas v2 · Hoy (docs/maquetas/observatorio.html). Solo tokens de src/styles/tokens.css. */
+@layer components {
+  /* Las cabeceras de Section con una acción ancha (pestañas) también pueden
+     forzar el ancho si no se les permite encoger: se apilan bajo el título. */
+  .today-page .ui-section-action { min-width: 0; flex-wrap: wrap; }
+  .today-page .ui-tabs { max-width: 100%; }
+  @media (max-width: 480px) {
+    .today-page .ui-section-head { align-items: stretch; }
+    .today-page .ui-section-action { margin-left: 0; width: 100%; }
+  }
+
+  /* ───────── Cabecera ───────── */
+  .today-hello { padding: 4px 2px 20px; }
+  .today-eyebrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .today-eyebrow-sep { width: 3px; height: 3px; flex: none; border-radius: 50%; background: var(--text-4); }
+  .today-h1 {
+    margin-top: 10px; font-family: var(--serif); font-weight: 500; font-size: 44px; line-height: 1.04;
+    letter-spacing: -.005em; color: var(--text);
+  }
+  .today-tutor { margin-top: 10px; max-width: 720px; font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 19px; color: var(--text-2); }
+  .today-cold-num { font-weight: 600; font-style: normal; color: var(--frost-fg); }
+  .today-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .today-stat-pill {
+    display: inline-flex; align-items: center; gap: 9px; height: 38px; padding: 0 14px 0 12px; border-radius: 12px;
+    background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); font-size: 12.5px; color: var(--text-3);
+  }
+  .today-stat-pill svg { color: var(--text-3); }
+  .today-stat-pill b { font-family: var(--serif); font-size: 20px; font-weight: 600; line-height: 1; color: var(--text); margin-right: 2px; }
+  .today-stat-pill.is-cold svg, .today-stat-pill.is-cold b { color: var(--frost-fg); }
+  .today-classlog-btn { margin-top: 22px; }
+  @media (max-width: 767px) {
+    .today-h1 { font-size: 34px; }
+    .today-tutor { font-size: 17px; }
+    .today-stats { gap: 8px; }
+    .today-stat-pill { height: 34px; padding: 0 11px 0 9px; }
+    .today-stat-pill b { font-size: 18px; }
+  }
+
+  /* ───────── Rejilla ───────── */
+  .today-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
+  .today-col-main, .today-col-aside { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  /* Un hijo de un flex column puede forzar la columna a ensancharse si no
+     puede encogerse por debajo de su contenido (mínimo automático). */
+  .today-col-main > *, .today-col-aside > * { min-width: 0; }
+  @media (min-width: 1200px) {
+    .today-grid { grid-template-columns: minmax(0, 1fr) 440px; gap: 28px; }
+  }
+
+  .today-card-aside { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-size: 12.5px; color: var(--text-3); text-align: right; }
+  .today-card-aside--row { flex-direction: row; align-items: center; gap: 12px; }
+  .today-card-desc { font-size: 12.5px; color: var(--text-3); white-space: nowrap; }
+  .today-card-foot { margin-top: 6px; padding-top: 14px; border-top: 1px dashed var(--line-2); text-align: right; }
+  .today-link { display: inline-flex; align-items: center; gap: 6px; color: var(--gold-fg); font-size: 13px; font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; }
+  .today-link:hover { color: var(--text); }
+  .today-link svg { width: 13px; height: 13px; }
+
+  /* ───────── Misión de hoy · cadena ───────── */
+  .today-mission .ui-hero-body { display: flex; flex-direction: column; }
+  .today-mission-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .today-info {
+    display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: var(--text-3);
+    border: 0; background: none; cursor: pointer; flex: none;
+  }
+  .today-info:hover, .today-info:focus-visible { color: var(--text); background: var(--hover); }
+  .today-mission-tokens { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-left: auto; }
+  .today-t { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-2); white-space: nowrap; line-height: 1.2; }
+  .today-t svg { color: var(--text-3); }
+  .today-t b { font-weight: 600; color: var(--text); }
+  .today-t.is-gold, .today-t.is-gold svg, .today-t.is-gold b { color: var(--gold-fg); }
+  .today-t.is-ember, .today-t.is-ember svg, .today-t.is-ember b { color: var(--ember-fg); }
+  .today-t.is-frost, .today-t.is-frost svg, .today-t.is-frost b { color: var(--frost-fg); }
+  .today-t.pill { padding: 3px 9px 3px 7px; border-radius: 999px; }
+  .today-t.pill.quiet { background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); }
+  .today-t.pill.is-gold { background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); }
+  .today-t.pill.is-ember { background: var(--ember-soft); box-shadow: inset 0 0 0 1px var(--ember-line); }
+
+  /* Cadena de escritorio: nodo actual desplegado, nodos compactos y la recompensa.
+     El bloque va a todo el ancho de la página (por delante de la rejilla de dos
+     columnas), como en la maqueta: mismos tamaños que docs/maquetas/mision-cadena.html. */
+  .today-mission { margin-bottom: 24px; }
+  .today-mission-chain { display: flex; align-items: flex-start; margin-top: 30px; flex-wrap: wrap; row-gap: 24px; }
+  .today-mission-item { display: flex; align-items: flex-start; min-width: 0; }
+  .today-mission-link {
+    flex: 1 1 26px; min-width: 16px; height: 2px; margin: 29px 4px 0; border-radius: 2px; align-self: flex-start;
+    background: repeating-linear-gradient(90deg, var(--line-2) 0 6px, transparent 6px 11px);
+  }
+  .today-mission-link.is-lit { background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); box-shadow: 0 0 10px rgba(243, 182, 74, .45); }
+
+  .today-mission-node { position: relative; width: 118px; flex: none; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+  .today-mission-node-n { position: absolute; top: -19px; left: 50%; transform: translateX(-50%); color: var(--text-4); font-size: 10px; }
+  .today-mission-node-ic {
+    position: relative; display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--ink-3), var(--ink-1)); box-shadow: inset 0 0 0 1px var(--line-2); color: var(--text-2);
+  }
+  .today-mission-node-ic.is-sm { width: 40px; height: 40px; }
+  .today-mission-node.is-done .today-mission-node-ic {
+    background: radial-gradient(circle at 40% 35%, var(--gold-hi), var(--gold) 70%); color: var(--gold-ink); box-shadow: 0 0 22px -6px rgba(243, 182, 74, .85);
+  }
+  .today-mission-node-badge {
+    position: absolute; top: -6px; right: -10px; padding: 2px 6px 1px; border-radius: 999px; font-family: var(--mono); font-size: 10px;
+    line-height: 1.3; color: var(--text-2); background: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line-2);
+  }
+  .today-mission-node-badge.is-gold { color: var(--gold-fg); box-shadow: inset 0 0 0 1px var(--gold-line); background: var(--ink-1); }
+  .today-mission-node-title { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+  .today-mission-node-title b { font-family: var(--serif); font-size: 19px; font-weight: 600; line-height: 1; }
+  .today-mission-node.is-done .today-mission-node-title b { color: var(--text-2); }
+  .today-mission-node-meta { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .today-mission-node.is-prize .today-mission-node-ic { box-shadow: inset 0 0 0 1px var(--gold-line); }
+  .today-mission-node.is-prize:not(.is-done) .today-mission-node-ic::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px dashed var(--gold-line); }
+  .today-mission-node.is-prize .today-mission-node-title b { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--text-2); }
+
+  /* Nodo actual, desplegado (compartido con el panel móvil bajo la tira). */
+  .today-mission-current {
+    position: relative; flex: 1 1 400px; max-width: 430px; margin-top: -18px; padding: 18px 20px 18px 18px; border-radius: 18px;
+    background: linear-gradient(180deg, rgba(243, 182, 74, .10), rgba(243, 182, 74, .03)); box-shadow: inset 0 0 0 1px var(--gold-line), 0 20px 40px -24px rgba(0, 0, 0, .8);
+  }
+  .today-mission-current-head { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 16px; align-items: center; }
+  .today-mission-current-n { color: var(--gold-fg); }
+
+  /* Anillo de progreso propio (no `Ring` de ui/, ver el comentario en MissionRing). */
+  .today-mission-ring { position: relative; display: inline-grid; place-items: center; flex: none; }
+  .today-mission-ring-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .today-mission-ring-track { fill: none; stroke: var(--track); }
+  .today-mission-ring-arc { fill: none; stroke: var(--gold); stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(243, 182, 74, .55)); }
+  .today-mission-ring-ic { position: relative; display: grid; place-items: center; color: var(--gold-fg); }
+  .today-mission-current h3 { margin-top: 5px; font-family: var(--serif); font-weight: 600; font-size: 30px; line-height: 1; }
+  .today-mission-current-meta { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-top: 14px; }
+  .today-mission-current-progress { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .today-mission-current-progress .ui-bar { flex: 1; }
+  .today-mission-current-progress-n { font-family: var(--mono); font-size: 12px; color: var(--text-3); }
+  .today-mission-current-progress-n b { color: var(--text); font-weight: 500; }
+  .today-mission-current-cta { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .today-mission-current--done .today-mission-current-ic { width: 60px; height: 60px; color: var(--gold-fg); }
+  .today-mission-current-done-text { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; font-size: 13.5px; color: var(--text-2); line-height: 1.4; }
+
+  /* Tira móvil (< 760 px): nodos diminutos + el panel actual o el de día completado debajo. */
+  .today-mission-mobile { display: none; }
+  .today-mission-strip { display: flex; align-items: flex-start; padding: 0 2px; }
+  .today-mission-strip-item { display: flex; align-items: flex-start; min-width: 0; }
+  .today-mission-link.is-strip { min-width: 6px; flex: 1 1 6px; margin-top: 19px; }
+  .today-mission-strip-node { width: 40px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .today-mission-strip-node .today-mission-node-ic { color: var(--text-2); }
+  .today-mission-strip-node.is-done .today-mission-node-ic {
+    background: radial-gradient(circle at 40% 35%, var(--gold-hi), var(--gold) 70%); color: var(--gold-ink); box-shadow: 0 0 16px -6px rgba(243, 182, 74, .85);
+  }
+  .today-mission-strip-node.is-current .today-mission-ring { color: var(--gold-fg); }
+  .today-mission-strip-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em; color: var(--text-3); white-space: nowrap; }
+  .today-mission-strip-node.is-current .today-mission-strip-label { color: var(--gold-fg); }
+  @media (max-width: 760px) {
+    .today-mission-chain { display: none; }
+    .today-mission-mobile { display: block; margin-top: 22px; }
+    .today-mission-mobile .today-mission-current { max-width: none; margin-top: 16px; padding: 16px; }
+    .today-mission-mobile .today-mission-current::before {
+      content: ""; position: absolute; top: -6px; left: 15px; width: 11px; height: 11px; transform: rotate(45deg);
+      background: var(--ink-3); box-shadow: inset 1px 1px 0 var(--gold-line);
+    }
+    .today-mission-mobile .today-mission-current h3 { font-size: 23px; }
+  }
+
+  /* Mañana: la cadena siguiente, apagada. */
+  .today-mission-tomorrow { display: flex; align-items: center; gap: 16px; margin-top: 22px; padding-top: 16px; border-top: 1px dashed var(--line-2); flex-wrap: wrap; }
+  .today-mission-mini { display: flex; align-items: center; opacity: .72; flex-wrap: wrap; gap: 0; }
+  .today-mission-mn-group { display: flex; align-items: center; }
+  .today-mission-mn {
+    display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px 0 5px; border-radius: 999px;
+    background: var(--hover); box-shadow: inset 0 0 0 1px var(--line-2); font-size: 12px; color: var(--text-2); white-space: nowrap;
+  }
+  .today-mission-mn-c { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-1); box-shadow: inset 0 0 0 1px var(--line-2); color: var(--text-3); }
+  .today-mission-link.is-mini { width: 18px; min-width: 18px; flex: none; margin: 0 2px; height: 2px; }
+  .today-mission-tomorrow-empty { font-style: italic; }
+  .today-mission-camino { margin-left: auto; }
+  @media (max-width: 480px) {
+    .today-mission-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .today-mission-tokens { margin-left: 0; }
+    .today-mission-tomorrow { gap: 10px 12px; }
+    .today-mission-mini { width: 100%; }
+    .today-mission-camino { margin-left: 0; }
+  }
+
+  /* ───────── En la cola ───────── */
+  .today-queue-act { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .today-queue { list-style: none; margin: 4px 0 0; }
+  .today-q { border-top: 1px solid var(--line); }
+  .today-q:first-child { border-top: 0; }
+  .today-q-btn {
+    display: grid; grid-template-columns: 30px minmax(0, 1fr) 72px 58px 16px; gap: 14px; align-items: center;
+    width: 100%; padding: 14px 6px; border: 0; border-radius: 12px; background: none; color: inherit;
+    font: inherit; text-align: left; cursor: pointer; transition: background var(--dur) var(--ease);
+  }
+  .today-q-btn:hover, .today-q-btn:focus-visible { background: var(--hover); }
+  .today-q:first-child .today-q-n { color: var(--gold-fg); }
+  .today-q-n { font-family: var(--mono); font-size: 12px; color: var(--text-4); align-self: start; padding-top: 4px; }
+  .today-q-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .today-q-t { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .today-q-name { font-family: var(--serif); font-weight: 600; font-size: 19px; line-height: 1.15; color: var(--text); }
+  .today-tag {
+    display: inline-flex; align-items: center; gap: 4px; font-family: var(--mono); font-size: 9.5px;
+    letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px;
+  }
+  .today-tag.is-new { color: var(--gold-fg); background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); }
+  .today-tag.is-first { color: var(--frost-fg); background: var(--frost-soft); box-shadow: inset 0 0 0 1px var(--frost-line); }
+  .today-tag.is-review { color: var(--text-2); background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); }
+  .today-q-why { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.8px; color: var(--text-3); }
+  .today-q-reason { display: inline-flex; align-items: center; gap: 6px; }
+  .today-q-reason svg { width: 13px; height: 13px; flex: none; }
+  .today-q-reason.is-gold { color: var(--gold-fg); padding: 3px 9px 3px 7px; border-radius: 999px; background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); }
+  .today-q-reason.is-ember { color: var(--ember-fg); }
+  .today-q-reason.is-frost { color: var(--frost-fg); }
+  .today-q-state { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .today-q-time { font-family: var(--mono); font-size: 12px; color: var(--text-2); text-align: right; }
+  .today-q-go { color: var(--gold-fg); opacity: 0; transform: translateX(-3px); transition: opacity var(--dur), transform var(--dur); }
+  .today-q-btn:hover .today-q-go, .today-q-btn:focus-visible .today-q-go { opacity: 1; transform: none; }
+  .today-q-foot { margin-top: 8px; padding-top: 14px; border-top: 1px dashed var(--line-2); }
+  @media (max-width: 640px) {
+    .today-q-btn { grid-template-columns: 24px minmax(0, 1fr) 46px; }
+    .today-q-state { display: none; }
+  }
+
+  /* ───────── Misión / estrella guía más cercanas ───────── */
+  .today-nearest { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .today-nearest > * { min-width: 0; }
+  .today-nearest-card { display: flex; flex-direction: column; gap: 12px; }
+  .today-nearest-card .mono-label { display: flex; align-items: center; gap: 8px; }
+  .today-nearest-card .mono-label svg { width: 14px; height: 14px; color: var(--gold-fg); }
+  .today-nearest-body { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
+  .today-nearest-monogram {
+    display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--ink-3), var(--ink-1));
+    box-shadow: inset 0 0 0 1px var(--gold-line); font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--gold-fg);
+  }
+  .today-nearest-monogram--guide { box-shadow: inset 0 0 0 1px var(--frost-line); color: var(--frost-fg); }
+  .today-nearest-body b { display: block; font-size: 14.5px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .today-nearest-body small { display: block; margin-top: 2px; font-size: 12px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .today-nearest-empty { font-size: 13px; color: var(--text-3); }
+  @media (max-width: 700px) { .today-nearest { grid-template-columns: 1fr; } }
+
+  /* ───────── Asignaturas ───────── */
+  .today-subs-group {
+    display: flex; align-items: center; gap: 10px; margin: 14px 0 6px; font-family: var(--mono); font-size: 10px;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--text-3);
+  }
+  .today-subs-group::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .today-subs-group:first-child { margin-top: 0; }
+  .today-subs-grid { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  @media (min-width: 640px) {
+    .today-subs-grid { grid-template-columns: 1fr 1fr; gap: 4px 18px; }
+  }
+  .today-sub { display: block; padding: 10px 12px; border-radius: 12px; transition: background var(--dur); }
+  .today-sub:hover, .today-sub:focus-visible { background: var(--hover); }
+  .today-sub-head { display: flex; align-items: center; gap: 8px; }
+  .today-sub-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; color: var(--text); }
+  .today-sub-lvl {
+    flex: none; font-family: var(--mono); font-size: 9.5px; padding: 1px 6px; border-radius: 999px; color: var(--gold-fg);
+    background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); white-space: nowrap;
+  }
+  .today-sub-pct { font-family: var(--mono); font-size: 11px; color: var(--text-2); }
+  .today-sub-bars { display: grid; gap: 4px; margin-top: 8px; }
+  .today-sub-bar-track { height: 3px; border-radius: 2px; background: var(--track); overflow: hidden; }
+  .today-sub-bar-track b { display: block; height: 100%; border-radius: 2px; background: linear-gradient(90deg, color-mix(in oklab, var(--star) 40%, transparent), var(--star)); }
+  .today-sub-bar-track--lit { display: block; }
+  .today-sub-fresh.ui-fresh-track { height: 3px; }
+  .today-sub-t { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; }
+  .today-sub-t .today-t { font-size: 11.5px; }
+
+  /* ───────── Constancia ───────── */
+  .today-heat { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: center; }
+  @media (min-width: 720px) {
+    .today-heat { grid-template-columns: auto minmax(0, 1fr); }
+  }
+  .today-heat-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+  .today-stat { display: flex; align-items: center; gap: 12px; }
+  .today-stat > svg { color: var(--text-3); flex: none; }
+  .today-stat-v { font-family: var(--serif); font-weight: 600; font-size: 26px; line-height: 1; color: var(--text); }
+  .today-stat-v small { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text-2); margin-left: 3px; }
+  .today-stat-k { margin-top: 3px; font-size: 12px; color: var(--text-3); }
+
+  /* ───────── Objetivos y reparto ───────── */
+  .today-goals-card { display: grid; grid-template-columns: 1fr; gap: 28px; }
+  .today-goals-card > * { min-width: 0; }
+  @media (min-width: 900px) {
+    .today-goals-card { grid-template-columns: 1fr 1fr; }
+    .today-goals-col:first-child { padding-right: 28px; border-right: 1px solid var(--line); }
+  }
+  .today-goals-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .today-goals-title { display: flex; align-items: center; gap: 8px; font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--text); }
+  .today-goals-title svg { color: var(--text-3); }
+  .today-goals-title.is-gold svg { color: var(--gold-fg); }
+  .today-goal-list { display: grid; gap: 12px; }
+  .today-goal { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 10px; align-items: center; font-size: 13px; color: var(--text-2); }
+  .today-goal > svg { color: var(--text-3); }
+  .today-goal em { font-style: normal; font-family: var(--mono); font-size: 11.5px; color: var(--text-3); }
+  .today-goal em b { color: var(--text); font-weight: 500; }
+  .today-goal .ui-bar { grid-column: 1 / -1; }
+  .today-goal-days { margin-top: 14px; }
+  .today-tutor-note { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+  .today-tutor-note i { font-style: italic; }
+
+  /* ───────── Tarjeta de jugador ───────── */
+  .today-player-head { display: flex; align-items: center; gap: 14px; }
+  .today-player-emblem {
+    display: grid; place-items: center; width: 64px; height: 64px; flex: none; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--ink-3), var(--ink-1));
+    box-shadow: inset 0 0 0 1px var(--gold-line), 0 0 22px -8px color-mix(in oklab, var(--gold) calc(60% * var(--glow)), transparent);
+  }
+  .today-player-id { min-width: 0; }
+  .today-player-id h3 { margin-top: 3px; font-size: 32px; }
+  .today-player-tot { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: var(--gold-fg); }
+  .today-player-tot b { font-family: var(--mono); font-size: 15px; color: var(--text); }
+  .today-player-xp { margin-top: 18px; }
+  .today-player-xp-l { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; font-size: 12px; color: var(--text-3); }
+  .today-player-xp-l b { color: var(--text); font-weight: 600; }
+  .today-gold { color: var(--gold-fg); }
+  .today-ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px 4px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .today-rk { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; font-size: 9.5px; color: var(--text-4); line-height: 1.2; }
+  .today-rk span { max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .today-rk.is-done { color: var(--text-3); }
+  .today-rk.is-now { color: var(--gold-fg); font-weight: 600; }
+  .today-player-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .today-player-stat-v { display: flex; align-items: baseline; gap: 6px; font-family: var(--serif); font-weight: 600; font-size: 22px; color: var(--text); }
+  .today-player-stat-v svg { width: 16px; height: 16px; align-self: center; color: var(--text-3); }
+  .today-player-stat-v small { font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text-2); }
+  .today-player-stat-k { margin-top: 4px; font-size: 11.5px; color: var(--text-3); }
+  .today-flame.is-lit { color: var(--gold); filter: drop-shadow(0 0 5px color-mix(in oklab, var(--gold) calc(60% * var(--glow)), transparent)); }
+  .today-moon { color: var(--frost); }
+  .today-week { display: flex; align-items: center; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+  .today-week-days { display: flex; gap: 6px; }
+  .today-dd {
+    display: grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; position: relative;
+    font-family: var(--mono); font-size: 10px; color: var(--text-4); box-shadow: inset 0 0 0 1px var(--line-2);
+  }
+  .today-dd.is-ok { color: var(--gold-ink); background: radial-gradient(circle at 40% 35%, var(--gold-hi), var(--gold) 70%); font-weight: 600; }
+  .today-dd.is-now { color: var(--gold-fg); box-shadow: inset 0 0 0 1.4px var(--gold); }
+  .today-dd.is-future { opacity: .45; }
+  .today-week-t { font-size: 12px; color: var(--text-3); line-height: 1.3; }
+  .today-week-t b { display: block; color: var(--text); font-weight: 600; font-size: 13px; }
+
+  /* ───────── Próximas fechas ───────── */
+  .today-tl { width: 100%; height: auto; display: block; margin: -2px 0 8px; }
+  .today-tl-base { stroke: var(--line-2); stroke-width: 1; fill: none; }
+  .today-tl-today { fill: var(--gold); }
+  .today-tl-label { font-family: var(--mono); font-size: 8.5px; letter-spacing: .08em; fill: var(--text-4); }
+  .today-ex { list-style: none; }
+  .today-ex li { display: grid; grid-template-columns: 48px minmax(0, 1fr) 46px; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); }
+  .today-ex li:first-child { border-top: 0; }
+  .today-ex-days { text-align: center; }
+  .today-ex-days b { display: block; font-family: var(--serif); font-weight: 600; font-size: 26px; line-height: .95; color: var(--text); }
+  .today-ex-days small { font-family: var(--mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-4); }
+  .today-ex-days.is-urgent b { color: var(--ember-fg); }
+  .today-ex-days.is-soon b { color: var(--gold-fg); }
+  .today-ex-body { min-width: 0; }
+  .today-ex-t { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .today-ex-t svg { color: var(--text-3); flex: none; }
+  .today-ex-k { font-family: var(--mono); font-size: 9px; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+  .today-ex-s { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 11.5px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ───────── Rumbo ───────── */
+  .today-rumbo-list { list-style: none; display: flex; flex-direction: column; }
+  .today-rumbo-step { border-top: 1px solid var(--line); }
+  .today-rumbo-step:first-child { border-top: 0; }
+  .today-rumbo-step-link {
+    display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 4px 10px; align-items: start;
+    padding: 11px 4px; border-radius: 10px;
+  }
+  .today-rumbo-step-link:hover, .today-rumbo-step-link:focus-visible { background: var(--hover); }
+  .today-rumbo-step-icon { margin-top: 1px; color: var(--text-2); }
+  .today-rumbo-step-title { font-size: 13.5px; font-weight: 600; line-height: 1.35; color: var(--text); }
+  .today-rumbo-step-meta { grid-column: 2; display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--text-3); }
+
+  /* ───────── Logros ───────── */
+  .today-next-badge {
+    display: grid; grid-template-columns: 78px 1fr; gap: 16px; align-items: center; padding: 14px;
+    border-radius: 16px; background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line);
+  }
+  .today-next-badge h4 { margin-top: 3px; font-size: 21px; }
+  .today-next-desc { margin-top: 4px; font-size: 12.5px; color: var(--text-2); line-height: 1.4; }
+  .today-steps { display: flex; gap: 4px; margin-top: 9px; }
+  .today-steps i { flex: 1; height: 4px; border-radius: 2px; background: var(--track); }
+  .today-steps i.is-on { background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); }
+  .today-empty-line { margin-top: 12px; font-size: 12.5px; color: var(--text-3); font-style: italic; }
+  .today-recent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+}
+
+
+.today-rumbo-links { display: inline-flex; align-items: center; gap: 14px; }

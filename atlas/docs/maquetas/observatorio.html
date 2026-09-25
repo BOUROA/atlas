@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas · Hoy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink-0:#070B18; --ink-1:#0B1122; --ink-2:#111A31; --ink-3:#18223D;
+  --line:rgba(170,188,235,.10); --line-2:rgba(170,188,235,.18);
+  --text:#ECE6D6; --text-2:#A9B1C9; --text-3:#6C7594; --text-4:#454E6C;
+  --gold:#F3B64A; --gold-hi:#FFD68A; --gold-lo:#B7802A; --gold-ink:#1C1405;
+  --frost:#8DB4E8; --ember:#F08A6C; --star:#FFF6E4;
+  --s-iac:#BFA2F2; --s-cal:#6FD5C8; --s-log:#97AAFB; --s-alg:#95D69A; --s-fpr:#F6A98C;
+  --s-alc:#D2D67C; --s-eda:#74C3EC; --s-tc:#E59BD8; --s-moe:#F4A3B5; --s-pmd:#E8C79A;
+  --serif:'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --sans:'Hanken Grotesk', system-ui, sans-serif;
+  --mono:'DM Mono', ui-monospace, monospace;
+  --r:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink-0)}
+body{
+  font-family:var(--sans); font-size:14.5px; line-height:1.45; color:var(--text);
+  -webkit-font-smoothing:antialiased; min-height:100vh; overflow-x:hidden;
+  background:
+    radial-gradient(1100px 640px at 8% -8%, rgba(56,84,162,.34), transparent 62%),
+    radial-gradient(900px 620px at 104% 24%, rgba(96,64,150,.16), transparent 60%),
+    radial-gradient(900px 520px at 46% 108%, rgba(243,182,74,.05), transparent 60%),
+    linear-gradient(180deg,#0B1226 0%,#0A0F1F 55%,#090D1B 100%);
+  font-feature-settings:"ss01";
+}
+/* cielo de fondo: dos capas de estrellas con periodos distintos */
+body::before, body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0}
+body::before{
+  background-image:
+    radial-gradient(1px 1px at 23px 41px, rgba(255,255,255,.55), transparent 70%),
+    radial-gradient(1px 1px at 157px 213px, rgba(255,255,255,.35), transparent 70%),
+    radial-gradient(1.4px 1.4px at 311px 97px, rgba(255,236,200,.65), transparent 70%),
+    radial-gradient(1px 1px at 88px 301px, rgba(200,215,255,.45), transparent 70%),
+    radial-gradient(1px 1px at 246px 22px, rgba(255,255,255,.3), transparent 70%),
+    radial-gradient(1px 1px at 199px 144px, rgba(255,255,255,.25), transparent 70%),
+    radial-gradient(1.2px 1.2px at 12px 188px, rgba(210,225,255,.5), transparent 70%),
+    radial-gradient(1px 1px at 330px 260px, rgba(255,255,255,.3), transparent 70%);
+  background-size:347px 347px; opacity:.55;
+}
+body::after{
+  background-image:
+    radial-gradient(1.6px 1.6px at 61px 77px, rgba(255,240,210,.8), transparent 70%),
+    radial-gradient(1px 1px at 402px 190px, rgba(255,255,255,.5), transparent 70%),
+    radial-gradient(1.3px 1.3px at 270px 455px, rgba(190,210,255,.7), transparent 70%),
+    radial-gradient(1px 1px at 488px 38px, rgba(255,255,255,.45), transparent 70%),
+    radial-gradient(1px 1px at 139px 390px, rgba(255,255,255,.4), transparent 70%);
+  background-size:523px 523px; opacity:.5; animation:twinkle 9s ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:.8}}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.045;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+svg.i{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3)}
+.gold{color:var(--gold-hi)}
+
+/* ───────── Barra superior ───────── */
+.top{position:sticky;top:0;z-index:30;background:rgba(9,13,28,.72);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-bottom:1px solid var(--line)}
+.top-in{max-width:1440px;margin:0 auto;padding:0 40px;height:66px;display:flex;align-items:center;gap:30px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.02em;color:var(--text)}
+.brand svg{width:26px;height:26px}
+.nav{display:flex;gap:4px}
+.nav a{position:relative;color:var(--text-2);text-decoration:none;font-weight:500;font-size:14.5px;padding:8px 15px;border-radius:999px;transition:color .2s,background .2s}
+.nav a:hover{color:var(--text);background:rgba(255,255,255,.035)}
+.nav a.on{color:var(--text);background:rgba(243,182,74,.08);box-shadow:inset 0 0 0 1px rgba(243,182,74,.18)}
+.nav a.on::after{content:"";position:absolute;left:50%;bottom:-13px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px 2px rgba(243,182,74,.6)}
+.search{flex:1;max-width:420px;margin-left:8px;display:flex;align-items:center;gap:10px;height:40px;padding:0 10px 0 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--line);color:var(--text-3);font:inherit;font-size:13.5px;cursor:text;transition:border-color .2s,background .2s}
+.search:hover{border-color:var(--line-2);background:rgba(255,255,255,.05)}
+.search span{flex:1;text-align:left}
+kbd{font-family:var(--mono);font-size:10.5px;color:var(--text-2);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--line-2);border-bottom-width:2px}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.chip{display:flex;align-items:center;gap:8px;height:36px;padding:0 13px 0 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:13px;color:var(--text-2)}
+.chip b{color:var(--text);font-weight:600}
+.chip .c-comet{color:var(--gold)}
+.lvl-ring{width:24px;height:24px}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:17px;color:var(--gold-hi);background:radial-gradient(circle at 35% 30%,#2A3760,#141C36);box-shadow:inset 0 0 0 1px rgba(243,182,74,.3)}
+
+/* ───────── Estructura ───────── */
+.wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:34px 40px 72px;display:grid;grid-template-columns:minmax(0,1fr) 452px;gap:28px;align-items:start}
+.col{display:flex;flex-direction:column;gap:24px;min-width:0}
+.card{position:relative;border-radius:var(--r);padding:24px 26px;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(24,34,63,.66),rgba(15,22,43,.66));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 30px 60px -34px rgba(0,0,0,.7)}
+.card-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.card-h h2{font-family:var(--serif);font-weight:600;font-size:27px;line-height:1.05;letter-spacing:.005em;margin-top:5px}
+.card-h .aside{font-size:12.5px;color:var(--text-3);text-align:right}
+.link{color:var(--gold-hi);text-decoration:none;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.link:hover{color:#fff}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 8px -1px var(--c);flex:none}
+
+.rise{animation:rise .9s cubic-bezier(.16,.8,.24,1) both;animation-delay:var(--d,0s)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ───────── Saludo ───────── */
+.hello{padding:4px 2px 2px}
+.hello .eyebrow{display:flex;gap:14px;align-items:center}
+.hello .eyebrow i{width:26px;height:1px;background:var(--line-2)}
+.hello h1{font-family:var(--serif);font-weight:500;font-size:52px;line-height:1.0;letter-spacing:-.005em;margin-top:14px}
+.hello h1 em{display:block;font-style:italic;font-weight:500;color:var(--text-2)}
+.hello h1 em span{color:var(--gold-hi);text-shadow:0 0 28px rgba(243,182,74,.35)}
+.hello p{margin-top:14px;max-width:640px;color:var(--text-2);font-size:15px}
+.hello p b{color:var(--text);font-weight:600}
+
+/* ───────── Sesión de hoy ───────── */
+.session{padding:30px 32px 28px;display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:26px;overflow:hidden;border-color:rgba(243,182,74,.24);
+  background:
+    radial-gradient(520px 300px at 4% 104%, rgba(243,182,74,.16), transparent 62%),
+    radial-gradient(520px 420px at 96% -4%, rgba(92,124,226,.22), transparent 62%),
+    linear-gradient(158deg,#18244A 0%,#111A37 52%,#0E1530 100%);
+  box-shadow:inset 0 1px 0 rgba(255,236,200,.08),0 0 0 1px rgba(243,182,74,.05),0 40px 80px -40px rgba(0,0,0,.8),0 0 120px -60px rgba(243,182,74,.5)}
+.session .grat{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.session > *:not(.grat){position:relative}
+.s-top{display:flex;align-items:center;gap:12px}
+.s-top .eyebrow{color:var(--gold-hi)}
+.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--text-2);padding:3px 9px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.03)}
+.big{display:flex;align-items:flex-end;gap:22px;margin-top:18px}
+.big .n{font-family:var(--serif);font-weight:500;font-size:92px;line-height:.78;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums;color:var(--star)}
+.big .n.nw{color:var(--gold-hi);text-shadow:0 0 40px rgba(243,182,74,.35)}
+.big .lb{font-size:14px;color:var(--text-2);margin-top:10px;line-height:1.25}
+.big .lb b{display:block;color:var(--text);font-weight:600;font-size:15px}
+.big .plus{font-family:var(--serif);font-size:44px;color:var(--text-4);line-height:1;padding-bottom:26px}
+.meta{display:flex;gap:18px;margin-top:22px;color:var(--text-2);font-size:13.5px;flex-wrap:wrap}
+.meta > span{display:inline-block}
+.meta svg.i{vertical-align:-3px;margin-right:7px}
+.meta b{color:var(--text);font-weight:600}
+.meta .m-xp{color:var(--gold-hi)}
+.meta .m-xp b{color:var(--gold-hi)}
+.comp{margin-top:16px}
+.comp-bar{display:flex;gap:3px;height:7px}
+.comp-bar i{flex:var(--m);background:var(--c);border-radius:3px;opacity:.85;box-shadow:0 0 12px -3px var(--c)}
+.comp-lg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:9px;font-size:12px;color:var(--text-3)}
+.comp-lg span{display:inline-flex;align-items:center;gap:6px}
+.comp-lg em{font-style:normal;color:var(--text-2);font-family:var(--mono);font-size:11px}
+.cta{display:flex;align-items:center;gap:14px;margin-top:24px}
+.btn{font:inherit;cursor:pointer;border:0;display:inline-flex;align-items:center;gap:10px;border-radius:14px;transition:transform .18s,box-shadow .25s,background .25s}
+.btn-go{position:relative;overflow:hidden;padding:15px 22px 15px 20px;font-size:16px;font-weight:700;letter-spacing:.005em;color:var(--gold-ink);
+  background:linear-gradient(180deg,#FFD27C 0%,#F4B447 55%,#E9A536 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,220,150,.6),0 12px 30px -8px rgba(243,182,74,.6),0 0 70px -12px rgba(243,182,74,.55)}
+.btn-go:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 0 1px rgba(255,230,170,.7),0 16px 36px -8px rgba(243,182,74,.75),0 0 90px -10px rgba(243,182,74,.7)}
+.btn-go::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:sheen 4.8s ease-in-out 1.4s infinite}
+@keyframes sheen{0%{left:-80px}28%,100%{left:120%}}
+.btn-go .play{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(28,20,5,.14)}
+.btn-go .play svg{width:12px;height:12px;fill:var(--gold-ink);stroke:none;margin-left:2px}
+.btn-go kbd{background:rgba(28,20,5,.1);border-color:rgba(28,20,5,.18);color:rgba(28,20,5,.7);margin-left:4px}
+.btn-ghost{padding:14px 16px;font-size:14px;font-weight:500;color:var(--text-2);background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 1px var(--line-2)}
+.btn-ghost:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.lvlup{display:flex;align-items:center;gap:10px;margin-top:18px;font-size:13px;color:var(--text-2)}
+.lvlup svg{width:14px;height:14px;fill:var(--gold);stroke:none;filter:drop-shadow(0 0 6px rgba(243,182,74,.8))}
+.lvlup b{color:var(--gold-hi);font-weight:600}
+.dial-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial{width:224px;height:224px;overflow:visible}
+.dial-lg{margin-top:12px;width:100%;display:grid;gap:7px;font-size:12px;color:var(--text-2)}
+.dial-lg div{display:flex;align-items:center;gap:9px}
+.dial-lg i{width:14px;height:4px;border-radius:2px;flex:none}
+.dial-lg em{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--text-3)}
+
+/* ───────── Cola de estudio ───────── */
+.seg{display:flex;gap:2px;padding:3px;border-radius:11px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.seg button{font:inherit;font-size:12.5px;color:var(--text-3);background:none;border:0;padding:5px 11px;border-radius:8px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.seg button em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--text-4)}
+.seg button.on{background:rgba(255,255,255,.07);color:var(--text)}
+.seg button.on em{color:var(--gold-hi)}
+.queue{list-style:none;margin:0 -12px}
+.q{display:grid;grid-template-columns:34px minmax(0,1fr) 118px 58px 16px;gap:14px;align-items:center;padding:15px 12px;border-top:1px solid var(--line);border-radius:12px;transition:background .2s}
+.q:first-child{border-top-color:transparent}
+.q:hover{background:rgba(255,255,255,.028)}
+.q:hover .q-go{opacity:1;transform:none}
+.q-n{font-family:var(--mono);font-size:12px;color:var(--text-4);align-self:start;padding-top:5px}
+.q:first-child .q-n{color:var(--gold)}
+.q-t{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q-name{font-family:var(--serif);font-weight:600;font-size:22px;line-height:1.1;letter-spacing:.003em}
+.subj{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+.subj .dot{width:6px;height:6px}
+.tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;padding:2px 7px 2px;border-radius:5px;line-height:1.5;transform:translateY(-2px)}
+.tag.new{color:var(--gold-hi);background:rgba(243,182,74,.1);box-shadow:inset 0 0 0 1px rgba(243,182,74,.3)}
+.tag.rev{color:#C5D6F3;background:rgba(141,180,232,.08);box-shadow:inset 0 0 0 1px rgba(141,180,232,.22)}
+.q-why{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:7px;font-size:13.2px;color:var(--text-3)}
+.q-why > span{display:inline-block}
+.q-why svg.i{vertical-align:-2.5px;margin-right:7px}
+.q-why svg.i{width:14px;height:14px;color:var(--text-3)}
+.q-why b{color:var(--text-2);font-weight:600}
+.q-why .hot, .q-why .hot svg.i{color:var(--gold-hi)}
+.q-why .hot b{color:var(--gold-hi)}
+.q-why .cold, .q-why .cold svg.i{color:var(--frost)}
+.q-why .cold b{color:#BCD2F2}
+.q-why .urg, .q-why .urg svg.i{color:#F4A58C}
+.q-why .urg b{color:#F7B9A4}
+.q-state{display:grid;gap:7px;justify-items:start}
+.pips{display:flex;gap:5px;align-items:center}
+.pips i{width:7px;height:7px;transform:rotate(45deg);border-radius:1.5px;background:transparent;box-shadow:inset 0 0 0 1px var(--text-4)}
+.pips.l1 i:nth-child(-n+1),.pips.l2 i:nth-child(-n+2),.pips.l3 i:nth-child(-n+3){background:var(--star);box-shadow:0 0 7px rgba(255,240,210,.55)}
+.pips.cool i:nth-child(-n+2){background:#A9BFE6;box-shadow:0 0 6px rgba(141,180,232,.45)}
+.pips + small{font-family:var(--mono);font-size:10px;color:var(--text-4);letter-spacing:.06em;margin-left:6px}
+.fresh{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+.fresh .tr{width:54px;height:3px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden}
+.fresh .tr b{display:block;height:100%;width:var(--v);background:linear-gradient(90deg,rgba(243,182,74,.5),var(--gold-hi));border-radius:2px}
+.fresh.cool{color:var(--frost)}
+.fresh.cool .tr b{background:linear-gradient(90deg,rgba(141,180,232,.35),var(--frost))}
+.fresh.none{color:var(--text-4)}
+.q-time{font-family:var(--mono);font-size:12.5px;color:var(--text-2);text-align:right}
+.q-time small{display:block;font-size:10px;color:var(--text-4);letter-spacing:.08em}
+.q-go{opacity:0;transform:translateX(-4px);transition:.2s;color:var(--gold-hi)}
+.q-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding-top:16px;border-top:1px dashed var(--line-2);font-size:13px;color:var(--text-3)}
+.q-foot b{color:var(--text-2);font-weight:600}
+
+/* ───────── Carta celeste ───────── */
+.map-card{padding-bottom:22px;overflow:hidden}
+.map-card .desc{font-size:13.5px;color:var(--text-3);max-width:560px;margin:-8px 0 12px}
+.map{width:100%;height:auto;display:block}
+.map .ax{font-family:var(--mono);font-size:10px;letter-spacing:.12em;fill:var(--text-4);text-transform:uppercase}
+.map .ln-n{font-family:var(--serif);font-weight:600;font-size:18px;fill:var(--text)}
+.map .ln-s{font-family:var(--mono);font-size:10px;fill:var(--text-3);letter-spacing:.04em}
+.map .lb{font-family:var(--sans);font-size:11.5px;fill:var(--text-2)}
+.map .lb.dim{fill:var(--text-3)}
+.map .lb.off{fill:#5B6588}
+.map .lb.today{fill:var(--gold-hi);font-weight:600}
+.map .lb.cool{fill:#9DB9E3}
+.map .rail{fill:none;stroke-width:1.4;stroke-linecap:round}
+.map .cx{fill:none;stroke:rgba(210,222,255,.26);stroke-width:1.1}
+.map .cx.lit{stroke:rgba(255,236,200,.42)}
+.map .cx.late{stroke:var(--ember);stroke-opacity:.8;stroke-dasharray:4 4}
+.map .unlock{fill:none;stroke:var(--gold);stroke-width:1.6;stroke-dasharray:2 5;stroke-linecap:round;animation:flow 1.8s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-14}}
+.map .tw{animation:tw 4.5s ease-in-out infinite}
+.map .tw.b{animation-duration:6s;animation-delay:-2s}
+.map .tw.c{animation-duration:5.2s;animation-delay:-3.5s}
+@keyframes tw{0%,100%{opacity:1}50%{opacity:.72}}
+.map .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.6s cubic-bezier(.2,.6,.3,1) infinite}
+@keyframes pulse{0%{transform:scale(.7);opacity:.9}100%{transform:scale(2.3);opacity:0}}
+.map .spin{transform-box:fill-box;transform-origin:center;animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.map-foot{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-top:14px;padding-top:16px;border-top:1px solid var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--text-3)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend svg{width:18px;height:18px;overflow:visible}
+.insight{display:flex;gap:11px;align-items:flex-start;max-width:420px;padding:11px 14px;border-radius:12px;background:rgba(240,138,108,.07);box-shadow:inset 0 0 0 1px rgba(240,138,108,.22);font-size:12.8px;color:var(--text-2);line-height:1.4}
+.insight svg.i{color:var(--ember);width:16px;height:16px;margin-top:1px}
+.insight b{color:#F7B9A4;font-weight:600}
+
+/* ───────── Actividad ───────── */
+.heat{display:grid;grid-template-columns:auto minmax(0,1fr);gap:34px;align-items:center}
+.hm{width:370px;height:auto;display:block;overflow:visible}
+.hm .hm-m{font-family:var(--mono);font-size:10px;fill:var(--text-3);letter-spacing:.08em}
+.hm .hm-d{font-family:var(--mono);font-size:9.5px;fill:var(--text-4)}
+.hm .hm-f{fill:rgba(255,255,255,.08)}
+.hm .hm-l0{fill:#27304D}
+.hm .hm-l1{fill:rgba(243,182,74,.32)}
+.hm .hm-l2{fill:rgba(243,182,74,.58)}
+.hm .hm-l3{fill:rgba(255,205,120,.86)}
+.hm .hm-l4{fill:#FFE3AA;filter:drop-shadow(0 0 3px rgba(243,182,74,.9))}
+.hm .hm-today{fill:none;stroke:var(--gold);stroke-width:1.3;stroke-dasharray:2.4 2.2}
+.hm .hm-freeze{color:var(--frost)}
+.hm .ann{font-family:var(--sans);font-size:10.5px;fill:var(--text-3);font-style:italic}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:22px 26px}
+.stat .v{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1;font-variant-numeric:lining-nums tabular-nums}
+.stat .v small{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--text-2);margin-left:4px}
+.stat .k{font-size:12.5px;color:var(--text-3);margin-top:6px}
+.stat .k b{color:var(--text-2);font-weight:500}
+.hm-lg{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:11.5px;color:var(--text-3)}
+.hm-lg svg{height:14px;width:auto}
+.hm-lg .sep{width:1px;height:12px;background:var(--line-2);margin:0 6px}
+
+/* ───────── Jugador ───────── */
+.player{padding:24px 24px 22px;overflow:hidden;
+  background:radial-gradient(360px 220px at 18% 0%, rgba(243,182,74,.12), transparent 70%),linear-gradient(180deg,rgba(26,36,66,.72),rgba(15,22,43,.7))}
+.p-head{display:flex;align-items:center;gap:16px}
+.emblem{width:76px;height:76px;flex:none;filter:drop-shadow(0 0 18px rgba(243,182,74,.28))}
+.p-head .rank{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-hi)}
+.p-head h3{font-family:var(--serif);font-weight:600;font-size:40px;line-height:.95;margin-top:4px;font-variant-numeric:lining-nums}
+.p-head .tot{margin-left:auto;text-align:right;font-size:12px;color:var(--text-3)}
+.p-head .tot b{display:block;font-family:var(--mono);font-weight:500;font-size:15px;color:var(--text);letter-spacing:.02em}
+.xp{margin-top:18px}
+.xp-bar{position:relative;height:10px;border-radius:6px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.xp-bar .f{position:absolute;left:0;top:0;bottom:0;width:51.4%;border-radius:6px;background:linear-gradient(90deg,#B7802A,#F3B64A 60%,#FFD68A);box-shadow:0 0 16px -2px rgba(243,182,74,.7)}
+.xp-bar .f::after{content:"";position:absolute;right:-1px;top:-3px;bottom:-3px;width:3px;border-radius:2px;background:#FFF3D6;box-shadow:0 0 10px 2px rgba(255,214,138,.9)}
+.xp-bar .g{position:absolute;left:51.4%;right:0;top:0;bottom:0;border-radius:0 6px 6px 0;background:repeating-linear-gradient(135deg,rgba(243,182,74,.34) 0 3px,rgba(243,182,74,.1) 3px 7px)}
+.xp-bar .cap{position:absolute;right:-4px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:#0F1731;box-shadow:inset 0 0 0 1.4px var(--gold);display:grid;place-items:center;font-family:var(--mono);font-size:9px;color:var(--gold-hi)}
+.xp-l{display:flex;justify-content:space-between;margin-top:9px;font-size:12px;color:var(--text-3)}
+.xp-l b{color:var(--text);font-weight:600;font-family:var(--mono);font-size:12px}
+.xp-l .gold b{color:var(--gold-hi)}
+.ladder{position:relative;display:grid;grid-template-columns:repeat(6,1fr);margin-top:20px;padding-top:2px}
+.ladder::before{content:"";position:absolute;left:8.33%;right:8.33%;top:11px;height:1px;background:linear-gradient(90deg,rgba(243,182,74,.55) 0 40%,var(--line-2) 40%)}
+.rk{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11px;color:var(--text-4);text-align:center;line-height:1.15}
+.rk svg{width:22px;height:22px;background:#111A33;border-radius:50%}
+.rk small{font-family:var(--mono);font-size:9.5px;color:var(--text-4)}
+.rk.done{color:var(--text-3)}
+.rk.now{color:var(--gold-hi);font-weight:600}
+.rk.now svg{box-shadow:0 0 0 1.3px var(--gold),0 0 14px 1px rgba(243,182,74,.5)}
+.p-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:20px;border:1px solid var(--line);border-radius:14px;background:rgba(7,11,24,.28)}
+.p-stats > div{padding:12px 14px}
+.p-stats > div + div{border-left:1px solid var(--line)}
+.p-stats .v{display:flex;align-items:center;gap:7px;font-family:var(--serif);font-weight:600;font-size:26px;line-height:1;font-variant-numeric:lining-nums tabular-nums}
+.p-stats .v small{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text-2)}
+.p-stats .v svg{width:17px;height:17px}
+.p-stats .k{font-size:11.5px;color:var(--text-3);margin-top:5px}
+.week{display:flex;align-items:center;gap:16px;margin-top:18px}
+.days{display:flex;gap:7px}
+.dd{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:10.5px;color:var(--text-4);box-shadow:inset 0 0 0 1px var(--line-2);position:relative}
+.dd.ok{color:var(--gold-ink);background:radial-gradient(circle at 40% 35%,#FFE3AA,#F3B64A 70%);box-shadow:0 0 12px -2px rgba(243,182,74,.7);font-weight:500}
+.dd.now{color:var(--gold-hi);box-shadow:inset 0 0 0 1.4px var(--gold)}
+.dd.now::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(243,182,74,.5);animation:ring 2.4s ease-out infinite}
+@keyframes ring{0%{transform:scale(.85);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.week-t{font-size:12.5px;color:var(--text-3);line-height:1.35}
+.week-t b{display:block;color:var(--text);font-weight:600;font-size:13.5px}
+.goals{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);display:grid;gap:12px}
+.goals-h{display:flex;justify-content:space-between;align-items:baseline}
+.goals-h span:last-child{font-size:11.5px;color:var(--gold-hi)}
+.goal{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:13px;color:var(--text-2)}
+.goal em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--text-3)}
+.goal em b{color:var(--text);font-weight:500}
+.goal .tr{grid-column:1/-1;height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.goal .tr b{display:block;height:100%;width:var(--v);border-radius:2px;background:linear-gradient(90deg,rgba(243,182,74,.55),var(--gold-hi))}
+
+/* ───────── Hitos ───────── */
+.tl{width:100%;height:auto;display:block;margin:-2px 0 6px}
+.tl text{font-family:var(--mono);font-size:9.5px;fill:var(--text-3);letter-spacing:.06em}
+.ex{list-style:none}
+.ex li{display:grid;grid-template-columns:54px minmax(0,1fr) 78px;gap:14px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.cd{text-align:center}
+.cd b{display:block;font-family:var(--serif);font-weight:600;font-size:34px;line-height:.9;font-variant-numeric:lining-nums tabular-nums;color:var(--text)}
+.cd small{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-4)}
+.cd.urg b{color:#F7A488;text-shadow:0 0 22px rgba(240,138,108,.45)}
+.cd.soon b{color:var(--gold-hi)}
+.ex-t{font-size:14px;font-weight:600;color:var(--text);line-height:1.25}
+.ex-t .k{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-left:6px}
+.ex-s{display:flex;align-items:center;gap:7px;margin-top:4px;font-size:12px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prep{font-family:var(--mono);font-size:11.5px;color:var(--text-2);text-align:right}
+.prep .tr{height:3px;border-radius:2px;background:rgba(255,255,255,.07);margin-top:6px;overflow:hidden}
+.prep .tr b{display:block;height:100%;width:var(--v);background:var(--c,var(--star));opacity:.85;border-radius:2px}
+.ex-foot{display:flex;align-items:center;gap:10px;margin-top:4px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 1px var(--line);font-size:12.8px;color:var(--text-2)}
+.ex-foot .grade{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1;color:var(--gold-hi);font-variant-numeric:lining-nums}
+
+/* ───────── Asignaturas ───────── */
+.subs-h{display:grid;grid-template-columns:minmax(0,1fr) 46px 62px;gap:10px;padding:0 0 8px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-4)}
+.subs-h span:nth-child(n+2){text-align:right}
+.grp{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);padding:12px 0 4px;display:flex;align-items:center;gap:10px}
+.grp::after{content:"";flex:1;height:1px;background:var(--line)}
+.sb{display:grid;grid-template-columns:minmax(0,1fr) 46px 62px;gap:10px;align-items:center;padding:8px 0}
+.sb-n{min-width:0}
+.sb-n .nm{display:flex;align-items:center;gap:8px;font-size:13.6px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-n .sub{display:flex;align-items:center;gap:12px;margin:6px 0 0 15px}
+.sb-n small{font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.02em}
+.temas{display:flex;gap:3.5px;align-items:center}
+.temas i{width:5.5px;height:5.5px;border-radius:50%;box-shadow:inset 0 0 0 1px #3A4466}
+.temas i.d{background:var(--star);box-shadow:0 0 6px 1px rgba(255,226,170,.55)}
+.temas i.p{background:rgba(243,182,74,.55);box-shadow:0 0 0 1px rgba(243,182,74,.55)}
+.temas i.f{background:#8DB4E8;box-shadow:0 0 6px rgba(141,180,232,.5);opacity:.85}
+.dom{font-family:var(--mono);font-size:11px;color:var(--text);text-align:right}
+.dom .tr{height:3px;border-radius:2px;background:rgba(255,255,255,.07);margin-top:5px;overflow:hidden}
+.dom .tr b{display:block;margin-left:auto;height:100%;width:var(--v);border-radius:2px;background:linear-gradient(90deg,rgba(236,230,214,.35),var(--star))}
+.frs{text-align:right;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+.frs .tr{height:3px;border-radius:2px;background:rgba(255,255,255,.07);margin-top:5px;overflow:hidden}
+.frs .tr b{display:block;margin-left:auto;height:100%;width:var(--v);border-radius:2px;background:linear-gradient(90deg,rgba(243,182,74,.4),var(--gold-hi))}
+.frs.cool{color:var(--frost)}
+.frs.cool .tr b{background:linear-gradient(90deg,rgba(141,180,232,.3),var(--frost))}
+.subs-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--text-3)}
+.subs-lg span{display:inline-flex;align-items:center;gap:6px}
+.subs-lg .temas i{margin:0}
+
+/* ───────── Logros ───────── */
+.next{display:grid;grid-template-columns:78px 1fr;gap:16px;align-items:center;padding:16px;border-radius:16px;background:radial-gradient(260px 140px at 0% 50%,rgba(243,182,74,.1),transparent 70%),rgba(255,255,255,.02);box-shadow:inset 0 0 0 1px rgba(243,182,74,.18)}
+.medal{width:78px;height:78px;overflow:visible}
+.next .eyebrow{color:var(--gold-hi)}
+.next h4{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1;margin-top:4px}
+.next p{font-size:12.8px;color:var(--text-2);margin-top:5px;line-height:1.4}
+.next p b{color:var(--text);font-weight:600}
+.steps{display:flex;gap:4px;margin-top:10px}
+.steps i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.08)}
+.steps i.on{background:linear-gradient(90deg,#C98A2E,var(--gold-hi));box-shadow:0 0 8px -1px rgba(243,182,74,.7)}
+.recent{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.rc{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:12px 6px 10px;border-radius:14px;transition:background .2s}
+.rc:hover{background:rgba(255,255,255,.03)}
+.rc svg{width:50px;height:50px;overflow:visible}
+.rc b{font-family:var(--serif);font-weight:600;font-size:16.5px;line-height:1.05}
+.rc small{font-size:11px;color:var(--text-3);line-height:1.3}
+.rc em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:.04em}
+.ach-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--text-3)}
+.ach-foot .tr{flex:1;height:3px;margin:0 14px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden}
+.ach-foot .tr b{display:block;width:25%;height:100%;background:var(--gold);opacity:.7}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:1180px){.wrap{grid-template-columns:1fr}.search{display:none}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- Iconos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="6" cy="5.5" r="2.2"/><circle cx="6" cy="18.5" r="2.2"/><circle cx="18" cy="8.5" r="2.2"/><path d="M6 7.7v8.6M6 13.5c0-3 1.8-4.6 4.6-4.9l5.2-.1"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M6.5 17.5l11-11M9 6.5h8.5V15"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.6A8 8 0 1 1 9.4 4.5a6.4 6.4 0 0 0 10.1 10.1z" fill="currentColor" fill-opacity=".15" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-medal" viewBox="0 0 24 24"><circle cx="12" cy="14.5" r="5.5"/><path d="M8.6 10.2L6 3.5h4l2 4 2-4h4l-2.6 6.7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.4 4.4L19 7.4"/></symbol>
+    <symbol id="i-bridge" viewBox="0 0 24 24"><path d="M2.5 17.5c3.2-7.5 15.8-7.5 19 0M2.5 17.5h19M8 13.2v4.3M12 11.7v5.8M16 13.2v4.3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.8l9.2 16H2.8z"/><path d="M12 10v4.4M12 17.1v.2"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2.5l2 7.5 7.5 2-7.5 2-2 7.5-2-7.5-7.5-2 7.5-2z"/></symbol>
+    <symbol id="i-comet" viewBox="0 0 24 24"><circle cx="16.8" cy="7.2" r="3.6" fill="currentColor" stroke="none"/><path d="M13.9 10.1L3.5 20.5M12.6 8.1L5.2 13M15.9 11.4L11 18.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" opacity=".75"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15L19.5 12z"/></symbol>
+  </defs>
+</svg>
+
+<!-- ═════════ Barra superior ═════════ -->
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <defs><radialGradient id="bg-logo"><stop offset="0" stop-color="#FFE7B3"/><stop offset=".45" stop-color="#F3B64A" stop-opacity=".45"/><stop offset="1" stop-color="#F3B64A" stop-opacity="0"/></radialGradient></defs>
+        <circle cx="16" cy="16" r="15" fill="url(#bg-logo)" opacity=".55"/>
+        <circle cx="16" cy="16" r="11.5" fill="none" stroke="#F3B64A" stroke-opacity=".45" stroke-width=".8"/>
+        <path d="M16 3.5l1.7 10.8L28.5 16l-10.8 1.7L16 28.5l-1.7-10.8L3.5 16l10.8-1.7z" fill="#FFE2A6"/>
+        <circle cx="16" cy="16" r="1.8" fill="#fff"/>
+      </svg>
+      Atlas
+    </div>
+    <nav class="nav" aria-label="Principal">
+      <a href="#" class="on" aria-current="page">Hoy</a>
+      <a href="#">Asignaturas</a>
+      <a href="#">Mapa</a>
+      <a href="#">Progreso</a>
+    </nav>
+    <button class="search" type="button">
+      <svg class="i"><use href="#i-search"/></svg>
+      <span>Buscar conceptos, temas o exámenes…</span>
+      <kbd>Ctrl</kbd><kbd>K</kbd>
+    </button>
+    <div class="top-r">
+      <div class="chip" title="Racha: 12 días seguidos">
+        <svg class="i c-comet" style="width:17px;height:17px"><use href="#i-comet"/></svg>
+        <span><b class="num">12</b> días</span>
+      </div>
+      <div class="chip" title="Nivel 7 · 51 % hacia el nivel 8">
+        <svg class="lvl-ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="2.4"/><circle cx="12" cy="12" r="9.5" fill="none" stroke="#F3B64A" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="30.7 59.7" transform="rotate(-90 12 12)"/><text x="12" y="15.6" text-anchor="middle" font-family="DM Mono" font-size="10" fill="#FFD68A">7</text></svg>
+        <span><b>Protoestrella</b></span>
+      </div>
+      <div class="avatar" title="Hugo">H</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ═════════ Columna principal ═════════ -->
+  <div class="col">
+
+    <section class="hello rise" style="--d:.02s">
+      <div class="eyebrow"><span>Jueves, 24 de septiembre de 2026</span><i></i><span>Semana 2 de 18 del cuatrimestre</span></div>
+      <h1>Buenas tardes, Hugo.
+        <em>Hoy puedes encender <span>seis estrellas nuevas</span>.</em></h1>
+      <p>Llevas <b>12 días seguidos</b>. La sesión de hoy recupera las <b>9 estrellas que se están apagando</b> y te deja lista la parte de Resolución para el test de Lógica del martes.</p>
+    </section>
+
+    <!-- Sesión de hoy -->
+    <section class="card session rise" style="--d:.1s" aria-label="Sesión de hoy">
+      <svg class="grat" viewBox="0 0 880 340" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+        <g fill="none" stroke="rgba(170,192,245,.075)" stroke-width="1">
+          <ellipse cx="760" cy="170" rx="330" ry="330"/>
+          <ellipse cx="760" cy="170" rx="250" ry="250"/>
+          <ellipse cx="760" cy="170" rx="170" ry="170" stroke-dasharray="2 6"/>
+          <ellipse cx="760" cy="170" rx="330" ry="120"/>
+          <ellipse cx="760" cy="170" rx="330" ry="220" stroke-dasharray="1 5"/>
+          <path d="M430 170H1100M760 -170V510M527 -63L993 403M527 403L993 -63"/>
+        </g>
+        <g fill="#FFF3DA">
+          <circle cx="700" cy="304" r="1.1" opacity=".7"/><circle cx="512" cy="300" r=".9" opacity=".5"/>
+          <circle cx="860" cy="40" r="1.3" opacity=".8"/><circle cx="410" cy="250" r=".8" opacity=".5"/>
+          <circle cx="640" cy="318" r="1" opacity=".6"/><circle cx="360" cy="30" r=".8" opacity=".45"/>
+          <circle cx="270" cy="318" r=".9" opacity=".4"/><circle cx="560" cy="130" r=".8" opacity=".45"/>
+        </g>
+      </svg>
+
+      <div>
+        <div class="s-top">
+          <span class="eyebrow">✦ Sesión de hoy</span>
+          <span class="pill">Preparada a las 07:00 · se adapta a tus fallos</span>
+        </div>
+        <div class="big">
+          <div>
+            <div class="n num">18</div>
+            <div class="lb"><b>repasos</b>9 se están enfriando</div>
+          </div>
+          <div class="plus">+</div>
+          <div>
+            <div class="n nw num">6</div>
+            <div class="lb"><b>conceptos nuevos</b>requisitos ya cumplidos</div>
+          </div>
+        </div>
+        <div class="meta">
+          <span><svg class="i"><use href="#i-clock"/></svg><b>≈ 2 h 10 min</b> de estudio</span>
+          <span><svg class="i"><use href="#i-layers"/></svg><b>7</b> asignaturas</span>
+          <span class="m-xp"><svg class="i" style="fill:currentColor;stroke:none"><use href="#i-spark"/></svg><b>+360 XP</b> estimados</span>
+        </div>
+        <div class="comp" aria-label="Reparto del tiempo por asignatura">
+          <div class="comp-bar">
+            <i style="--m:26;--c:var(--s-cal)"></i><i style="--m:26;--c:var(--s-eda)"></i><i style="--m:24;--c:var(--s-moe)"></i><i style="--m:16;--c:var(--s-log)"></i><i style="--m:14;--c:var(--s-fpr)"></i><i style="--m:12;--c:var(--s-alg)"></i><i style="--m:12;--c:var(--s-tc)"></i>
+          </div>
+          <div class="comp-lg">
+            <span><i class="dot" style="--c:var(--s-cal)"></i>Cálculo <em>26′</em></span>
+            <span><i class="dot" style="--c:var(--s-eda)"></i>Estructuras <em>26′</em></span>
+            <span><i class="dot" style="--c:var(--s-moe)"></i>Métodos op. <em>24′</em></span>
+            <span><i class="dot" style="--c:var(--s-log)"></i>Lógica <em>16′</em></span>
+            <span><i class="dot" style="--c:var(--s-fpr)"></i>Programación <em>14′</em></span>
+            <span><i class="dot" style="--c:var(--s-alg)"></i>Álgebra <em>12′</em></span>
+            <span><i class="dot" style="--c:var(--s-tc)"></i>Teoría comp. <em>12′</em></span>
+          </div>
+        </div>
+        <div class="cta">
+          <button class="btn btn-go" type="button">
+            <span class="play"><svg><use href="#i-play"/></svg></span>
+            Empezar sesión
+            <kbd>Intro</kbd>
+          </button>
+          <button class="btn btn-ghost" type="button">Solo repasos · 45 min</button>
+        </div>
+        <div class="lvlup">
+          <svg><use href="#i-spark"/></svg>
+          <span>Hacia la mitad de la sesión <b>subirás a Nivel 8</b> · te faltan 340 XP</span>
+        </div>
+      </div>
+
+      <div class="dial-wrap">
+        <svg class="dial" viewBox="0 0 240 240" role="img" aria-label="Plan de la sesión: 45 minutos de repasos, pausa, 45 y 40 minutos de conceptos nuevos">
+          <defs>
+            <linearGradient id="g-arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE0A0"/><stop offset="1" stop-color="#E9A536"/></linearGradient>
+            <radialGradient id="g-core"><stop offset="0" stop-color="#F3B64A" stop-opacity=".16"/><stop offset="1" stop-color="#F3B64A" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="120" cy="120" r="78" fill="url(#g-core)"/>
+          <circle cx="120" cy="120" r="116" fill="none" stroke="rgba(170,190,240,.12)"/>
+          <!-- marcas cada 5 min y cada 30 min -->
+          <circle cx="120" cy="120" r="106" fill="none" stroke="rgba(170,190,240,.22)" stroke-width="6" stroke-dasharray="1 21.21" transform="rotate(-90 120 120)"/>
+          <circle cx="120" cy="120" r="106" fill="none" stroke="rgba(236,230,214,.55)" stroke-width="11" stroke-dasharray="1.4 131.8" transform="rotate(-90.4 120 120)"/>
+          <!-- pista -->
+          <circle cx="120" cy="120" r="90" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="10"/>
+          <g transform="rotate(-90 120 120)" fill="none">
+            <!-- C = 565.49 ; 3.77 por min ; 150 min con pausas -->
+            <circle cx="120" cy="120" r="90" stroke="#D5E0F7" stroke-width="10" stroke-dasharray="166.6 565.49" stroke-dashoffset="-1.5" style="filter:drop-shadow(0 0 5px rgba(190,210,250,.5))"/>
+            <circle cx="120" cy="120" r="90" stroke="url(#g-arc)" stroke-width="10" stroke-dasharray="166.6 565.49" stroke-dashoffset="-209.2" style="filter:drop-shadow(0 0 6px rgba(243,182,74,.55))"/>
+            <circle cx="120" cy="120" r="90" stroke="url(#g-arc)" stroke-width="10" stroke-dasharray="147.8 565.49" stroke-dashoffset="-416.2" style="filter:drop-shadow(0 0 6px rgba(243,182,74,.55))"/>
+            <!-- pausas -->
+            <circle cx="120" cy="120" r="90" stroke="rgba(236,230,214,.35)" stroke-width="2.2" stroke-dasharray="30.7 565.49" stroke-dashoffset="-172.6"/>
+            <circle cx="120" cy="120" r="90" stroke="rgba(236,230,214,.35)" stroke-width="2.2" stroke-dasharray="30.7 565.49" stroke-dashoffset="-380.2"/>
+          </g>
+          <!-- aguja «ahora» -->
+          <path d="M120 8l5 8h-10z" fill="#FFD68A"/>
+          <text x="120" y="112" text-anchor="middle" font-family="Cormorant Garamond" font-weight="600" font-size="44" fill="#ECE6D6" style="font-variant-numeric:lining-nums">2 h 10</text>
+          <text x="120" y="132" text-anchor="middle" font-family="DM Mono" font-size="9.5" letter-spacing="1.6" fill="#6C7594">DE ESTUDIO</text>
+          <text x="120" y="156" text-anchor="middle" font-family="Hanken Grotesk" font-size="12" fill="#A9B1C9">acabas ≈ <tspan fill="#FFD68A" font-weight="600">19:10</tspan></text>
+        </svg>
+        <div class="dial-lg">
+          <div><i style="background:#D5E0F7"></i>Bloque 1 · 18 repasos<em>45′</em></div>
+          <div><i style="background:linear-gradient(90deg,#FFE0A0,#E9A536)"></i>Bloques 2–3 · 6 nuevos<em>85′</em></div>
+          <div><i style="background:repeating-linear-gradient(90deg,rgba(236,230,214,.45) 0 3px,transparent 3px 5px);height:2px"></i>2 pausas<em>10′ + 10′</em></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cola de estudio -->
+    <section class="card rise" style="--d:.18s" aria-label="Cola de estudio">
+      <div class="card-h">
+        <div>
+          <div class="eyebrow">Ordenada por impacto</div>
+          <h2>Cola de estudio</h2>
+        </div>
+        <div class="seg" role="tablist">
+          <button class="on" type="button">Todo <em>24</em></button>
+          <button type="button">Repasos <em>18</em></button>
+          <button type="button">Nuevos <em>6</em></button>
+        </div>
+      </div>
+
+      <ol class="queue">
+        <li class="q">
+          <span class="q-n">01</span>
+          <div>
+            <div class="q-t"><span class="q-name">Regla de la cadena</span><span class="subj"><i class="dot" style="--c:var(--s-cal)"></i>Cálculo</span><span class="tag new">Nuevo</span></div>
+            <div class="q-why">
+              <span class="hot"><svg class="i"><use href="#i-branch"/></svg>Desbloquea <b>9 conceptos</b></span>
+              <span><svg class="i"><use href="#i-arrow"/></svg>La usarás en <b>Preprocesamiento</b> y <b>Métodos operativos</b></span>
+            </div>
+          </div>
+          <div class="q-state"><div class="pips l0"><i></i><i></i><i></i></div><div class="fresh none">sin ver</div></div>
+          <div class="q-time">22 min<small>NUEVO</small></div>
+          <svg class="i q-go"><use href="#i-chev"/></svg>
+        </li>
+        <li class="q">
+          <span class="q-n">02</span>
+          <div>
+            <div class="q-t"><span class="q-name">Resolución</span><span class="subj"><i class="dot" style="--c:var(--s-log)"></i>Lógica computacional</span><span class="tag rev">Repaso</span></div>
+            <div class="q-why">
+              <span class="urg"><svg class="i"><use href="#i-cal"/></svg><b>Test del tema 2</b> en 5 días</span>
+              <span><svg class="i"><use href="#i-target"/></svg>Es lo más flojo del tema: dominio <b>1 de 3</b></span>
+            </div>
+          </div>
+          <div class="q-state"><div class="pips l1"><i></i><i></i><i></i></div><div class="fresh"><span class="tr"><b style="--v:71%"></b></span>71 %</div></div>
+          <div class="q-time">6 min<small>REPASO</small></div>
+          <svg class="i q-go"><use href="#i-chev"/></svg>
+        </li>
+        <li class="q">
+          <span class="q-n">03</span>
+          <div>
+            <div class="q-t"><span class="q-name">Matrices</span><span class="subj"><i class="dot" style="--c:var(--s-alg)"></i>Álgebra y matemática discreta</span><span class="tag rev">Repaso</span></div>
+            <div class="q-why">
+              <span class="cold"><svg class="i"><use href="#i-moon"/></svg><b>Se está enfriando</b>: último repaso hace 11 días</span>
+              <span class="hot"><svg class="i"><use href="#i-medal"/></svg>Cuenta para el logro <b>Puente</b></span>
+            </div>
+          </div>
+          <div class="q-state"><div class="pips cool"><i></i><i></i><i></i></div><div class="fresh cool"><span class="tr"><b style="--v:48%"></b></span>48 %</div></div>
+          <div class="q-time">5 min<small>REPASO</small></div>
+          <svg class="i q-go"><use href="#i-chev"/></svg>
+        </li>
+        <li class="q">
+          <span class="q-n">04</span>
+          <div>
+            <div class="q-t"><span class="q-name">Recursividad</span><span class="subj"><i class="dot" style="--c:var(--s-fpr)"></i>Fundamentos de programación</span><span class="tag rev">Repaso</span></div>
+            <div class="q-why">
+              <span class="urg"><svg class="i"><use href="#i-cal"/></svg>Entrega de la <b>Práctica 1</b> en 9 días</span>
+              <span><svg class="i"><use href="#i-arrow"/></svg>Requisito de <b>Árboles binarios de búsqueda</b>, que ves hoy</span>
+            </div>
+          </div>
+          <div class="q-state"><div class="pips l2"><i></i><i></i><i></i></div><div class="fresh"><span class="tr"><b style="--v:83%"></b></span>83 %</div></div>
+          <div class="q-time">6 min<small>REPASO</small></div>
+          <svg class="i q-go"><use href="#i-chev"/></svg>
+        </li>
+        <li class="q">
+          <span class="q-n">05</span>
+          <div>
+            <div class="q-t"><span class="q-name">Árboles binarios de búsqueda</span><span class="subj"><i class="dot" style="--c:var(--s-eda)"></i>Estructuras de datos</span><span class="tag new">Nuevo</span></div>
+            <div class="q-why">
+              <span><svg class="i"><use href="#i-check"/></svg>Requisito listo: <b>Recursividad</b></span>
+              <span><svg class="i"><use href="#i-arrow"/></svg>Volverá en <b>Algoritmia</b> · búsqueda en O(log n)</span>
+            </div>
+          </div>
+          <div class="q-state"><div class="pips l0"><i></i><i></i><i></i></div><div class="fresh none">sin ver</div></div>
+          <div class="q-time">24 min<small>NUEVO</small></div>
+          <svg class="i q-go"><use href="#i-chev"/></svg>
+        </li>
+        <li class="q">
+          <span class="q-n">06</span>
+          <div>
+            <div class="q-t"><span class="q-name">Varianza</span><span class="subj"><i class="dot" style="--c:var(--s-moe)"></i>Métodos operativos y estadísticos</span><span class="tag rev">Repaso</span></div>
+            <div class="q-why">
+              <span class="cold"><svg class="i"><use href="#i-moon"/></svg><b>Frescura 42 %</b> · la estás perdiendo</span>
+              <span><svg class="i"><use href="#i-arrow"/></svg>La necesitas justo después para <b>Matriz de covarianza</b></span>
+            </div>
+          </div>
+          <div class="q-state"><div class="pips cool"><i></i><i></i><i></i></div><div class="fresh cool"><span class="tr"><b style="--v:42%"></b></span>42 %</div></div>
+          <div class="q-time">4 min<small>REPASO</small></div>
+          <svg class="i q-go"><use href="#i-chev"/></svg>
+        </li>
+        <li class="q">
+          <span class="q-n">07</span>
+          <div>
+            <div class="q-t"><span class="q-name">Matriz de covarianza</span><span class="subj"><i class="dot" style="--c:var(--s-moe)"></i>Métodos operativos y estadísticos</span><span class="tag new">Nuevo</span></div>
+            <div class="q-why">
+              <span class="hot"><svg class="i"><use href="#i-bridge"/></svg>Une <b>3 asignaturas</b>: Métodos operativos, Álgebra y Preprocesamiento</span>
+              <span><svg class="i"><use href="#i-arrow"/></svg>Primer paso hacia <b>PCA</b></span>
+            </div>
+          </div>
+          <div class="q-state"><div class="pips l0"><i></i><i></i><i></i></div><div class="fresh none">sin ver</div></div>
+          <div class="q-time">18 min<small>NUEVO</small></div>
+          <svg class="i q-go"><use href="#i-chev"/></svg>
+        </li>
+      </ol>
+      <div class="q-foot">
+        <span><b>17 más</b> en la sesión · 14 repasos y 3 nuevos · ≈ 45 min</span>
+        <a class="link" href="#">Ver la cola completa <svg class="i" style="width:13px;height:13px"><use href="#i-chev"/></svg></a>
+      </div>
+    </section>
+
+    <!-- Carta celeste (avance del mapa) -->
+    <section class="card map-card rise" style="--d:.26s" aria-label="Carta celeste">
+      <div class="card-h">
+        <div>
+          <div class="eyebrow">Mapa · fragmento</div>
+          <h2>Carta celeste</h2>
+        </div>
+        <div class="aside"><span class="num"><b style="color:var(--text);font-weight:600">126</b> de 810 estrellas encendidas · <span style="color:var(--frost)">9 enfriándose</span></span><br><a class="link" href="#" style="margin-top:6px">Abrir el mapa completo <svg class="i" style="width:13px;height:13px"><use href="#i-chev"/></svg></a></div>
+      </div>
+      <p class="desc">Cada franja es una asignatura y cada estrella, un concepto colocado en la semana en que se enseña. Brillan al dominarlas, se apagan si las dejas enfriar; las líneas cruzan hacia donde las volverás a necesitar.</p>
+
+      <svg class="map" viewBox="0 0 836 356" role="img" aria-label="Fragmento del mapa: Cálculo, Álgebra, Métodos operativos y Preprocesamiento, semanas 1 a 8">
+        <defs>
+          <radialGradient id="g-warm"><stop offset="0" stop-color="#FFECC0" stop-opacity=".9"/><stop offset=".28" stop-color="#F3B64A" stop-opacity=".3"/><stop offset="1" stop-color="#F3B64A" stop-opacity="0"/></radialGradient>
+          <radialGradient id="g-cool"><stop offset="0" stop-color="#A9C4F0" stop-opacity=".6"/><stop offset="1" stop-color="#8DB4E8" stop-opacity="0"/></radialGradient>
+          <linearGradient id="g-lit" x1="0" x2="1"><stop offset="0" stop-color="#F3B64A" stop-opacity="0"/><stop offset="1" stop-color="#F3B64A" stop-opacity=".09"/></linearGradient>
+          <linearGradient id="fade" x1="0" x2="1"><stop offset=".86" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          <mask id="m-fade"><rect x="0" y="0" width="836" height="356" fill="url(#fade)"/></mask>
+          <g id="st3"><circle r="17" fill="url(#g-warm)"/><path d="M-13 0H13M0-13V13" stroke="#FFF1D6" stroke-opacity=".55" stroke-width=".8"/><circle r="4.4" fill="#FFF8EA"/></g>
+          <g id="st2"><circle r="12.5" fill="url(#g-warm)" opacity=".85"/><path d="M-8 0H8M0-8V8" stroke="#FFF1D6" stroke-opacity=".4" stroke-width=".7"/><circle r="3.6" fill="#F8EEDA"/></g>
+          <g id="st1"><circle r="9" fill="url(#g-warm)" opacity=".55"/><circle r="2.9" fill="#E8DDC4" opacity=".9"/></g>
+          <g id="stc"><circle r="12" fill="url(#g-cool)" opacity=".7"/><circle r="7" fill="none" stroke="#8DB4E8" stroke-opacity=".45" stroke-dasharray="1.6 2.6"/><circle r="3.4" fill="#AFC5EA"/></g>
+          <g id="st0"><circle r="3.3" fill="#0E1530" stroke="#56618A" stroke-width="1.1"/></g>
+        </defs>
+
+        <!-- cielo ya recorrido -->
+        <rect x="150" y="40" width="159" height="306" fill="url(#g-lit)" opacity=".7"/>
+
+        <!-- franjas -->
+        <g stroke="rgba(170,188,235,.09)" stroke-width="1">
+          <path d="M0 40H836M0 118H836M0 196H836M0 274H836M0 346H836"/>
+        </g>
+        <!-- semanas -->
+        <g stroke="rgba(170,188,235,.06)" stroke-dasharray="2 4">
+          <path d="M180 40V346M266 40V346M352 40V346M438 40V346M524 40V346M610 40V346M696 40V346M782 40V346"/>
+        </g>
+        <g class="ax">
+          <text x="186" y="30">sem 1</text><text x="272" y="30">sem 2</text><text x="358" y="30">sem 3</text><text x="444" y="30">sem 4</text>
+          <text x="530" y="30">sem 5</text><text x="616" y="30">sem 6</text><text x="702" y="30">sem 7</text><text x="788" y="30">sem 8</text>
+        </g>
+
+        <!-- nombres de franja -->
+        <g>
+          <circle cx="6" cy="74" r="3.5" fill="var(--s-cal)"/>
+          <text class="ln-n" x="16" y="80">Cálculo</text>
+          <text class="ln-s" x="16" y="97">19 de 88 · 22 %</text>
+          <circle cx="6" cy="152" r="3.5" fill="var(--s-alg)"/>
+          <text class="ln-n" x="16" y="158">Álgebra</text>
+          <text class="ln-s" x="16" y="175">16 de 92 · 17 %</text>
+          <circle cx="6" cy="230" r="3.5" fill="var(--s-moe)"/>
+          <text class="ln-n" x="16" y="236">Métodos operativos</text>
+          <text class="ln-s" x="16" y="253">12 de 86 · 14 %</text>
+          <circle cx="6" cy="306" r="3.5" fill="var(--s-pmd)"/>
+          <text class="ln-n" x="16" y="312">Preprocesamiento</text>
+          <text class="ln-s" x="16" y="329">7 de 74 · 9 %</text>
+        </g>
+
+        <g mask="url(#m-fade)">
+          <!-- raíles por asignatura (tenue = por recorrer, intenso = ya recorrido) -->
+          <path class="rail" d="M170 80H836" stroke="var(--s-cal)" stroke-opacity=".16"/>
+          <path class="rail" d="M170 158H836" stroke="var(--s-alg)" stroke-opacity=".16"/>
+          <path class="rail" d="M170 236H836" stroke="var(--s-moe)" stroke-opacity=".16"/>
+          <path class="rail" d="M170 312H836" stroke="var(--s-pmd)" stroke-opacity=".16"/>
+          <path class="rail" d="M201.5 80H261.7" stroke="var(--s-cal)" stroke-opacity=".75" stroke-width="2"/>
+          <path class="rail" d="M205.8 158H278.9" stroke="var(--s-alg)" stroke-opacity=".45" stroke-width="2"/>
+          <path class="rail" d="M192.9 236H253.1" stroke="var(--s-moe)" stroke-opacity=".5" stroke-width="2"/>
+
+          <!-- conexiones entre asignaturas -->
+          <path class="cx" d="M205.8 158C230 206 300 232 347.7 236"/>
+          <path class="cx" d="M347.7 236C430 236 470 312 541.2 312"/>
+          <path class="cx" d="M463.8 80C560 80 590 312 644.4 312"/>
+          <path class="cx" d="M395 158C400 232 440 262 446.6 312"/>
+          <path class="cx late" d="M713.2 158C705 242 600 292 541.2 312"/>
+          <!-- camino que abre la regla de la cadena -->
+          <path class="unlock" d="M341 80H452"/>
+          <text x="396" y="70" text-anchor="middle" font-family="DM Mono" font-size="9.5" letter-spacing=".8" fill="#FFD68A">ABRE 9 →</text>
+
+          <!-- aviso: llega tarde -->
+          <g transform="translate(646 259)">
+            <circle r="9" fill="#141C38" stroke="#F08A6C" stroke-width="1.2"/>
+            <path d="M0-4.2v4.6M0 3.2v.3" stroke="#F08A6C" stroke-width="1.6" stroke-linecap="round"/>
+          </g>
+
+          <!-- CÁLCULO -->
+          <use href="#st3" x="201.5" y="80" class="tw"/>
+          <use href="#st3" x="261.7" y="80" class="tw b"/>
+          <g transform="translate(330.5 80)">
+            <circle r="9" fill="none" stroke="#F3B64A" stroke-width="1.2" class="pulse"/>
+            <circle r="12" fill="none" stroke="#F3B64A" stroke-opacity=".55" stroke-dasharray="2 3.5" class="spin"/>
+            <circle r="7" fill="rgba(243,182,74,.18)"/>
+            <circle r="3.4" fill="#FFE2A6"/>
+          </g>
+          <use href="#st0" x="463.8" y="80"/>
+          <use href="#st0" x="661.6" y="80"/>
+          <text class="lb" x="201.5" y="104" text-anchor="middle">Límites</text>
+          <text class="lb" x="261.7" y="62" text-anchor="middle">Derivadas</text>
+          <text class="lb today" x="330.5" y="106" text-anchor="middle">Regla de la cadena</text>
+          <text class="lb off" x="463.8" y="102" text-anchor="middle">Gradiente</text>
+          <text class="lb off" x="661.6" y="102" text-anchor="middle">Método de Newton</text>
+
+          <!-- ÁLGEBRA -->
+          <use href="#stc" x="205.8" y="158"/>
+          <use href="#st2" x="278.9" y="158" class="tw c"/>
+          <use href="#st0" x="395" y="158"/>
+          <use href="#st0" x="713.2" y="158"/>
+          <text class="lb cool" x="205.8" y="182" text-anchor="middle">Matrices</text>
+          <text class="lb" x="268" y="140" text-anchor="middle">Determinantes</text>
+          <text class="lb off" x="395" y="142" text-anchor="middle">Sistemas lineales</text>
+          <text class="lb off" x="713.2" y="142" text-anchor="middle">Autovalores</text>
+
+          <!-- MÉTODOS OPERATIVOS -->
+          <use href="#st3" x="192.9" y="236" class="tw c"/>
+          <use href="#stc" x="253.1" y="236"/>
+          <g transform="translate(347.7 236)">
+            <circle r="9" fill="none" stroke="#F3B64A" stroke-width="1.2" class="pulse" style="animation-delay:-1.3s"/>
+            <circle r="12" fill="none" stroke="#F3B64A" stroke-opacity=".55" stroke-dasharray="2 3.5" class="spin"/>
+            <circle r="7" fill="rgba(243,182,74,.18)"/>
+            <circle r="3.4" fill="#FFE2A6"/>
+          </g>
+          <use href="#st0" x="524" y="236"/>
+          <text class="lb" x="192.9" y="260" text-anchor="middle">Probabilidad</text>
+          <text class="lb cool" x="253.1" y="218" text-anchor="middle">Varianza</text>
+          <text class="lb today" x="347.7" y="262" text-anchor="middle">Matriz de covarianza</text>
+          <text class="lb off" x="524" y="218" text-anchor="middle">Método simplex</text>
+
+          <!-- PREPROCESAMIENTO -->
+          <use href="#st1" x="270.3" y="312"/>
+          <use href="#st0" x="446.6" y="312"/>
+          <use href="#st0" x="541.2" y="312"/>
+          <use href="#st0" x="644.4" y="312"/>
+          <text class="lb dim" x="270.3" y="336" text-anchor="middle">Normalización</text>
+          <text class="lb off" x="446.6" y="336" text-anchor="middle">Regresión lineal</text>
+          <text class="lb off" x="541.2" y="336" text-anchor="middle">PCA</text>
+          <text class="lb off" x="644.4" y="336" text-anchor="middle">Descenso por gradiente</text>
+        </g>
+
+        <!-- hoy -->
+        <path d="M309 40V346" stroke="#F3B64A" stroke-opacity=".55" stroke-dasharray="3 4"/>
+        <rect x="286" y="4" width="46" height="17" rx="8.5" fill="#F3B64A"/>
+        <text x="309" y="16" text-anchor="middle" font-family="DM Mono" font-size="9.5" font-weight="500" letter-spacing="1.4" fill="#1C1405">HOY</text>
+      </svg>
+
+      <div class="map-foot">
+        <div class="legend">
+          <span><svg viewBox="-9 -9 18 18"><use href="#st3" transform="scale(.55)"/></svg>Dominada</span>
+          <span><svg viewBox="-9 -9 18 18"><use href="#stc" transform="scale(.7)"/></svg>Enfriándose</span>
+          <span><svg viewBox="-9 -9 18 18"><circle r="6" fill="none" stroke="#F3B64A" stroke-width="1.2"/><circle r="2.6" fill="#FFE2A6"/></svg>En la sesión de hoy</span>
+          <span><svg viewBox="-9 -9 18 18"><use href="#st0"/></svg>Por descubrir</span>
+          <span><svg viewBox="0 0 22 10" style="width:22px"><path d="M1 5h20" stroke="rgba(210,222,255,.5)" stroke-width="1.2"/></svg>Se usa en otra asignatura</span>
+        </div>
+        <div class="insight">
+          <svg class="i"><use href="#i-alert"/></svg>
+          <div><b>Autovalores llega tarde.</b> Preprocesamiento lo usa para PCA en la semana 5, pero Álgebra no lo ve hasta la 7. Atlas te lo adelantará la semana que viene.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actividad -->
+    <section class="card rise" style="--d:.34s" aria-label="Actividad">
+      <div class="card-h">
+        <div>
+          <div class="eyebrow">Últimas 16 semanas</div>
+          <h2>Actividad</h2>
+        </div>
+        <div class="aside">Cada punto es un día · cuanto más brilla, más estudiaste</div>
+      </div>
+      <div class="heat">
+        <div>
+          <svg class="hm" viewBox="0 0 366 206" role="img" aria-label="Mapa de actividad diaria desde el 8 de junio">
+            <text class="hm-d" x="4" y="40">L</text><text class="hm-d" x="4" y="82">X</text><text class="hm-d" x="4" y="124">V</text><text class="hm-d" x="4" y="166">D</text>
+            <text class="hm-m" x="34.5" y="12">jun</text>
+            <circle cx="40.5" cy="36.5" r="1.7" class="hm-l0"><title>08/06 · sin estudio</title></circle>
+            <circle cx="40.5" cy="57.5" r="3.1" class="hm-l1"><title>09/06 · 1,1 h</title></circle>
+            <circle cx="40.5" cy="78.5" r="3.1" class="hm-l1"><title>10/06 · 1,0 h</title></circle>
+            <circle cx="40.5" cy="99.5" r="1.7" class="hm-l0"><title>11/06 · sin estudio</title></circle>
+            <circle cx="40.5" cy="120.5" r="4.2" class="hm-l2"><title>12/06 · 2,1 h</title></circle>
+            <circle cx="40.5" cy="141.5" r="4.2" class="hm-l2"><title>13/06 · 2,2 h</title></circle>
+            <circle cx="40.5" cy="162.5" r="1.7" class="hm-l0"><title>14/06 · sin estudio</title></circle>
+            <circle cx="61.5" cy="36.5" r="1.7" class="hm-l0"><title>15/06 · sin estudio</title></circle>
+            <circle cx="61.5" cy="57.5" r="3.1" class="hm-l1"><title>16/06 · 1,2 h</title></circle>
+            <circle cx="61.5" cy="78.5" r="1.7" class="hm-l0"><title>17/06 · sin estudio</title></circle>
+            <circle cx="61.5" cy="99.5" r="1.7" class="hm-l0"><title>18/06 · sin estudio</title></circle>
+            <circle cx="61.5" cy="120.5" r="4.2" class="hm-l2"><title>19/06 · 1,9 h</title></circle>
+            <circle cx="61.5" cy="141.5" r="1.7" class="hm-l0"><title>20/06 · sin estudio</title></circle>
+            <circle cx="61.5" cy="162.5" r="3.1" class="hm-l1"><title>21/06 · 1,2 h</title></circle>
+            <circle cx="82.5" cy="36.5" r="1.7" class="hm-l0"><title>22/06 · sin estudio</title></circle>
+            <circle cx="82.5" cy="57.5" r="1.7" class="hm-l0"><title>23/06 · sin estudio</title></circle>
+            <circle cx="82.5" cy="78.5" r="1.7" class="hm-l0"><title>24/06 · sin estudio</title></circle>
+            <circle cx="82.5" cy="99.5" r="3.1" class="hm-l1"><title>25/06 · 0,8 h</title></circle>
+            <circle cx="82.5" cy="120.5" r="1.7" class="hm-l0"><title>26/06 · sin estudio</title></circle>
+            <circle cx="82.5" cy="141.5" r="1.7" class="hm-l0"><title>27/06 · sin estudio</title></circle>
+            <circle cx="82.5" cy="162.5" r="1.7" class="hm-l0"><title>28/06 · sin estudio</title></circle>
+            <circle cx="103.5" cy="36.5" r="4.2" class="hm-l2"><title>29/06 · 1,9 h</title></circle>
+            <circle cx="103.5" cy="57.5" r="1.7" class="hm-l0"><title>30/06 · sin estudio</title></circle>
+            <circle cx="103.5" cy="78.5" r="1.7" class="hm-l0"><title>01/07 · sin estudio</title></circle>
+            <circle cx="103.5" cy="99.5" r="4.2" class="hm-l2"><title>02/07 · 2,5 h</title></circle>
+            <circle cx="103.5" cy="120.5" r="1.7" class="hm-l0"><title>03/07 · sin estudio</title></circle>
+            <circle cx="103.5" cy="141.5" r="3.1" class="hm-l1"><title>04/07 · 1,1 h</title></circle>
+            <circle cx="103.5" cy="162.5" r="1.7" class="hm-l0"><title>05/07 · sin estudio</title></circle>
+            <text class="hm-m" x="118.5" y="12">jul</text>
+            <circle cx="124.5" cy="36.5" r="1.7" class="hm-l0"><title>06/07 · sin estudio</title></circle>
+            <circle cx="124.5" cy="57.5" r="4.2" class="hm-l2"><title>07/07 · 2,7 h</title></circle>
+            <circle cx="124.5" cy="78.5" r="5.4" class="hm-l3"><title>08/07 · 3,2 h</title></circle>
+            <circle cx="124.5" cy="99.5" r="1.7" class="hm-l0"><title>09/07 · sin estudio</title></circle>
+            <circle cx="124.5" cy="120.5" r="5.4" class="hm-l3"><title>10/07 · 3,3 h</title></circle>
+            <circle cx="124.5" cy="141.5" r="4.2" class="hm-l2"><title>11/07 · 2,7 h</title></circle>
+            <circle cx="124.5" cy="162.5" r="1.7" class="hm-l0"><title>12/07 · sin estudio</title></circle>
+            <circle cx="145.5" cy="36.5" r="4.2" class="hm-l2"><title>13/07 · 2,1 h</title></circle>
+            <circle cx="145.5" cy="57.5" r="5.4" class="hm-l3"><title>14/07 · 3,3 h</title></circle>
+            <circle cx="145.5" cy="78.5" r="4.2" class="hm-l2"><title>15/07 · 2,7 h</title></circle>
+            <circle cx="145.5" cy="99.5" r="3.1" class="hm-l1"><title>16/07 · 1,4 h</title></circle>
+            <circle cx="145.5" cy="120.5" r="4.2" class="hm-l2"><title>17/07 · 2,6 h</title></circle>
+            <circle cx="145.5" cy="141.5" r="1.7" class="hm-l0"><title>18/07 · sin estudio</title></circle>
+            <circle cx="145.5" cy="162.5" r="4.2" class="hm-l2"><title>19/07 · 1,8 h</title></circle>
+            <circle cx="166.5" cy="36.5" r="1.7" class="hm-l0"><title>20/07 · sin estudio</title></circle>
+            <circle cx="166.5" cy="57.5" r="5.4" class="hm-l3"><title>21/07 · 3,2 h</title></circle>
+            <circle cx="166.5" cy="78.5" r="3.1" class="hm-l1"><title>22/07 · 1,2 h</title></circle>
+            <circle cx="166.5" cy="99.5" r="1.7" class="hm-l0"><title>23/07 · sin estudio</title></circle>
+            <circle cx="166.5" cy="120.5" r="4.2" class="hm-l2"><title>24/07 · 2,3 h</title></circle>
+            <circle cx="166.5" cy="141.5" r="4.2" class="hm-l2"><title>25/07 · 2,8 h</title></circle>
+            <circle cx="166.5" cy="162.5" r="4.2" class="hm-l2"><title>26/07 · 2,2 h</title></circle>
+            <circle cx="187.5" cy="36.5" r="1.7" class="hm-l0"><title>27/07 · sin estudio</title></circle>
+            <circle cx="187.5" cy="57.5" r="1.7" class="hm-l0"><title>28/07 · sin estudio</title></circle>
+            <circle cx="187.5" cy="78.5" r="5.4" class="hm-l3"><title>29/07 · 3,2 h</title></circle>
+            <circle cx="187.5" cy="99.5" r="4.2" class="hm-l2"><title>30/07 · 2,0 h</title></circle>
+            <circle cx="187.5" cy="120.5" r="4.2" class="hm-l2"><title>31/07 · 1,5 h</title></circle>
+            <circle cx="187.5" cy="141.5" r="4.2" class="hm-l2"><title>01/08 · 2,5 h</title></circle>
+            <circle cx="187.5" cy="162.5" r="4.2" class="hm-l2"><title>02/08 · 2,5 h</title></circle>
+            <text class="hm-m" x="202.5" y="12">ago</text>
+            <circle cx="208.5" cy="36.5" r="5.4" class="hm-l3"><title>03/08 · 3,1 h</title></circle>
+            <circle cx="208.5" cy="57.5" r="4.2" class="hm-l2"><title>04/08 · 2,7 h</title></circle>
+            <circle cx="208.5" cy="78.5" r="1.7" class="hm-l0"><title>05/08 · sin estudio</title></circle>
+            <circle cx="208.5" cy="99.5" r="5.4" class="hm-l3"><title>06/08 · 3,1 h</title></circle>
+            <circle cx="208.5" cy="120.5" r="5.4" class="hm-l3"><title>07/08 · 3,5 h</title></circle>
+            <circle cx="208.5" cy="141.5" r="5.4" class="hm-l3"><title>08/08 · 3,1 h</title></circle>
+            <circle cx="208.5" cy="162.5" r="5.4" class="hm-l3"><title>09/08 · 3,2 h</title></circle>
+            <circle cx="229.5" cy="36.5" r="1.7" class="hm-l0"><title>10/08 · sin estudio</title></circle>
+            <circle cx="229.5" cy="57.5" r="1.7" class="hm-l0"><title>11/08 · sin estudio</title></circle>
+            <circle cx="229.5" cy="78.5" r="1.7" class="hm-l0"><title>12/08 · sin estudio</title></circle>
+            <circle cx="229.5" cy="99.5" r="3.1" class="hm-l1"><title>13/08 · 0,8 h</title></circle>
+            <circle cx="229.5" cy="120.5" r="1.7" class="hm-l0"><title>14/08 · sin estudio</title></circle>
+            <circle cx="229.5" cy="141.5" r="1.7" class="hm-l0"><title>15/08 · sin estudio</title></circle>
+            <circle cx="229.5" cy="162.5" r="1.7" class="hm-l0"><title>16/08 · sin estudio</title></circle>
+            <circle cx="250.5" cy="36.5" r="1.7" class="hm-l0"><title>17/08 · sin estudio</title></circle>
+            <circle cx="250.5" cy="57.5" r="5.4" class="hm-l3"><title>18/08 · 3,7 h</title></circle>
+            <circle cx="250.5" cy="78.5" r="5.4" class="hm-l3"><title>19/08 · 3,1 h</title></circle>
+            <circle cx="250.5" cy="99.5" r="4.2" class="hm-l2"><title>20/08 · 2,9 h</title></circle>
+            <circle cx="250.5" cy="120.5" r="1.7" class="hm-l0"><title>21/08 · sin estudio</title></circle>
+            <circle cx="250.5" cy="141.5" r="1.7" class="hm-l0"><title>22/08 · sin estudio</title></circle>
+            <circle cx="250.5" cy="162.5" r="5.4" class="hm-l3"><title>23/08 · 3,0 h</title></circle>
+            <circle cx="271.5" cy="36.5" r="4.2" class="hm-l2"><title>24/08 · 2,9 h</title></circle>
+            <circle cx="271.5" cy="57.5" r="4.2" class="hm-l2"><title>25/08 · 1,7 h</title></circle>
+            <circle cx="271.5" cy="78.5" r="4.2" class="hm-l2"><title>26/08 · 2,2 h</title></circle>
+            <circle cx="271.5" cy="99.5" r="5.4" class="hm-l3"><title>27/08 · 3,3 h</title></circle>
+            <circle cx="271.5" cy="120.5" r="5.4" class="hm-l3"><title>28/08 · 3,4 h</title></circle>
+            <circle cx="271.5" cy="141.5" r="5.4" class="hm-l3"><title>29/08 · 3,6 h</title></circle>
+            <circle cx="271.5" cy="162.5" r="1.7" class="hm-l0"><title>30/08 · sin estudio</title></circle>
+            <circle cx="292.5" cy="36.5" r="4.2" class="hm-l2"><title>31/08 · 2,8 h</title></circle>
+            <circle cx="292.5" cy="57.5" r="5.4" class="hm-l3"><title>01/09 · 3,2 h</title></circle>
+            <circle cx="292.5" cy="78.5" r="5.4" class="hm-l3"><title>02/09 · 3,9 h</title></circle>
+            <circle cx="292.5" cy="99.5" r="5.4" class="hm-l3"><title>03/09 · 3,9 h</title></circle>
+            <circle cx="292.5" cy="120.5" r="6.4" class="hm-l4"><title>04/09 · 4,8 h</title></circle>
+            <circle cx="292.5" cy="141.5" r="5.4" class="hm-l3"><title>05/09 · 4,4 h</title></circle>
+            <circle cx="292.5" cy="162.5" r="1.7" class="hm-l0"><title>06/09 · sin estudio</title></circle>
+            <text class="hm-m" x="307.5" y="12">sep</text>
+            <circle cx="313.5" cy="36.5" r="5.4" class="hm-l3"><title>07/09 · 3,6 h</title></circle>
+            <circle cx="313.5" cy="57.5" r="1.7" class="hm-l0"><title>08/09 · sin estudio</title></circle>
+            <circle cx="313.5" cy="78.5" r="5.4" class="hm-l3"><title>09/09 · 4,1 h</title></circle>
+            <circle cx="313.5" cy="99.5" r="1.7" class="hm-l0"><title>10/09 · sin estudio</title></circle>
+            <circle cx="313.5" cy="120.5" r="5.4" class="hm-l3"><title>11/09 · 4,0 h</title></circle>
+            <circle cx="313.5" cy="141.5" r="5.4" class="hm-l3"><title>12/09 · 4,1 h</title></circle>
+            <circle cx="313.5" cy="162.5" r="6.4" class="hm-l4"><title>13/09 · 4,9 h</title></circle>
+            <circle cx="334.5" cy="36.5" r="6.4" class="hm-l4"><title>14/09 · 4,9 h</title></circle>
+            <circle cx="334.5" cy="57.5" r="6.4" class="hm-l4"><title>15/09 · 4,6 h</title></circle>
+            <circle cx="334.5" cy="78.5" r="5.4" class="hm-l3"><title>16/09 · 4,1 h</title></circle>
+            <circle cx="334.5" cy="99.5" r="6.4" class="hm-l4"><title>17/09 · 4,5 h</title></circle>
+            <circle cx="334.5" cy="120.5" r="5.4" class="hm-l3"><title>18/09 · 4,3 h</title></circle>
+            <use href="#i-moon" x="328.5" y="135.5" width="12" height="12" class="hm-freeze"><title>sáb 19 sep · comodín usado, la racha sigue</title></use>
+            <circle cx="334.5" cy="162.5" r="5.4" class="hm-l3"><title>20/09 · 4,4 h</title></circle>
+            <circle cx="355.5" cy="36.5" r="6.4" class="hm-l4"><title>21/09 · 4,5 h</title></circle>
+            <circle cx="355.5" cy="57.5" r="6.4" class="hm-l4"><title>22/09 · 5,0 h</title></circle>
+            <circle cx="355.5" cy="78.5" r="5.4" class="hm-l3"><title>23/09 · 4,2 h</title></circle>
+            <circle cx="355.5" cy="99.5" r="6.2" class="hm-today"/>
+            <circle cx="355.5" cy="120.5" r="1" class="hm-f"/>
+            <circle cx="355.5" cy="141.5" r="1" class="hm-f"/>
+            <circle cx="355.5" cy="162.5" r="1" class="hm-f"/>
+            <!-- anotaciones -->
+            <path d="M219 178v6h21v-6" fill="none" stroke="rgba(170,188,235,.3)"/>
+            <text class="ann" x="229.5" y="200" text-anchor="middle">vacaciones</text>
+            <path d="M334.5 176v10" stroke="#F3B64A" stroke-opacity=".8"/>
+            <text class="ann" x="366" y="200" text-anchor="end" style="fill:#D9B06A">inicio del curso</text>
+          </svg>
+          <div class="hm-lg">
+            Menos
+            <svg viewBox="0 0 76 14"><circle cx="7" cy="7" r="1.7" fill="#27304D"/><circle cx="22" cy="7" r="3.1" fill="rgba(243,182,74,.32)"/><circle cx="38" cy="7" r="4.2" fill="rgba(243,182,74,.58)"/><circle cx="54" cy="7" r="5.4" fill="rgba(255,205,120,.86)"/><circle cx="69.5" cy="7" r="6.2" fill="#FFE3AA"/></svg>
+            Más
+            <span class="sep"></span>
+            <svg viewBox="0 0 14 14" style="color:var(--frost)"><use href="#i-moon" width="14" height="14"/></svg>
+            Comodín usado
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="v num">13,7<small>h</small></div><div class="k">esta semana · <b>objetivo 25 h</b></div></div>
+          <div class="stat"><div class="v num">4 h 03<small>min</small></div><div class="k">media diaria desde el <b>inicio del curso</b></div></div>
+          <div class="stat"><div class="v num">12<small>días</small></div><div class="k">racha actual · <b>tu récord</b></div></div>
+          <div class="stat"><div class="v num">200<small>h</small></div><div class="k">desde junio · <b>68 días</b> activos</div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═════════ Columna lateral ═════════ -->
+  <aside class="col">
+
+    <!-- Jugador -->
+    <section class="card player rise" style="--d:.06s" aria-label="Tu nivel">
+      <div class="p-head">
+        <svg class="emblem" viewBox="0 0 80 80" aria-hidden="true">
+          <defs>
+            <radialGradient id="em-core"><stop offset="0" stop-color="#FFF8E6"/><stop offset=".3" stop-color="#FFD68A" stop-opacity=".9"/><stop offset=".65" stop-color="#F3B64A" stop-opacity=".25"/><stop offset="1" stop-color="#F3B64A" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="40" cy="40" r="38" fill="#0F1731" stroke="#F3B64A" stroke-opacity=".35"/>
+          <circle cx="40" cy="40" r="33" fill="none" stroke="#F3B64A" stroke-opacity=".3" stroke-width="3" stroke-dasharray=".8 4.38"/>
+          <ellipse cx="40" cy="40" rx="27" ry="7.5" transform="rotate(-20 40 40)" fill="none" stroke="#F3B64A" stroke-opacity=".45" stroke-width="1"/>
+          <ellipse cx="40" cy="40" rx="19" ry="5" transform="rotate(-20 40 40)" fill="none" stroke="#FFD68A" stroke-opacity=".7" stroke-width="1.2"/>
+          <circle cx="40" cy="40" r="17" fill="url(#em-core)"/>
+          <circle cx="40" cy="40" r="4.6" fill="#FFFBF0"/>
+          <circle cx="62" cy="31" r="1.4" fill="#FFE2A6"/>
+        </svg>
+        <div>
+          <div class="rank">Rango · Protoestrella</div>
+          <h3>Nivel 7</h3>
+        </div>
+        <div class="tot">XP total<b>2.460</b></div>
+      </div>
+
+      <div class="xp">
+        <div class="xp-bar" aria-label="360 de 700 XP del nivel 7; la sesión de hoy aporta 360">
+          <div class="g"></div><div class="f"></div><div class="cap">8</div>
+        </div>
+        <div class="xp-l"><span><b>360 / 700</b> XP en este nivel</span><span class="gold">sesión de hoy <b>+360</b></span></div>
+      </div>
+
+      <div class="ladder" aria-label="Rangos">
+        <div class="rk done"><svg viewBox="-11 -11 22 22"><circle r="10.5" fill="#111A33" stroke="#6C7594" stroke-opacity=".6"/><circle cx="-3" cy="-2" r="1.1" fill="#A9B1C9"/><circle cx="2.5" cy="-3.5" r=".8" fill="#A9B1C9"/><circle cx="1" cy="3" r="1" fill="#A9B1C9"/></svg>Polvo<small>1</small></div>
+        <div class="rk done"><svg viewBox="-11 -11 22 22"><circle r="10.5" fill="#111A33" stroke="#6C7594" stroke-opacity=".6"/><ellipse rx="6" ry="3.6" fill="#A9B1C9" opacity=".35"/><ellipse cx="1" rx="3" ry="2" fill="#A9B1C9" opacity=".6"/></svg>Nebulosa<small>3</small></div>
+        <div class="rk now"><svg viewBox="-11 -11 22 22"><circle r="10.5" fill="#111A33"/><ellipse rx="7" ry="2" transform="rotate(-20)" fill="none" stroke="#F3B64A" stroke-width=".9"/><circle r="2.6" fill="#FFE2A6"/></svg>Protoestrella<small>6</small></div>
+        <div class="rk"><svg viewBox="-11 -11 22 22"><circle r="10.5" fill="#111A33" stroke="#454E6C"/><path d="M0-6v12M-6 0h12" stroke="#454E6C" stroke-width=".8"/><circle r="2.4" fill="#454E6C"/></svg>Estrella<small>10</small></div>
+        <div class="rk"><svg viewBox="-11 -11 22 22"><circle r="10.5" fill="#111A33" stroke="#454E6C"/><circle r="5" fill="#454E6C" opacity=".8"/></svg>Gigante<small>16</small></div>
+        <div class="rk"><svg viewBox="-11 -11 22 22"><circle r="10.5" fill="#111A33" stroke="#454E6C"/><path d="M0-7v4M0 3v4M-7 0h4M3 0h4M-5-5l2.6 2.6M2.4 2.4L5 5M5-5L2.4-2.4M-2.4 2.4L-5 5" stroke="#454E6C" stroke-width=".9" stroke-linecap="round"/><circle r="1.6" fill="#454E6C"/></svg>Supernova<small>24</small></div>
+      </div>
+
+      <div class="p-stats">
+        <div>
+          <div class="v"><svg style="color:var(--gold)"><use href="#i-comet"/></svg>12<small>días</small></div>
+          <div class="k">racha · hoy pendiente</div>
+        </div>
+        <div>
+          <div class="v"><svg style="color:var(--frost)"><use href="#i-moon"/></svg>1<small>comodín</small></div>
+          <div class="k">usado el sáb 19 sin perder racha</div>
+        </div>
+        <div>
+          <div class="v"><svg style="fill:var(--gold-hi);stroke:none"><use href="#i-spark"/></svg>126</div>
+          <div class="k">estrellas encendidas</div>
+        </div>
+      </div>
+
+      <div class="week">
+        <div class="days" aria-label="Días activos esta semana">
+          <span class="dd ok">L</span><span class="dd ok">M</span><span class="dd ok">X</span><span class="dd now">J</span><span class="dd">V</span><span class="dd">S</span><span class="dd">D</span>
+        </div>
+        <div class="week-t"><b>3 de 7 días</b>activos esta semana</div>
+      </div>
+
+      <div class="goals">
+        <div class="goals-h"><span class="eyebrow">Objetivos de la semana</span><span>+250 XP y 1 comodín</span></div>
+        <div class="goal"><span>Estudiar 6 días</span><em><b>3</b> / 6</em><span class="tr"><b style="--v:50%"></b></span></div>
+        <div class="goal"><span>25 horas de estudio</span><em><b>13,7</b> / 25 h</em><span class="tr"><b style="--v:54.8%"></b></span></div>
+        <div class="goal"><span>Dominar 8 conceptos</span><em><b>5</b> / 8</em><span class="tr"><b style="--v:62.5%"></b></span></div>
+      </div>
+    </section>
+
+    <!-- Hitos -->
+    <section class="card rise" style="--d:.14s" aria-label="Próximos exámenes y entregas">
+      <div class="card-h">
+        <div>
+          <div class="eyebrow">Cuenta atrás</div>
+          <h2>Próximos hitos</h2>
+        </div>
+        <a class="link" href="#">Calendario <svg class="i" style="width:13px;height:13px"><use href="#i-chev"/></svg></a>
+      </div>
+      <svg class="tl" viewBox="0 0 400 40" aria-hidden="true">
+        <path d="M8 20H392" stroke="rgba(170,188,235,.18)"/>
+        <path d="M8 20H392" stroke="rgba(170,188,235,.35)" stroke-width="6" stroke-dasharray="1 66.2"/>
+        <path d="M71 12v16" stroke="rgba(170,188,235,.28)" stroke-dasharray="2 2"/>
+        <text x="75" y="10">OCT</text>
+        <circle cx="8" cy="20" r="4" fill="#F3B64A"/>
+        <text x="4" y="37">HOY</text>
+        <circle cx="53" cy="20" r="4.2" fill="var(--s-log)"/>
+        <circle cx="89" cy="20" r="4.2" fill="var(--s-fpr)"/>
+        <circle cx="116" cy="20" r="4.2" fill="var(--s-alg)"/>
+        <path d="M215 13.5l6.5 6.5-6.5 6.5-6.5-6.5z" fill="var(--s-cal)"/>
+        <path d="M332 13.5l6.5 6.5-6.5 6.5-6.5-6.5z" fill="var(--s-eda)"/>
+        <text x="215" y="37" text-anchor="middle">17 OCT</text>
+        <text x="332" y="37" text-anchor="middle">30 OCT</text>
+        <text x="392" y="10" text-anchor="end">NOV</text>
+      </svg>
+      <ul class="ex">
+        <li>
+          <div class="cd urg"><b>5</b><small>días</small></div>
+          <div><div class="ex-t">Test del tema 2<span class="k">Test</span></div><div class="ex-s"><i class="dot" style="--c:var(--s-log)"></i>Lógica computacional · mar 29 sep, 10:00</div></div>
+          <div class="prep">58 %<div class="tr"><b style="--v:58%;--c:var(--s-log)"></b></div></div>
+        </li>
+        <li>
+          <div class="cd soon"><b>9</b><small>días</small></div>
+          <div><div class="ex-t">Práctica 1 · Recursividad<span class="k">Entrega</span></div><div class="ex-s"><i class="dot" style="--c:var(--s-fpr)"></i>Programación · sáb 3 oct, 23:59</div></div>
+          <div class="prep">70 %<div class="tr"><b style="--v:70%;--c:var(--s-fpr)"></b></div></div>
+        </li>
+        <li>
+          <div class="cd soon"><b>12</b><small>días</small></div>
+          <div><div class="ex-t">Actividad 1 · Matrices<span class="k">Entrega</span></div><div class="ex-s"><i class="dot" style="--c:var(--s-alg)"></i>Álgebra · mar 6 oct, 23:59</div></div>
+          <div class="prep">45 %<div class="tr"><b style="--v:45%;--c:var(--s-alg)"></b></div></div>
+        </li>
+        <li>
+          <div class="cd"><b>23</b><small>días</small></div>
+          <div><div class="ex-t">Parcial de Cálculo<span class="k">Examen</span></div><div class="ex-s"><i class="dot" style="--c:var(--s-cal)"></i>Cálculo y métodos numéricos · sáb 17 oct, 9:30</div></div>
+          <div class="prep">38 %<div class="tr"><b style="--v:38%;--c:var(--s-cal)"></b></div></div>
+        </li>
+        <li>
+          <div class="cd"><b>36</b><small>días</small></div>
+          <div><div class="ex-t">Parcial de Estructuras<span class="k">Examen</span></div><div class="ex-s"><i class="dot" style="--c:var(--s-eda)"></i>Estructuras de datos · vie 30 oct, 16:00</div></div>
+          <div class="prep">12 %<div class="tr"><b style="--v:12%;--c:var(--s-eda)"></b></div></div>
+        </li>
+      </ul>
+      <div class="ex-foot">
+        <span class="grade">9,6</span>
+        <span>Última nota: <b style="color:var(--text);font-weight:600">Cuestionario 1</b> de IA y conocimiento · 18 sep</span>
+      </div>
+    </section>
+
+    <!-- Asignaturas -->
+    <section class="card rise" style="--d:.22s" aria-label="Estado por asignatura">
+      <div class="card-h">
+        <div>
+          <div class="eyebrow">10 asignaturas</div>
+          <h2>Tus constelaciones</h2>
+        </div>
+        <a class="link" href="#">Asignaturas <svg class="i" style="width:13px;height:13px"><use href="#i-chev"/></svg></a>
+      </div>
+      <div class="subs-h"><span>Asignatura · temas · conceptos vistos</span><span>Dominio</span><span>Frescura</span></div>
+
+      <div class="grp">1.º curso</div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-iac)"></i>IA y conocimiento</div><div class="sub"><span class="temas"><i class="d"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>14 de 84 · 17 %</small></div></div><div class="dom">72 %<div class="tr"><b style="--v:72%"></b></div></div><div class="frs">88 %<div class="tr"><b style="--v:88%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-cal)"></i>Cálculo y métodos numéricos</div><div class="sub"><span class="temas"><i class="d"></i><i class="d"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>19 de 88 · 22 %</small></div></div><div class="dom">78 %<div class="tr"><b style="--v:78%"></b></div></div><div class="frs">84 %<div class="tr"><b style="--v:84%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-log)"></i>Lógica computacional</div><div class="sub"><span class="temas"><i class="d"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>11 de 76 · 14 %</small></div></div><div class="dom">55 %<div class="tr"><b style="--v:55%"></b></div></div><div class="frs">71 %<div class="tr"><b style="--v:71%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-alg)"></i>Álgebra y matemática discreta</div><div class="sub"><span class="temas"><i class="f"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>16 de 92 · 17 %</small></div></div><div class="dom">63 %<div class="tr"><b style="--v:63%"></b></div></div><div class="frs cool">52 %<div class="tr"><b style="--v:52%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-fpr)"></i>Fundamentos de programación</div><div class="sub"><span class="temas"><i class="d"></i><i class="d"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>22 de 80 · 28 %</small></div></div><div class="dom">84 %<div class="tr"><b style="--v:84%"></b></div></div><div class="frs">93 %<div class="tr"><b style="--v:93%"></b></div></div></div>
+
+      <div class="grp">2.º curso</div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-alc)"></i>Algoritmia y complejidad</div><div class="sub"><span class="temas"><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>7 de 78 · 9 %</small></div></div><div class="dom">61 %<div class="tr"><b style="--v:61%"></b></div></div><div class="frs">90 %<div class="tr"><b style="--v:90%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-eda)"></i>Estructuras de datos</div><div class="sub"><span class="temas"><i class="d"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>10 de 82 · 12 %</small></div></div><div class="dom">66 %<div class="tr"><b style="--v:66%"></b></div></div><div class="frs">86 %<div class="tr"><b style="--v:86%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-tc)"></i>Teoría de la computación</div><div class="sub"><span class="temas"><i class="f"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>8 de 70 · 11 %</small></div></div><div class="dom">49 %<div class="tr"><b style="--v:49%"></b></div></div><div class="frs">69 %<div class="tr"><b style="--v:69%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-moe)"></i>Métodos operativos y estadísticos</div><div class="sub"><span class="temas"><i class="f"></i><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>12 de 86 · 14 %</small></div></div><div class="dom">64 %<div class="tr"><b style="--v:64%"></b></div></div><div class="frs cool">47 %<div class="tr"><b style="--v:47%"></b></div></div></div>
+      <div class="sb"><div class="sb-n"><div class="nm"><i class="dot" style="--c:var(--s-pmd)"></i>Preprocesamiento y modelos de datos</div><div class="sub"><span class="temas"><i class="p"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><small>7 de 74 · 9 %</small></div></div><div class="dom">43 %<div class="tr"><b style="--v:43%"></b></div></div><div class="frs">91 %<div class="tr"><b style="--v:91%"></b></div></div></div>
+
+      <div class="subs-lg">
+        <span class="temas"><i class="d"></i></span><span>Tema dominado</span>
+        <span class="temas"><i class="p"></i></span><span>En curso</span>
+        <span class="temas"><i class="f"></i></span><span>Enfriándose</span>
+        <span class="temas"><i></i></span><span>Sin empezar</span>
+      </div>
+    </section>
+
+    <!-- Logros -->
+    <section class="card rise" style="--d:.3s" aria-label="Logros">
+      <div class="card-h">
+        <div>
+          <div class="eyebrow">12 de 48 conseguidos</div>
+          <h2>Logros</h2>
+        </div>
+        <a class="link" href="#">Todos <svg class="i" style="width:13px;height:13px"><use href="#i-chev"/></svg></a>
+      </div>
+
+      <div class="next">
+        <svg class="medal" viewBox="-40 -40 80 80" aria-hidden="true">
+          <circle r="37" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="3"/>
+          <circle r="37" fill="none" stroke="#F3B64A" stroke-width="3" stroke-linecap="round" stroke-dasharray="155 232.5" transform="rotate(-90)" style="filter:drop-shadow(0 0 5px rgba(243,182,74,.7))"/>
+          <circle r="30" fill="#131C38" stroke="#F3B64A" stroke-opacity=".35"/>
+          <circle r="25" fill="none" stroke="#F3B64A" stroke-opacity=".2" stroke-dasharray="1 3"/>
+          <path d="M-15 7C-10 -9 10 -9 15 7" fill="none" stroke="#FFD68A" stroke-width="1.5"/>
+          <path d="M-18 7H18" stroke="#FFD68A" stroke-opacity=".5" stroke-width="1"/>
+          <circle cx="-15" cy="7" r="3" fill="#FFE2A6"/>
+          <circle cx="0" cy="-5" r="3" fill="#FFE2A6"/>
+          <circle cx="15" cy="7" r="3" fill="none" stroke="#FFD68A" stroke-width="1.2" stroke-dasharray="1.5 1.5"/>
+        </svg>
+        <div>
+          <div class="eyebrow">Próximo logro · +150 XP</div>
+          <h4>Puente</h4>
+          <p>Domina un concepto que se usa en 3 asignaturas. <b>Matrices</b> está en dominio 2 de 3: un repaso correcto hoy (n.º 3 de tu cola) lo completa.</p>
+          <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+        </div>
+      </div>
+
+      <div class="recent">
+        <div class="rc">
+          <svg viewBox="-26 -26 52 52" aria-hidden="true">
+            <circle r="24" fill="#131C38" stroke="#F3B64A" stroke-opacity=".55"/>
+            <circle r="19.5" fill="none" stroke="#F3B64A" stroke-opacity=".25" stroke-width="2.4" stroke-dasharray=".7 9.5"/>
+            <path d="M6 -9A10 10 0 1 0 8 6A7.5 7.5 0 0 1 6 -9z" fill="#FFD68A" opacity=".9"/>
+            <circle cx="10" cy="-8" r="1.1" fill="#FFE2A6"/><circle cx="13" cy="-2" r=".8" fill="#FFE2A6"/>
+          </svg>
+          <b>Doce noches</b><small>12 días seguidos</small><em>AYER</em>
+        </div>
+        <div class="rc">
+          <svg viewBox="-26 -26 52 52" aria-hidden="true">
+            <circle r="24" fill="#131C38" stroke="#F3B64A" stroke-opacity=".55"/>
+            <path d="M-11 6L-4 -6L5 -2L11 -10" fill="none" stroke="#FFD68A" stroke-opacity=".6" stroke-width="1"/>
+            <path d="M5 -2L8 9" fill="none" stroke="#FFD68A" stroke-opacity=".6" stroke-width="1"/>
+            <circle cx="-11" cy="6" r="2" fill="#FFE2A6"/><circle cx="-4" cy="-6" r="2.4" fill="#FFF3D6"/><circle cx="5" cy="-2" r="2" fill="#FFE2A6"/><circle cx="11" cy="-10" r="1.6" fill="#FFE2A6"/><circle cx="8" cy="9" r="1.6" fill="#FFE2A6"/>
+          </svg>
+          <b>Primera constelación</b><small>Tema 1 de Programación</small><em>21 SEP</em>
+        </div>
+        <div class="rc">
+          <svg viewBox="-26 -26 52 52" aria-hidden="true">
+            <circle r="24" fill="#131C38" stroke="#F3B64A" stroke-opacity=".55"/>
+            <path d="M-14 8H14" stroke="#FFD68A" stroke-opacity=".45"/>
+            <path d="M0 -12l2 7 7 2-7 2-2 7-2-7-7-2 7-2z" fill="#FFE2A6"/>
+            <circle r="9" fill="none" stroke="#FFD68A" stroke-opacity=".25"/>
+          </svg>
+          <b>Primera luz</b><small>tu primer concepto dominado</small><em>15 SEP</em>
+        </div>
+      </div>
+      <div class="ach-foot"><span>Cartógrafo · enciende 150 estrellas</span><span class="tr"><b style="width:84%"></b></span><span class="mono" style="font-size:11.5px;color:var(--text-2)">126 / 150</span></div>
+    </section>
+  </aside>
+</main>
+</body>
+</html>

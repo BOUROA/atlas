@@ -1,0 +1,92 @@
+{
+  "subjectId": "probabilidad",
+  "trials": [
+    {
+      "id": "probabilidad.control.t1",
+      "kind": "control",
+      "level": 2,
+      "title": "Control · Sucesos y probabilidad",
+      "unitIds": ["probabilidad.t1"],
+      "durationMin": 30,
+      "rules": "Sin calculadora. Da los resultados como fracción irreducible o como decimal exacto. Justifica cada paso: un resultado sin justificar no puntúa.",
+      "problems": [
+        {
+          "n": "1",
+          "points": 5,
+          "difficulty": 1,
+          "concepts": ["prob.sample_space", "prob.laplace"],
+          "statement": "Se lanzan dos dados equilibrados de seis caras.\n\na) Calcula la probabilidad de que la suma sea $7$.\n\nb) Calcula la probabilidad de sacar al menos un seis.",
+          "solution": "El espacio muestral son los pares ordenados $(i,j)$ con $i,j\\in\\{1,\\dots,6\\}$: $36$ resultados equiprobables, así que se aplica la regla de Laplace.\n\n**a)** Los pares que suman $7$ son $(1,6),(2,5),(3,4),(4,3),(5,2),(6,1)$: $6$ casos favorables. $P=\\frac{6}{36}=\\frac{1}{6}$.\n\n**b)** Es más cómodo pasar al complementario, «ningún seis»: cada dado tiene $5$ resultados sin seis, luego hay $5\\cdot 5=25$ casos. $P(\\text{al menos un seis})=1-\\frac{25}{36}=\\frac{11}{36}$.",
+          "rubric": [
+            { "text": "Describe el espacio muestral como $36$ pares ordenados equiprobables", "points": 1 },
+            { "text": "a) Cuenta los $6$ casos favorables y obtiene $\\frac{1}{6}$", "points": 2 },
+            { "text": "b) Usa el complementario (o cuenta bien los $11$ casos) y obtiene $\\frac{11}{36}$", "points": 2 }
+          ],
+          "pitfalls": [
+            "Tomar como espacio muestral las sumas $2,\\dots,12$, que no son equiprobables",
+            "Contar $(6,6)$ dos veces en el apartado b) y obtener $\\frac{12}{36}$"
+          ]
+        },
+        {
+          "n": "2",
+          "points": 5,
+          "difficulty": 2,
+          "concepts": ["prob.axioms"],
+          "statement": "Sean $A$ y $B$ sucesos con $P(A)=0{,}5$, $P(B)=0{,}4$ y $P(A\\cap B)=0{,}2$.\n\na) Calcula $P(A\\cup B)$.\n\nb) Calcula la probabilidad de que no ocurra ninguno de los dos.\n\nc) ¿Son $A$ y $B$ incompatibles? Razónalo.",
+          "solution": "**a)** Por la fórmula de la unión, que se deduce de los axiomas: $P(A\\cup B)=P(A)+P(B)-P(A\\cap B)=0{,}5+0{,}4-0{,}2=0{,}7$.\n\n**b)** «Ninguno de los dos» es $\\overline{A}\\cap\\overline{B}=\\overline{A\\cup B}$ (De Morgan), así que $P=1-P(A\\cup B)=1-0{,}7=0{,}3$.\n\n**c)** No. Incompatibles significa $A\\cap B=\\varnothing$, lo que obligaría a $P(A\\cap B)=0$, y aquí vale $0{,}2$.",
+          "rubric": [
+            { "text": "a) Aplica la fórmula de la unión restando la intersección: $0{,}7$", "points": 2 },
+            { "text": "b) Identifica el suceso como el complementario de la unión: $0{,}3$", "points": 2 },
+            { "text": "c) Concluye que no son incompatibles porque $P(A\\cap B)\\neq 0$", "points": 1 }
+          ],
+          "pitfalls": [
+            "Sumar $P(A)+P(B)=0{,}9$ sin restar la intersección",
+            "Confundir incompatibles con independientes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "probabilidad.control.t2",
+      "kind": "control",
+      "level": 2,
+      "title": "Control · Probabilidad condicionada",
+      "unitIds": ["probabilidad.t2"],
+      "durationMin": 30,
+      "rules": "Sin calculadora; puedes dejar las operaciones indicadas si el resultado final queda claro. Justifica cada paso: un resultado sin justificar no puntúa.",
+      "problems": [
+        {
+          "n": "1",
+          "points": 4,
+          "difficulty": 1,
+          "concepts": ["prob.conditional"],
+          "statement": "Con $P(A)=0{,}5$, $P(B)=0{,}4$ y $P(A\\cap B)=0{,}2$, calcula $P(A\\mid B)$ y $P(B\\mid A)$.",
+          "solution": "Por definición, $P(A\\mid B)=\\frac{P(A\\cap B)}{P(B)}=\\frac{0{,}2}{0{,}4}=0{,}5$ y $P(B\\mid A)=\\frac{P(A\\cap B)}{P(A)}=\\frac{0{,}2}{0{,}5}=0{,}4$. Las dos condicionadas son distintas: condicionar no es simétrico.",
+          "rubric": [
+            { "text": "Calcula $P(A\\mid B)=0{,}5$ con la definición", "points": 2 },
+            { "text": "Calcula $P(B\\mid A)=0{,}4$ con la definición", "points": 2 }
+          ],
+          "pitfalls": ["Dividir entre $P(A)$ para calcular $P(A\\mid B)$"]
+        },
+        {
+          "n": "2",
+          "points": 6,
+          "difficulty": 3,
+          "concepts": ["prob.total", "prob.bayes"],
+          "statement": "Una enfermedad afecta al $1\\,\\%$ de la población. Una prueba da positivo en el $95\\,\\%$ de los enfermos y en el $10\\,\\%$ de los sanos.\n\na) ¿Qué probabilidad hay de que la prueba dé positivo en una persona elegida al azar?\n\nb) Si una persona da positivo, ¿qué probabilidad hay de que esté enferma?",
+          "solution": "Sea $E$ «estar enfermo» y $+$ «dar positivo». Datos: $P(E)=0{,}01$, $P(+\\mid E)=0{,}95$, $P(+\\mid\\overline{E})=0{,}10$.\n\n**a)** $E$ y $\\overline{E}$ forman una partición, así que por la probabilidad total $$P(+)=P(+\\mid E)P(E)+P(+\\mid\\overline{E})P(\\overline{E})=0{,}95\\cdot0{,}01+0{,}10\\cdot0{,}99=0{,}0095+0{,}099=0{,}1085.$$\n\n**b)** Por Bayes, $$P(E\\mid +)=\\frac{P(+\\mid E)P(E)}{P(+)}=\\frac{0{,}0095}{0{,}1085}=\\frac{19}{217}\\approx 0{,}088.$$ Solo un $8{,}8\\,\\%$: como la enfermedad es rara, la mayoría de los positivos vienen de los muchos sanos que dan falso positivo.",
+          "rubric": [
+            { "text": "Nombra los sucesos y traduce bien los tres datos, incluida $P(\\overline{E})=0{,}99$", "points": 1 },
+            { "text": "a) Aplica la probabilidad total sobre la partición $E,\\overline{E}$: $0{,}1085$", "points": 2 },
+            { "text": "b) Aplica Bayes con el denominador de a): $\\approx 0{,}088$", "points": 2 },
+            { "text": "Interpreta por qué el resultado es tan bajo (prevalencia pequeña)", "points": 1 }
+          ],
+          "pitfalls": [
+            "Responder $0{,}95$ en b), confundiendo $P(E\\mid +)$ con $P(+\\mid E)$",
+            "Olvidar el término de los sanos en la probabilidad total"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "atlas",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vite --port 5173 --strictPort",
+    "build": "tsc --noEmit && vite build",
+    "start": "node server/serve.mjs",
+    "mobile": "node server/serve.mjs --mobile",
+    "test": "node --import tsx --test \"tests/**/*.test.ts\"",
+    "check": "tsc --noEmit",
+    "validate": "node scripts/validate-content.cjs content"
+  },
+  "dependencies": {
+    "@fontsource-variable/hanken-grotesk": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/dm-mono": "^5.3.0",
+    "cmdk": "^1.1.1",
+    "d3-selection": "^3.0.0",
+    "d3-zoom": "^3.0.0",
+    "katex": "^0.16.47",
+    "lucide-react": "^1.48.0",
+    "motion": "^12.43.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "ts-fsrs": "^5.4.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/d3-selection": "^3.0.12",
+    "@types/d3-zoom": "^3.0.8",
+    "@types/katex": "^0.16.8",
+    "@types/node": "^22.20.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "5.9",
+    "vite": "^8.3.0"
+  }
+}

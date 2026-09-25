@@ -1,0 +1,99 @@
+/* Atlas v2 · Progreso. Solo tokens de src/styles/tokens.css. */
+@layer components {
+  .progress-page { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  /* Un hijo de un flex column puede forzar la columna a ensancharse si no
+     puede encogerse por debajo de su contenido (mínimo automático). */
+  .progress-page > * { min-width: 0; }
+  .progress-page .ui-section-action { min-width: 0; flex-wrap: wrap; }
+  .progress-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
+  .progress-row > * { min-width: 0; }
+  @media (min-width: 1000px) {
+    .progress-row { grid-template-columns: 1fr 1fr; }
+  }
+  .progress-link { display: inline-flex; align-items: center; gap: 6px; color: var(--gold-fg); font-size: 13px; font-weight: 600; }
+  .progress-link:hover { color: var(--text); }
+
+  /* ───────── Nivel y rango ───────── */
+  .progress-rank-head { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .progress-rank-emblem {
+    display: grid; place-items: center; width: 84px; height: 84px; flex: none; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--ink-3), var(--ink-1));
+    box-shadow: inset 0 0 0 1px var(--gold-line), 0 0 28px -8px color-mix(in oklab, var(--gold) calc(60% * var(--glow)), transparent);
+  }
+  .progress-rank-id { min-width: 0; }
+  .progress-rank-level { margin-top: 4px; font-size: 44px; }
+  .progress-rank-tot { margin-left: auto; text-align: right; font-size: 12px; color: var(--text-3); }
+  .progress-rank-tot b { display: block; margin-top: 3px; font-family: var(--mono); font-size: 20px; color: var(--text); }
+  .progress-rank-xp { margin-top: 22px; }
+  .progress-rank-xp-l { margin-top: 8px; font-size: 12.5px; color: var(--text-3); }
+  .progress-rank-xp-l b { color: var(--text); font-weight: 600; }
+  .progress-ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px 8px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+  @media (min-width: 900px) {
+    .progress-ladder { grid-template-columns: repeat(10, 1fr); }
+  }
+  .progress-rk { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-size: 11px; color: var(--text-4); }
+  .progress-rk.is-done { color: var(--text-3); }
+  .progress-rk.is-now { color: var(--gold-fg); font-weight: 600; }
+  .progress-rk small { font-family: var(--mono); font-size: 9.5px; color: var(--text-4); }
+
+  /* ───────── Logros ───────── */
+  .progress-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 10px; }
+  .progress-badges-note { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--text-3); }
+
+  /* ───────── Constancia ───────── */
+  .progress-heat { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-items: center; }
+  @media (min-width: 640px) {
+    .progress-heat { grid-template-columns: auto minmax(0, 1fr); }
+  }
+  .progress-heat-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .progress-stat-v { font-family: var(--serif); font-weight: 600; font-size: 26px; line-height: 1; color: var(--text); }
+  .progress-stat-v small { font-family: var(--sans); font-size: 12.5px; font-weight: 500; color: var(--text-2); margin-left: 3px; }
+  .progress-stat-k { margin-top: 5px; font-size: 12px; color: var(--text-3); }
+
+  /* ───────── Evolución por asignatura ───────── */
+  .progress-evo { width: 100%; height: auto; display: block; overflow: visible; }
+  .progress-evo-grid line { stroke: var(--line); stroke-width: 1; }
+  .progress-evo path { stroke-width: 2; stroke-linejoin: round; }
+  .progress-evo-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--text-2); }
+  .progress-evo-legend li { display: inline-flex; align-items: center; gap: 7px; }
+  .progress-evo-legend i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .progress-evo-legend em { font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+
+  /* ───────── Preparación por evaluación ───────── */
+  .progress-readiness { list-style: none; }
+  .progress-readiness li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .progress-readiness li:first-child { border-top: 0; }
+  .progress-readiness-t { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .progress-readiness-t span { font-family: var(--mono); font-size: 9px; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+  .progress-readiness-s { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 11.5px; color: var(--text-3); }
+  .progress-readiness-cov { font-family: var(--mono); font-size: 11.5px; color: var(--text-3); text-align: right; white-space: nowrap; }
+  .progress-readiness-cov b { color: var(--text-2); font-weight: 500; }
+
+  /* ───────── Calibración ───────── */
+  .progress-calib { display: grid; gap: 12px; }
+  .progress-calib-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) 52px 80px; align-items: center; gap: 12px; font-size: 13px; color: var(--text-2); }
+  .progress-calib-track { height: 8px; border-radius: 4px; background: var(--track); overflow: hidden; }
+  .progress-calib-track b { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); }
+  .progress-calib-pct { text-align: right; color: var(--text); }
+  .progress-calib-n { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+  .progress-calib-phrase { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--text-2); }
+  .progress-calib-phrase em { color: var(--gold-fg); font-style: italic; }
+  @media (max-width: 480px) {
+    .progress-calib-row { grid-template-columns: 52px minmax(0, 1fr) 44px; }
+    .progress-calib-n { display: none; }
+  }
+
+  /* ───────── Bitácora de misiones ───────── */
+  .progress-missions { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+  .progress-mission { display: block; }
+
+  /* ───────── Galería de estrellas guía ───────── */
+  .progress-guides { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 18px; }
+  .progress-guide { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; padding: 10px 6px; border-radius: 14px; transition: background var(--dur); }
+  .progress-guide:hover, .progress-guide:focus-visible { background: var(--hover); }
+  .progress-guide-medal { display: inline-flex; }
+  .progress-guide-medal.is-golden .ui-ring-arc { filter: drop-shadow(0 0 6px color-mix(in oklab, var(--gold) calc(60% * var(--glow)), transparent)); }
+  .progress-guide-mono { font-family: var(--serif); font-weight: 600; font-size: 17px; color: var(--text); }
+  .progress-guide b { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .progress-guide small { font-family: var(--mono); font-size: 10.5px; color: var(--text-3); }
+}

@@ -1,0 +1,747 @@
+/*
+ * Atlas v2 · Misiones y estrellas guía (src/features/missions). Prefijo missions-.
+ * Solo variables de src/styles/tokens.css.
+ */
+
+/* ───────── Lista de misiones ───────── */
+.missions-groups { display: flex; flex-direction: column; gap: 26px; }
+.missions-group-label { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; }
+.missions-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+.missions-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: var(--r-card);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.missions-card:hover { border-color: var(--line-2); background: var(--hover); }
+.missions-card-link { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.missions-card-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.missions-card-body { flex: 1 1 auto; min-width: 0; }
+.missions-card-body h3 { font-family: var(--serif); font-size: var(--fs-16); font-weight: 600; color: var(--text); margin: 3px 0 2px; }
+.missions-card-meta { font-size: 12.5px; }
+.missions-card-stats { display: flex; align-items: center; gap: 18px; flex: none; }
+.missions-card-ready { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; }
+.missions-card-grade { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.missions-card-grade b { font-family: var(--serif); font-size: var(--fs-22); color: var(--text); }
+.missions-card-grade.is-passed b { color: var(--gold-fg); }
+.missions-card-chev { position: relative; z-index: 0; width: 18px; height: 18px; color: var(--text-3); flex: none; }
+
+/* ───────── Galería de estrellas guía ───────── */
+.missions-guides { display: flex; flex-direction: column; gap: 28px; }
+.missions-guide-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+.missions-guide-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 18px 14px;
+  border-radius: var(--r-card);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.missions-guide-tile:hover { border-color: var(--line-2); background: var(--hover); }
+.missions-guide-body { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.missions-guide-body h3 { font-family: var(--serif); font-size: var(--fs-16); font-weight: 600; color: var(--text); margin: 0; }
+.missions-guide-body p { font-size: 12px; min-height: 2.4em; }
+
+/* ───────── Cabecera de misión ───────── */
+.missions-detail-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 14px; flex-wrap: wrap; }
+.missions-detail-titles { flex: 1 1 320px; min-width: 0; }
+.missions-detail-titles h1 { font-family: var(--serif); font-size: var(--fs-28); font-weight: 600; color: var(--text); margin: 4px 0 6px; }
+.missions-detail-meta { font-size: 13px; }
+.missions-detail-ready { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; }
+.missions-why { max-width: 68ch; color: var(--text-2); font-size: var(--fs-16); margin: 0 0 22px; }
+
+/* ───────── Territorio ───────── */
+.missions-territory { list-style: none; margin: 0 0 14px; padding: 0; columns: 2; column-gap: 20px; }
+@media (max-width: 767px) { .missions-territory { columns: 1; } }
+.missions-territory li { break-inside: avoid; }
+.missions-territory-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 4px;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  text-align: left;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+.missions-territory-row:hover { background: var(--hover); }
+.missions-territory-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.missions-territory li.is-missing .missions-territory-row { color: var(--text-2); }
+.missions-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-style: normal;
+  color: var(--ember-fg);
+  border: 1px solid var(--ember-line);
+  background: var(--ember-soft);
+  border-radius: var(--r-chip);
+  padding: 1px 6px;
+  flex: none;
+}
+
+/* ───────── Problemas ───────── */
+.missions-problems { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; counter-reset: none; }
+.missions-problem { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-ctl); background: var(--well); display: flex; flex-direction: column; gap: 10px; }
+.missions-problem-head { display: flex; align-items: baseline; gap: 10px; }
+.missions-problem-head p { flex: 1 1 auto; margin: 0; color: var(--text); font-size: 13.5px; }
+.missions-problem-n { color: var(--gold-fg); flex: none; }
+.missions-problem-concepts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+
+.missions-chip {
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-pill);
+  padding: 4px 11px;
+  font-size: 12px;
+  color: var(--text-2);
+  background: var(--surface);
+}
+.missions-chip:hover { color: var(--text); border-color: var(--gold-line); background: var(--gold-soft); }
+
+/* ───────── Licencia ───────── */
+.missions-links { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 8px; }
+.missions-samedoc { max-width: 56ch; font-style: italic; }
+
+/* ───────── Cronómetro y corrección ───────── */
+.missions-timer { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.missions-timer-clock { font-family: var(--serif); font-size: var(--fs-56); font-weight: 600; color: var(--gold-fg); line-height: 1; }
+.missions-timer-actions { display: flex; gap: 10px; margin-top: 10px; }
+
+/* ───────── Resumen ───────── */
+.missions-summary { display: flex; gap: 20px; align-items: flex-start; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.missions-summary-body { flex: 1 1 260px; min-width: 0; }
+.missions-summary-grade { font-family: var(--serif); font-size: var(--fs-22); color: var(--text); margin: 0 0 6px; }
+.missions-reinforced { margin-top: 10px; }
+.missions-reinforced ul { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+
+.missions-history { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.missions-history li { display: flex; align-items: center; gap: 14px; padding: 8px 4px; border-top: 1px solid var(--line); font-size: 13px; color: var(--text-2); }
+.missions-history li:first-child { border-top: 0; }
+.missions-history b { font-family: var(--serif); font-size: var(--fs-16); color: var(--text); }
+.missions-history li.is-passed b { color: var(--gold-fg); }
+
+/* ───────── Estrella guía: detalle ───────── */
+.missions-guide-head { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; flex-wrap: wrap; }
+.missions-guide-head h1 { font-family: var(--serif); font-size: var(--fs-28); font-weight: 600; color: var(--text); margin: 4px 0; }
+.missions-guide-tagline { color: var(--text-2); font-size: var(--fs-16); max-width: 60ch; }
+.missions-guide-story { max-width: 74ch; margin-bottom: 26px; color: var(--text-2); }
+.missions-guide-section { margin-bottom: 28px; }
+.missions-guide-section h2 { font-family: var(--serif); font-size: var(--fs-22); font-weight: 600; color: var(--text); margin: 0 0 14px; }
+
+.missions-milestones { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.missions-milestones li { display: grid; grid-template-columns: 64px 60px 1fr; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--line); }
+.missions-milestones li:first-child { border-top: 0; }
+.missions-milestone-year { color: var(--gold-fg); font-family: var(--serif); font-size: var(--fs-18); }
+.missions-milestone-age { font-size: 12px; }
+.missions-milestones p { margin: 0; color: var(--text-2); font-size: 13.5px; }
+
+.missions-stamps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 20px; }
+
+.missions-route { list-style: none; margin: 14px 0; padding: 0; columns: 2; column-gap: 20px; }
+@media (max-width: 767px) { .missions-route { columns: 1; } }
+.missions-route li { break-inside: avoid; }
+
+.missions-lesson-card {
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-card);
+  background: var(--well);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.missions-lesson-title { font-size: var(--fs-18); color: var(--text); margin: 0; }
+
+.missions-sources { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.missions-sources a { color: var(--frost-fg); font-size: 13px; text-decoration: underline; text-underline-offset: 2px; }
+.missions-sources a:hover { color: var(--text); }
+
+/* ═════════════════════════════════════════════════════════════════════
+ * Rumbo (Principales) · Bitácora (Agenda) y Trayectorias (Carta)
+ * ═════════════════════════════════════════════════════════════════════ */
+
+.rumbo-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.rumbo-page > .ui-tabs { margin-bottom: 20px; }
+
+/* ───────── Cabecera (hola) ───────── */
+.rumbo-hello { padding: 2px 2px 22px; }
+.rumbo-eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.rumbo-eyebrow-week { display: inline-flex; align-items: center; gap: 12px; }
+.rumbo-eyebrow-week::before { content: ""; width: 28px; height: 1px; background: var(--line-2); }
+.rumbo-h1 {
+  margin-top: 12px; font-family: var(--serif); font-weight: 500; font-size: var(--fs-40); line-height: 1.06;
+  letter-spacing: -.005em; color: var(--text);
+}
+.rumbo-h1 em { display: block; font-style: italic; font-weight: 500; font-size: 30px; line-height: 1.12; color: var(--text-2); margin-top: 4px; }
+.rumbo-gold-word { color: var(--gold-fg); }
+.rumbo-late-word { color: var(--ember-fg); }
+.rumbo-ok-word { color: var(--text-2); }
+.rumbo-summary { margin-top: 14px; max-width: 780px; font-size: 15px; color: var(--text-2); }
+.rumbo-summary b { color: var(--text); font-weight: 600; }
+.rumbo-summary--frost { margin-top: 8px; color: var(--frost-fg); }
+.rumbo-summary--frost b { color: var(--frost-fg); }
+
+/* ───────── Cifras de la cabecera (esta semana · atrasados · al día) ───────── */
+.rumbo-hello-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.rumbo-stat {
+  display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 13px 0 11px;
+  border-radius: var(--r-ctl); background: var(--hover); box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 12.5px; color: var(--text-3); white-space: nowrap;
+}
+.rumbo-stat svg { color: var(--text-3); flex: none; }
+.rumbo-stat b { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--text); }
+.rumbo-stat.is-ember { color: var(--ember-fg); }
+.rumbo-stat.is-ember svg, .rumbo-stat.is-ember b { color: var(--ember-fg); }
+@media (max-width: 767px) {
+  .rumbo-eyebrow-week::before { display: none; }
+  .rumbo-h1 { font-size: 32px; }
+  .rumbo-h1 em { font-size: 21px; }
+  .rumbo-summary { font-size: 14.5px; }
+}
+
+/* ───────── Aviso de plantilla ───────── */
+.rumbo-tpl {
+  display: flex; align-items: center; gap: 10px 12px; margin-bottom: 20px; padding: 10px 12px 10px 14px;
+  border-radius: var(--r-ctl); background: var(--frost-soft); box-shadow: inset 0 0 0 1px var(--frost-line);
+  font-size: 13px; color: var(--text-2); flex-wrap: wrap;
+}
+.rumbo-tpl > p { flex: 1 1 360px; min-width: 0; }
+.rumbo-tpl-icon { width: 16px; height: 16px; color: var(--frost); flex: none; }
+.rumbo-tpl b { color: var(--frost-fg); font-weight: 600; }
+.rumbo-tpl-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+@media (max-width: 560px) { .rumbo-tpl-actions { margin-left: 0; width: 100%; } }
+.rumbo-tpl-slim { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.rumbo-tpl-slim .rumbo-tag { cursor: default; }
+
+/* ───────── Interruptor Agenda · Carta ───────── */
+.rumbo-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 18px; flex-wrap: wrap; }
+.rumbo-toggle-hint { font-size: 12.5px; }
+.rumbo-toggle-hint b { color: var(--text-2); font-weight: 600; }
+
+/* ───────── Rejilla de dos columnas ───────── */
+.rumbo-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-items: start; }
+.rumbo-col-main, .rumbo-col-aside { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.rumbo-col-main > *, .rumbo-col-aside > * { min-width: 0; }
+@media (min-width: 1180px) {
+  .rumbo-grid { grid-template-columns: minmax(0, 1fr) 400px; gap: 26px; }
+}
+.rumbo-aside-card h2 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-22); color: var(--text); margin: 3px 0 12px; }
+.rumbo-aside-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 3px 0 10px; }
+.rumbo-aside-head h2 { margin: 0; }
+.rumbo-aside-meta { flex: 1 1 auto; text-align: right; font-size: 12px; }
+.rumbo-aside-meta b { color: var(--text); font-weight: 600; }
+
+/* ───────── Tarjeta fija de atrasados ───────── */
+.rumbo-pin {
+  border-radius: var(--r-ctl); padding: 14px 18px 16px; margin-bottom: 20px;
+  background: linear-gradient(160deg, var(--ember-soft), transparent 70%), var(--well);
+  box-shadow: inset 0 0 0 1px var(--ember-line);
+}
+.rumbo-pin-eyebrow { color: var(--ember-fg); margin-bottom: 10px; }
+.rumbo-pin-more, .rumbo-pin-less { margin-top: 12px; }
+.rumbo-pin-less { margin-left: 12px; }
+.rumbo-pin-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.rumbo-pin-item:not(:first-child) { padding-top: 14px; border-top: 1px dashed var(--ember-line); }
+.rumbo-pin-item { display: grid; grid-template-columns: 34px minmax(0, 1fr) 220px; gap: 14px; align-items: start; }
+.rumbo-pin-main { min-width: 0; }
+.rumbo-pin-title { font-family: var(--serif); font-weight: 600; font-size: var(--fs-22); line-height: 1.1; margin: 4px 0; color: var(--text); }
+.rumbo-pin-item:not(:first-child) .rumbo-pin-title { font-size: 19px; }
+.rumbo-pin-desc { font-size: 13px; margin: 0; }
+.rumbo-pin-desc b { color: var(--text); }
+.rumbo-pin-cta { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.rumbo-pin-cta .ui-btn--quiet { align-self: center; }
+@media (max-width: 767px) { .rumbo-pin-item { grid-template-columns: 30px minmax(0, 1fr); } .rumbo-pin-cta { grid-column: 1 / -1; } }
+
+/* ───────── Cabeceras de grupo (días/semanas) ───────── */
+.rumbo-grp-h {
+  display: flex; align-items: baseline; gap: 4px 12px; margin: 24px 0 10px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line); flex-wrap: wrap;
+}
+.rumbo-grp-h:first-of-type { margin-top: 4px; }
+.rumbo-grp-h h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-22); color: var(--text); margin: 0; }
+.rumbo-grp-h > span:last-child { margin-left: auto; font-size: 12.5px; }
+
+/* ───────── Días (próximos 7) ───────── */
+.rumbo-days { display: flex; flex-direction: column; gap: 6px; }
+.rumbo-day { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; padding: 4px 0; }
+.rumbo-day-label {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 50%; background: var(--well); box-shadow: inset 0 0 0 1px var(--line-2);
+}
+.rumbo-day-label .mono-label { font-size: 9.5px; letter-spacing: .1em; }
+.rumbo-day-label b { font-family: var(--serif); font-weight: 600; font-size: 22px; line-height: .95; color: var(--text); }
+.rumbo-day.is-today .rumbo-day-label { background: var(--gold-soft); box-shadow: inset 0 0 0 1.4px var(--gold); }
+.rumbo-day.is-today .rumbo-day-label span, .rumbo-day.is-today .rumbo-day-label b { color: var(--gold-fg); }
+.rumbo-day.is-empty { padding: 0; }
+.rumbo-day.is-empty .rumbo-day-label { height: 30px; border-radius: 14px; flex-direction: row; gap: 5px; background: var(--well); }
+.rumbo-day.is-empty .rumbo-day-label b { font-size: 15px; }
+.rumbo-day-free { font-family: var(--serif); font-style: italic; font-size: 14.5px; display: flex; align-items: center; min-height: 30px; }
+.rumbo-day-body { display: flex; align-items: center; min-width: 0; }
+.rumbo-day:not(.is-empty) .rumbo-day-body { align-items: stretch; }
+.rumbo-today-free {
+  display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; width: 100%; padding: 7px 8px 7px 14px;
+  border-radius: var(--r-ctl); background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line);
+  font-size: 13.5px; color: var(--text-2);
+}
+.rumbo-today-free > svg { width: 15px; height: 15px; color: var(--gold); flex: none; }
+.rumbo-today-free p { flex: 1 1 180px; min-width: 0; }
+.rumbo-today-free b { color: var(--text); font-weight: 600; }
+
+/* ───────── Semana sin nada que venza ───────── */
+.rumbo-advance { padding: 6px 2px 4px; }
+.rumbo-week-empty {
+  display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-style: italic; font-size: 16px;
+  padding: 10px 14px; margin-bottom: 14px; border-radius: var(--r-ctl); background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line);
+}
+.rumbo-week-empty svg { width: 15px; height: 15px; color: var(--gold); flex: none; }
+.rumbo-advance-label { margin-bottom: 8px; }
+
+/* ───────── Fila de paso ───────── */
+.rumbo-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.rumbo-step {
+  position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr) 176px 16px; gap: 14px; align-items: center;
+  padding: 10px 14px; border-radius: var(--r-ctl); background: var(--well); box-shadow: inset 0 0 0 1px var(--line);
+  transition: box-shadow var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+.rumbo-step:hover { box-shadow: inset 0 0 0 1px var(--line-2); background-color: var(--hover); }
+.rumbo-step.is-ready { box-shadow: inset 0 0 0 1px var(--gold-line); background: linear-gradient(90deg, transparent 60%, var(--gold-soft)), var(--well); }
+.rumbo-step.is-exam { box-shadow: inset 0 0 0 1px var(--gold-line); background: linear-gradient(90deg, var(--gold-soft), transparent 55%), var(--well); }
+.rumbo-step-link { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.rumbo-step-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.rumbo-step-main { min-width: 0; }
+.rumbo-step-eyebrow { display: flex; align-items: center; gap: 4px 7px; flex-wrap: wrap; margin: 0; line-height: 1.3; }
+.rumbo-step-eyebrow .mono-label { font-size: 10px; letter-spacing: .12em; }
+.rumbo-step-subj { font-size: 12.5px; color: var(--text-2); font-weight: 500; }
+.rumbo-step-title { font-family: var(--serif); font-weight: 600; font-size: 17.5px; line-height: 1.15; margin: 3px 0; color: var(--text); }
+.rumbo-step-meta { font-size: 12px; margin: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.rumbo-step-prep { display: flex; flex-direction: column; align-items: stretch; gap: 5px; font-size: 11.5px; color: var(--text-3); }
+.rumbo-step-prep .ui-bar { width: 100%; }
+.rumbo-step-prep .rumbo-tag { align-self: flex-start; }
+.rumbo-prep-label { display: flex; justify-content: space-between; gap: 8px; white-space: nowrap; }
+.rumbo-prep-label b { color: var(--text-2); font-weight: 600; }
+.rumbo-step-chev { position: relative; z-index: 0; width: 16px; height: 16px; color: var(--text-4); flex: none; }
+.rumbo-step:hover .rumbo-step-chev { color: var(--text-3); }
+.rumbo-prev { display: inline-flex; align-items: center; gap: 5px; }
+.rumbo-prev b { color: var(--text-2); }
+.rumbo-stars { display: inline-flex; gap: 1px; vertical-align: -1px; }
+@media (max-width: 640px) {
+  .rumbo-step { grid-template-columns: 22px minmax(0, 1fr) 14px; row-gap: 8px; padding: 10px 12px; }
+  .rumbo-step-prep { grid-column: 2; grid-row: 2; }
+  .rumbo-step-chev { grid-column: 3; grid-row: 1; }
+  .rumbo-day { grid-template-columns: 44px minmax(0, 1fr); gap: 10px; }
+  .rumbo-day-label { width: 44px; height: 44px; }
+  .rumbo-day-label b { font-size: 19px; }
+}
+
+/* ───────── Etiquetas ───────── */
+.rumbo-tag {
+  display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: var(--r-chip); line-height: 1.5; white-space: nowrap;
+}
+.rumbo-tag--ready { color: var(--gold-fg); background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); }
+.rumbo-tag--heavy { color: var(--frost-fg); background: var(--frost-soft); box-shadow: inset 0 0 0 1px var(--frost-line); }
+.rumbo-tag--muted { color: var(--text-3); background: var(--hover); box-shadow: inset 0 0 0 1px var(--line-2); letter-spacing: .08em; }
+
+/* ───────── Semanas plegadas ───────── */
+.rumbo-weeks { list-style: none; margin: 0; padding: 0; }
+.rumbo-week { border-top: 1px solid var(--line); }
+.rumbo-week:first-child { border-top: 0; }
+.rumbo-week-row { display: flex; align-items: center; gap: 8px; }
+.rumbo-week-head {
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 14px; padding: 10px 6px; font: inherit; font-size: 13px;
+  color: var(--text-2); background: none; border: 0; border-radius: var(--r-chip); text-align: left; cursor: pointer;
+}
+.rumbo-week-heavy { flex: none; }
+.rumbo-week-head:hover { color: var(--text); background: var(--hover); }
+.rumbo-week-n { flex: none; width: 50px; font-size: 10px; letter-spacing: .1em; }
+.rumbo-week-d { flex: none; width: 104px; color: var(--text); white-space: nowrap; }
+.rumbo-week-c { flex: none; width: 64px; color: var(--text-3); white-space: nowrap; }
+.rumbo-week-c b { color: var(--text); font-weight: 600; }
+.rumbo-week-dots { display: flex; gap: 5px; flex-wrap: wrap; min-width: 0; }
+.rumbo-week-sims { flex: none; white-space: nowrap; font-size: 12.5px; }
+.rumbo-week-head .rumbo-tag--heavy { flex: none; }
+.rumbo-week-chev { width: 14px; height: 14px; color: var(--text-3); flex: none; transition: transform var(--dur) var(--ease); margin-left: auto; }
+.rumbo-week.is-open .rumbo-week-chev { transform: rotate(180deg); }
+.rumbo-week.is-heavy .rumbo-week-d { color: var(--frost-fg); }
+.rumbo-week-steps { list-style: none; margin: 2px 0 12px; padding: 0 6px 0 70px; display: flex; flex-direction: column; gap: 7px; }
+.rumbo-week-step { display: flex; align-items: center; gap: 10px; font-size: 12.8px; color: var(--text-2); }
+.rumbo-week-step-subj { display: flex; align-items: center; gap: 6px; flex: none; width: 128px; color: var(--text-3); }
+.rumbo-week-step-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.rumbo-week-step-title .tone-3 { font-size: 12px; }
+.rumbo-week-step-date { flex: none; font-size: 10px; }
+@media (max-width: 640px) {
+  .rumbo-week-row { flex-wrap: wrap; row-gap: 6px; }
+  .rumbo-week-head { flex: 1 1 100%; flex-wrap: wrap; row-gap: 6px; gap: 6px 10px; }
+  .rumbo-week-n { width: auto; }
+  .rumbo-week-d { width: auto; flex: 1 1 auto; }
+  .rumbo-week-c { width: auto; }
+  .rumbo-week-dots { order: 5; flex: 1 1 100%; padding-left: 0; }
+  .rumbo-week-sims { order: 6; }
+  .rumbo-week-steps { padding-left: 6px; }
+  .rumbo-week-step { flex-wrap: wrap; row-gap: 2px; }
+  .rumbo-week-step-subj { width: auto; }
+  .rumbo-week-step-title { order: 5; flex: 1 1 100%; padding-left: 28px; white-space: normal; }
+  .rumbo-week-step-date { margin-left: auto; }
+}
+
+/* ───────── Exámenes reales ───────── */
+.rumbo-fin { margin-top: 22px; padding: 16px 18px 14px; border-radius: var(--r-ctl); background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); }
+.rumbo-fin-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 10px; }
+.rumbo-fin-eyebrow { color: var(--gold-fg); margin-bottom: 4px; }
+.rumbo-fin-title { font-family: var(--serif); font-weight: 600; font-size: var(--fs-22); color: var(--text); margin: 0; }
+.rumbo-fin-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.rumbo-fx {
+  display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 8px; row-gap: 4px; align-items: center;
+  padding: 9px 10px; border-radius: var(--r-ctl); background: var(--surface-solid);
+  box-shadow: inset 0 0 0 1px var(--line); color: var(--text-2); text-decoration: none; height: 100%;
+}
+.rumbo-fx:hover { box-shadow: inset 0 0 0 1px var(--gold-line); color: var(--text); }
+/* Fecha + cuenta atrás en la misma línea: pueden envolver sin solaparse (fix del defecto a 390 px). */
+.rumbo-fx-main { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 10px; flex-wrap: wrap; min-width: 0; }
+.rumbo-fx-d { white-space: nowrap; }
+.rumbo-fx-d .mono-label { font-size: 10px; letter-spacing: .08em; }
+.rumbo-fx-d b { color: var(--text); font-family: var(--serif); font-size: 16px; font-weight: 600; }
+.rumbo-fx-left { font-size: 10px; letter-spacing: .06em; white-space: nowrap; }
+.rumbo-fx-n { grid-column: 2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--text); }
+.rumbo-fx-prov { color: var(--text-3); font-size: 11.5px; }
+
+/* ───────── Misión más cercana ───────── */
+.rumbo-boss {
+  display: grid; grid-template-columns: 68px minmax(0, 1fr) auto; gap: 14px; align-items: center; margin-top: 8px;
+  color: inherit; text-decoration: none; border-radius: var(--r-ctl);
+}
+.rumbo-boss:hover h3 { color: var(--gold-fg); }
+.rumbo-boss-eyebrow { font-size: 10px; }
+.rumbo-boss-t h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-22); color: var(--text); margin: 3px 0; transition: color var(--dur-fast) var(--ease); }
+.rumbo-boss-n { text-align: center; }
+.rumbo-boss-n b { display: block; font-family: var(--serif); font-weight: 600; font-size: 38px; line-height: .85; color: var(--text); }
+.rumbo-boss-n span { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); }
+.rumbo-boss-f { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--text-3); }
+.rumbo-boss-f .ui-bar { flex: 1; }
+.rumbo-boss-f b { color: var(--text-2); font-weight: 600; }
+
+/* ───────── ¿Vas al día? ───────── */
+.rumbo-tracklist { list-style: none; margin: 0; padding: 0; }
+.rumbo-track { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 10px 0; border-top: 1px solid var(--line); }
+.rumbo-track:first-child { border-top: 0; padding-top: 2px; }
+.rumbo-track-a { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--text); font-weight: 500; }
+.rumbo-track-dots { display: flex; gap: 2px; flex-wrap: wrap; }
+.rumbo-track-dots > span { display: inline-flex; }
+.rumbo-track-m { font-size: 11.5px; display: flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+.rumbo-track-m b { color: var(--text-2); font-weight: 600; }
+.rumbo-track-star { margin: 0 1px 0 -1px; }
+
+/* ───────── Resultados ───────── */
+.rumbo-results { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.rumbo-results > li {
+  position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; column-gap: 12px; align-items: center;
+  padding: 10px 6px; margin: 0 -6px; border-top: 1px solid var(--line); border-radius: var(--r-chip);
+}
+.rumbo-results > li:first-child { border-top: 0; }
+.rumbo-results > li:hover { background: var(--hover); }
+.rumbo-result-link { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.rumbo-result-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 0; }
+.rumbo-result-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin: 0; }
+.rumbo-result-subj { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rumbo-result-trial { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; color: var(--text); font-weight: 500; }
+.rumbo-result-score { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
+.rumbo-result-score .rumbo-score { line-height: 1; }
+.rumbo-result-meta { font-size: 9.5px; letter-spacing: .08em; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rumbo-score { font-family: var(--serif); font-weight: 600; font-size: 18px; color: var(--text); }
+.rumbo-results-more { margin-top: 8px; font-size: 12px; }
+
+/* ───────── Carta (Trayectorias) ───────── */
+.rumbo-chart-wrap { position: relative; overflow-x: auto; margin: 4px 0 6px; padding-bottom: 4px; overscroll-behavior-x: contain; }
+.rumbo-chart { display: block; }
+.rumbo-chart-gridline { stroke: var(--line); }
+.rumbo-chart-axis { font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; fill: var(--text-3); }
+.rumbo-chart-inner { position: relative; display: flex; align-items: flex-start; }
+/* Columna de nombres: botones reales; en móvil, fija a la izquierda mientras la carta se desplaza. */
+.rumbo-chart-labels { position: sticky; left: 0; z-index: 2; flex: none; display: flex; flex-direction: column; }
+.rumbo-chart-wrap.is-scroll .rumbo-chart-labels { background: var(--surface-solid); box-shadow: 10px 0 14px -12px rgba(0, 0, 0, .55); }
+.rumbo-chart-label {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1px; margin: 2px 0;
+  padding: 0 8px 0 12px; border: 0; border-radius: 10px 0 0 10px; background: transparent; color: inherit; font: inherit;
+  text-align: left; cursor: pointer; min-width: 0;
+}
+.rumbo-chart-label:hover { background: var(--hover); }
+.rumbo-chart-label.is-active { background: var(--hover-2); }
+.rumbo-chart-label:focus-visible { outline-offset: -2px; border-radius: 10px; }
+.rumbo-chart-label .rumbo-chart-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rumbo-chart-name { font-family: var(--serif); font-weight: 600; font-size: 15px; line-height: 1.1; }
+.rumbo-chart-label.is-active .rumbo-chart-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.rumbo-chart-sub { font-family: var(--sans); font-size: 10.5px; color: var(--text-3); white-space: nowrap; }
+.rumbo-chart-band { fill: transparent; cursor: pointer; }
+.rumbo-chart-band:hover { fill: var(--hover); }
+.rumbo-chart-row.is-active .rumbo-chart-band { fill: var(--hover-2); }
+.rumbo-chart-mark { cursor: pointer; }
+.rumbo-chart-mark:hover { filter: drop-shadow(0 0 4px color-mix(in oklab, var(--gold) 60%, transparent)); }
+.rumbo-chart-today { stroke: var(--gold); stroke-width: 1.3; opacity: .85; }
+.rumbo-chart-today-pill { fill: var(--surface-solid); stroke: var(--gold-line); }
+.rumbo-chart-today-label { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; fill: var(--gold-fg); }
+.rumbo-chart-coursestart line { stroke: var(--line-2); stroke-width: 1; }
+.rumbo-chart-coursestart text { font-family: var(--mono); font-size: 8.5px; letter-spacing: .08em; fill: var(--text-3); }
+.rumbo-chart-cd text { font-family: var(--mono); font-size: 11px; fill: var(--text-2); }
+.rumbo-chart-cd-u { font-size: 9px; fill: var(--text-3); }
+.rumbo-chart-cd-d { font-size: 9.5px; fill: var(--text-3); }
+.rumbo-chart-hint { font-size: 12px; margin-top: 2px; }
+.rumbo-planet { overflow: visible; }
+
+.rumbo-chart-tip {
+  position: absolute; z-index: 5; width: 256px; padding: 12px 14px 11px; border-radius: 14px; background: var(--tip-bg);
+  box-shadow: var(--shadow-pop); font-size: 12.5px; color: var(--text-2); pointer-events: none;
+}
+.rumbo-chart-tip-eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 3px 6px; margin: 0 0 5px; }
+.rumbo-chart-tip-eyebrow .rumbo-step-subj { color: var(--tip-fg); }
+.rumbo-chart-tip-eyebrow .mono-label { font-size: 9.5px; letter-spacing: .1em; }
+.rumbo-chart-tip h4 { font-family: var(--serif); font-weight: 600; font-size: 17px; color: var(--tip-fg); margin: 0 0 8px; line-height: 1.15; }
+.rumbo-chart-tip dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; margin: 0; }
+.rumbo-chart-tip dt { color: var(--text-3); font-size: 11.5px; }
+.rumbo-chart-tip dd { color: var(--tip-fg); text-align: right; font-size: 12px; margin: 0; }
+.rumbo-chart-tip .rumbo-score { color: var(--tip-fg); font-size: 16px; }
+.rumbo-chart-tip-foot { margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--line-2); font-size: 11.5px; color: var(--text-3); }
+/* En «Carta impresa» el tooltip es tinta oscura: sus grises secundarios se aclaran. */
+[data-theme="light"] .rumbo-chart-tip { --text-3: #A9B0C6; --line-2: rgba(246, 240, 226, .18); }
+@media (prefers-color-scheme: light) {
+  [data-theme="system"] .rumbo-chart-tip { --text-3: #A9B0C6; --line-2: rgba(246, 240, 226, .18); }
+}
+
+.rumbo-legend-tip { display: flex; flex-direction: column; gap: 8px; }
+.rumbo-legend-tip-list { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.rumbo-legend-tip-list span { display: inline-flex; align-items: center; gap: 5px; }
+.rumbo-legend-tip-list svg { flex: none; }
+
+.rumbo-panel { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.rumbo-panel-head { display: flex; align-items: baseline; gap: 4px 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.rumbo-panel-head h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-22); color: var(--text); margin: 0; }
+.rumbo-panel-head > span:last-child { font-size: 13px; }
+.rumbo-panel-list { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 24px; }
+@media (max-width: 900px) { .rumbo-panel-list { columns: 1; } }
+.rumbo-panel-row {
+  position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr) 84px auto; gap: 10px; align-items: center;
+  padding: 7px 6px; break-inside: avoid; border-radius: var(--r-chip);
+}
+.rumbo-panel-row:hover { background: var(--hover); }
+.rumbo-panel-main { min-width: 0; }
+.rumbo-panel-main .mono-label { font-size: 9.5px; letter-spacing: .1em; }
+.rumbo-panel-main b { display: block; font-size: 13px; color: var(--text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rumbo-panel-row.is-done .rumbo-panel-main b { color: var(--text-2); }
+.rumbo-panel-row.is-skipped .rumbo-panel-main { opacity: .55; }
+.rumbo-panel-row.is-skipped .rumbo-panel-main b { text-decoration: line-through; text-decoration-color: var(--text-3); }
+.rumbo-panel-date { white-space: nowrap; font-size: 10px; letter-spacing: .08em; text-align: right; }
+.rumbo-panel-res { min-width: 64px; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 11.5px; white-space: nowrap; }
+@media (max-width: 560px) {
+  .rumbo-panel-row { grid-template-columns: 26px minmax(0, 1fr) auto; row-gap: 2px; }
+  .rumbo-panel-main b { white-space: normal; }
+  .rumbo-panel-date { grid-column: 2; grid-row: 2; text-align: left; }
+  .rumbo-panel-res { grid-column: 3; grid-row: 1 / span 2; }
+  .rumbo-panel-row > svg { grid-row: 1 / span 2; }
+}
+
+/* ───────── Élite: campañas ───────── */
+.rumbo-elite-lead { display: flex; align-items: center; gap: 6px; max-width: 760px; font-size: 14px; margin: 0 0 22px; }
+.rumbo-elite-lead b { color: var(--text); font-weight: 600; }
+.rumbo-campaigns { display: flex; flex-direction: column; gap: 28px; }
+@media (min-width: 1200px) {
+  /* Dos columnas en flujo (como una revista): las escaleras largas no dejan huecos. */
+  .rumbo-campaigns { display: block; columns: 2; column-gap: 32px; }
+  .rumbo-campaign { break-inside: avoid; margin-bottom: 28px; }
+}
+.rumbo-campaign-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.rumbo-campaign-head h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-18); color: var(--text); margin: 0; }
+.rumbo-campaign-count { margin-left: auto; font-size: 12px; }
+.rumbo-campaign-count b { color: var(--text-2); font-weight: 600; }
+.rumbo-ladder { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.rumbo-rung {
+  position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 14px; min-height: 44px;
+  border-radius: var(--r-ctl); border: 1px solid var(--line); background: var(--surface);
+}
+.rumbo-rung:hover { border-color: var(--line-2); background: var(--hover); }
+.rumbo-rung.is-next { border-color: var(--gold-line); box-shadow: 0 0 0 1px var(--gold-line); }
+.rumbo-rung.is-passed { border-color: var(--line-2); }
+.rumbo-diff { display: inline-flex; flex: none; gap: 3px; width: 42px; }
+.rumbo-diff i { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--line-2); }
+.rumbo-diff i.is-on { background: var(--gold); }
+.rumbo-rung-main { display: flex; align-items: baseline; gap: 10px; flex: 1 1 auto; min-width: 0; margin: 0; }
+.rumbo-rung-title {
+  flex: 1 1 auto; min-width: 40px;
+  font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--text);
+}
+.rumbo-rung-check { display: inline-block; width: 13px; height: 13px; margin-right: 5px; color: var(--gold-fg); vertical-align: -1px; }
+.rumbo-rung-dot { display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 6px -1px var(--gold); vertical-align: 2px; }
+.rumbo-rung-src { flex: 0 1 auto; min-width: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--text-3); }
+.rumbo-rung-notes {
+  position: relative; z-index: 2; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px; color: var(--text-3); white-space: nowrap;
+}
+.rumbo-rung-notes:hover { color: var(--gold-fg); }
+.rumbo-rung-stats { display: flex; align-items: center; gap: 12px; flex: none; }
+.rumbo-rung-score { width: 40px; text-align: right; font-size: 13px; white-space: nowrap; }
+.rumbo-rung-score b { font-family: var(--serif); font-size: 17px; color: var(--text); }
+.rumbo-rung-score b.gold-text { color: var(--gold-fg); }
+.rumbo-rung-none { color: var(--text-4); }
+.rumbo-rung-ready { display: inline-flex; align-items: center; gap: 5px; min-width: 54px; font-size: 11.5px; color: var(--text-3); white-space: nowrap; }
+.rumbo-rung-end { width: 92px; display: flex; justify-content: flex-end; }
+.rumbo-rung-summit { width: 16px; height: 16px; color: var(--gold-fg); }
+@media (max-width: 640px) {
+  /* Dos líneas: título + marca (Siguiente/Cumbre) · fuente + nota + preparación. */
+  .rumbo-rung {
+    display: grid; grid-template-columns: 38px minmax(0, 1fr) auto auto; grid-template-areas: "d t t e" "d s c r";
+    column-gap: 10px; row-gap: 3px; align-items: center; padding: 9px 12px;
+  }
+  .rumbo-diff { grid-area: d; align-self: start; margin-top: 7px; width: 38px; }
+  .rumbo-rung-main, .rumbo-rung-stats { display: contents; }
+  .rumbo-rung-title { grid-area: t; white-space: normal; }
+  .rumbo-rung-src { grid-area: s; }
+  .rumbo-rung-score { grid-area: c; width: auto; }
+  .rumbo-rung-ready { grid-area: r; width: auto; }
+  .rumbo-rung-end { grid-area: e; width: auto; }
+}
+
+
+/* ═════════════════════════════════════════════════════════════════════
+ * Camino · sendero de estrellas (Misiones › Camino, spec 2026-09-25)
+ * ═════════════════════════════════════════════════════════════════════ */
+.camino-tab { display: flex; flex-direction: column; gap: 22px; }
+
+/* ───────── Selector de asignatura (diez mundos) ───────── */
+.camino-worlds {
+  display: flex; align-items: flex-end; gap: 8px; padding: 14px 18px 12px; border-radius: 18px;
+  background: var(--well); box-shadow: inset 0 0 0 1px var(--line); overflow-x: auto; overflow-y: hidden;
+}
+.camino-worlds-legend { display: flex; flex-direction: column; gap: 6px; padding-right: 14px; margin-right: 4px; border-right: 1px solid var(--line); flex: none; }
+.camino-worlds-legend .mono-label { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.camino-worlds-list { display: flex; align-items: flex-end; gap: 14px; flex: 1; min-width: 0; }
+.camino-world { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: none; min-width: 46px; color: inherit; border-radius: 10px; }
+.camino-world:hover .camino-world-code { color: var(--text-2); }
+.camino-world:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.camino-world-orb { position: relative; display: grid; place-items: center; flex: none; }
+.camino-world-orb svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.camino-world-lv { position: relative; font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--text-2); }
+.camino-world.is-zero .camino-world-lv { color: var(--text-4); }
+.camino-world.is-selected { gap: 7px; }
+.camino-world.is-selected .camino-world-lv { font-size: 23px; color: var(--gold-hi); text-shadow: 0 0 18px rgba(243, 182, 74, .45); }
+.camino-world-name { font-size: 12.5px; font-weight: 600; color: var(--text); white-space: nowrap; }
+.camino-world-code { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; color: var(--c); transition: color var(--dur-fast) var(--ease); }
+
+/* ───────── Rejilla: cielo + columna lateral ───────── */
+.camino-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (min-width: 1180px) { .camino-layout { grid-template-columns: minmax(0, 1fr) 400px; gap: 26px; } }
+.camino-side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.camino-card { position: relative; border-radius: var(--r-card); border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow-card); padding: 22px 24px; }
+
+/* ───────── El cielo (SVG) ───────── */
+.camino-skycard {
+  position: relative; overflow: hidden; padding: 0; border-radius: var(--r-card); border: 1px solid var(--line); box-shadow: var(--shadow-card);
+  background:
+    radial-gradient(700px 520px at 70% 58%, rgba(243, 182, 74, .07), transparent 60%),
+    radial-gradient(900px 700px at 40% 0%, rgba(92, 124, 226, .16), transparent 60%),
+    linear-gradient(180deg, var(--ink-2), var(--ink-0));
+}
+.camino-skycard-corner { position: absolute; top: 14px; right: 16px; z-index: 2; display: flex; align-items: center; gap: 8px; }
+.camino-legend { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--text-3); white-space: nowrap; }
+.camino-legend svg { color: var(--text-3); }
+@media (max-width: 640px) { .camino-legend { display: none; } }
+
+.camino-trailwrap { max-height: 660px; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; }
+.camino-trail { position: relative; width: 100%; }
+.camino-trail-svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.camino-trail-nodes { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; }
+.camino-node-li { position: absolute; transform: translate(-50%, -50%); }
+.camino-node { display: block; border-radius: 50%; }
+.camino-node--star { width: 28px; height: 28px; }
+.camino-node--planet { width: 46px; height: 46px; }
+.camino-node--elite { width: 24px; height: 24px; }
+.camino-node--summit { width: 58px; height: 58px; }
+.camino-node:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 5px rgba(243, 182, 74, .22); }
+
+.camino-glyph-tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; fill: var(--text-3); }
+.camino-glyph-name { font-family: var(--serif); font-size: 15px; font-weight: 600; }
+.camino-glyph-sub { font-family: var(--mono); font-size: 9.5px; fill: var(--text-3); }
+.camino-glyph-elite { font-family: var(--mono); font-size: 10px; fill: var(--text-3); }
+.camino-ruler-n { font-family: var(--serif); font-size: 13px; font-weight: 600; }
+.camino-ruler-l { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+.camino-here-pintext { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; font-weight: 500; fill: var(--gold-ink); }
+
+/* ───────── Ficha de la asignatura ───────── */
+.camino-subj { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; }
+.camino-lvring-n { font-family: var(--serif); font-size: 26px; font-weight: 600; }
+.camino-subj-body { min-width: 0; }
+.camino-subj-body h2 { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--text); margin: 0 0 2px; }
+.camino-subj-lv7 { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.camino-kv { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.camino-kv-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-3); }
+.camino-kv-item svg { color: var(--text-3); flex: none; }
+.camino-kv-item b { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--text); }
+
+/* ficha de nivel: 7 segmentos */
+.camino-lv7 { display: inline-flex; gap: 3px; flex: none; }
+.camino-lv7 i { display: block; width: 13px; height: 5px; border-radius: 2px; background: var(--track); }
+.camino-lv7 i.is-on { background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); box-shadow: 0 0 8px -2px rgba(243, 182, 74, .6); }
+.camino-lv7 i.is-next { background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); }
+
+/* ───────── "Estás aquí" ───────── */
+.camino-here { border-color: var(--hero-border); background: var(--hero-bg); box-shadow: var(--hero-shadow); }
+.camino-here-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--gold-fg); }
+.camino-here-eyebrow svg { color: var(--gold-fg); }
+.camino-here h3 { margin-top: 10px; display: flex; align-items: center; gap: 9px; font-family: var(--serif); font-weight: 600; font-size: 22px; line-height: 1.15; color: var(--text); }
+.camino-here h3 svg { color: var(--text-2); flex: none; }
+.camino-here-meta { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-top: 10px; }
+.camino-here-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+.camino-here-tag svg { color: var(--text-3); flex: none; }
+.camino-here-next { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 9px 11px; border-radius: 12px; background: var(--well); box-shadow: inset 0 0 0 1px var(--line); font-size: 13px; flex-wrap: wrap; }
+.camino-here-next svg { color: var(--text-3); flex: none; }
+.camino-here-next b { font-weight: 600; color: var(--text); white-space: nowrap; }
+.camino-here-next .camino-lv7 { margin-left: auto; }
+.camino-here-next.is-muted { color: var(--text-3); }
+.camino-here-cta { margin-top: 16px; }
+
+/* ───────── "Hasta el máximo" ───────── */
+.camino-climb-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+.camino-climb-head h2 { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--text); margin: 0; }
+.camino-climb-time { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+.camino-climb-list { list-style: none; margin: 6px 0 0; padding: 0; }
+.camino-climb-list li { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.camino-climb-list li:first-child { border-top: 0; }
+.camino-climb-list li > svg { color: var(--text-3); }
+.camino-climb-name { font-weight: 600; color: var(--text); min-width: 0; }
+.camino-climb-name small { font-weight: 400; color: var(--text-3); margin-left: 6px; font-size: 12px; }
+.camino-climb-list li.is-max .camino-climb-name { color: var(--gold-fg); }
+.camino-climb-meta { font-size: 11.5px; white-space: nowrap; }
+
+@media (max-width: 767px) {
+  .camino-card { padding: 18px 16px; }
+  .camino-trailwrap { max-height: 72vh; }
+  .camino-subj-body h2 { font-size: 22px; }
+  .camino-lvring svg, .camino-lvring { transform: scale(.9); }
+}
+
+/* ───────── Pestaña Pruebas ───────── */
+.rumbo-pruebas-pick {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin: 0 0 22px; padding: 16px 18px; border-radius: var(--r-card);
+  border: 1px solid var(--gold-line); background: var(--gold-soft);
+}
+.rumbo-pruebas-pick-main { min-width: 0; flex: 1 1 320px; }
+.rumbo-pruebas-pick-main .mono-label { margin: 0 0 4px; }
+.rumbo-pruebas-pick-title { margin: 0; display: flex; align-items: center; gap: 8px; font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--text); }
+.rumbo-pruebas-pick-meta { margin: 4px 0 0; font-size: 12.5px; }
+.rumbo-pruebas-pending { margin: 22px 0 0; font-size: 12.5px; }

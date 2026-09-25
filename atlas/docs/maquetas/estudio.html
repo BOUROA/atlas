@@ -1,0 +1,1363 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas · Hoy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ───────────────────────── Tokens ───────────────────────── */
+:root{
+  --bg:#0D0E10;
+  --surface:#16171A;
+  --surface-2:#1C1D21;
+  --surface-3:#25272C;
+  --line:rgba(255,255,255,.065);
+  --line-2:rgba(255,255,255,.11);
+  --text:#F3F2ED;
+  --text-2:#A7A9AF;
+  --text-3:#6F727A;
+
+  --volt:#D4F53C;
+  --volt-deep:#94AE1E;
+  --volt-ink:#151A02;
+  --ice:#8FD3FF;
+  --warm:#FFA05C;
+  --gold:#FFD66B;
+
+  /* asignaturas */
+  --iac:#A98BFF; --cal:#FF9148; --log:#4FC3FF; --alg:#FFC53D; --pro:#3FE0A0;
+  --alc:#FF6FA8; --eda:#2ED3CF; --tco:#7390FF; --moe:#DC86FF; --pmd:#FF6257;
+
+  /* mapa de calor */
+  --h0:#1E2024; --h1:#323D1D; --h2:#526B1F; --h3:#8BAE2A; --h4:#D4F53C;
+
+  --display:'Unbounded', ui-sans-serif, sans-serif;
+  --ui:'Figtree', ui-sans-serif, sans-serif;
+  --r-card:26px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{
+  font-family:var(--ui);
+  font-size:14px;
+  line-height:1.45;
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1100px 520px at 8% -12%, rgba(212,245,60,.075), transparent 62%),
+    radial-gradient(900px 540px at 104% -6%, rgba(115,144,255,.07), transparent 60%),
+    var(--bg);
+  overflow-x:hidden;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+.tnum{font-variant-numeric:tabular-nums}
+.ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ico.fill{fill:currentColor;stroke:none}
+.eyebrow{font:700 11px/1 var(--ui);letter-spacing:.11em;text-transform:uppercase;color:var(--text-3)}
+
+/* ───────────────────────── Top bar ───────────────────────── */
+.topbar{position:sticky;top:0;z-index:30;background:rgba(13,14,16,.74);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1440px;margin:0 auto;padding:0 32px;height:66px;display:flex;align-items:center;gap:26px}
+.brand{display:flex;align-items:center;gap:10px;font:600 18px var(--display);letter-spacing:-.02em}
+.brand svg{width:28px;height:28px}
+.nav{display:flex;gap:2px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.nav a{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:10px;color:var(--text-2);font-weight:600;font-size:13.5px;transition:color .2s, background .2s}
+.nav a:hover{color:var(--text)}
+.nav a.active{background:var(--surface-3);color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 1px 2px rgba(0,0,0,.4)}
+.nav a.active .ico{color:var(--volt)}
+.search{margin-left:auto;display:flex;align-items:center;gap:10px;width:380px;height:40px;padding:0 7px 0 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--text-3);font-weight:500;font-size:13.5px;transition:border-color .2s}
+.search:hover{border-color:var(--line-2)}
+.search span{flex:1;text-align:left}
+kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:7px;background:var(--surface-3);border:1px solid var(--line-2);border-bottom-width:2px;font:600 11px var(--ui);color:var(--text-2)}
+.search kbd + kbd{margin-left:-6px}
+.btn-log{display:flex;align-items:center;gap:8px;height:40px;padding:0 15px;border-radius:12px;border:1px solid var(--line-2);font-weight:600;font-size:13.5px;transition:background .2s}
+.btn-log:hover{background:var(--surface-2)}
+.avatar{position:relative;width:42px;height:42px;flex:none}
+.avatar svg{position:absolute;inset:0}
+.avatar .face{position:absolute;inset:5px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(150deg,#2E3138,#1B1C20);font:700 13px var(--display);color:var(--text)}
+.avatar .lv{position:absolute;right:-4px;bottom:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:6px;background:var(--volt);color:var(--volt-ink);font:800 10px/18px var(--display);text-align:center;box-shadow:0 0 0 2px var(--bg)}
+
+/* ───────────────────────── Page ───────────────────────── */
+.page{max-width:1440px;margin:0 auto;padding:0 32px 48px}
+.hello{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding:38px 2px 26px}
+.hello h1{font:600 40px/1.04 var(--display);letter-spacing:-.035em;margin:14px 0 12px}
+.hello h1 .wave{color:var(--volt)}
+.hello p.sub{color:var(--text-2);font-size:15.5px;max-width:640px}
+.hello p.sub b{color:var(--text);font-weight:700}
+.hello p.sub .ice{color:var(--ice);font-weight:700}
+.hello-stats{display:flex;align-items:stretch}
+.hs{padding:4px 26px;border-left:1px solid var(--line-2)}
+.hs:first-child{border-left:0}
+.hs-n{display:block;font:700 26px/1.1 var(--display);letter-spacing:-.03em}
+.hs-n small{font-size:13px;font-weight:600;color:var(--text-2);margin-left:2px;letter-spacing:0}
+.hs-l{display:block;margin-top:6px;color:var(--text-3);font-size:12.5px;font-weight:500}
+
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}
+.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}
+
+.card{
+  position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:24px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 18px 40px -24px rgba(0,0,0,.7);
+  animation:rise .75s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--delay,0ms);
+  min-width:0;
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;min-height:30px}
+.card-t{display:flex;align-items:baseline;gap:10px;font-weight:700;font-size:15.5px;letter-spacing:-.005em;white-space:nowrap}
+.card-t .meta{color:var(--text-3);font-weight:500;font-size:12.5px}
+.link{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-weight:600;font-size:12.5px;white-space:nowrap;transition:color .2s}
+.link:hover{color:var(--text)}
+.link .ico{width:14px;height:14px}
+
+/* ───────────────────────── Hero: sesión de hoy ───────────────────────── */
+.hero{
+  padding:28px 28px 28px 30px;overflow:hidden;
+  background:
+    radial-gradient(520px 300px at 0% 100%, rgba(212,245,60,.10), transparent 70%),
+    linear-gradient(160deg,#1C1F17 0%, #17181B 55%);
+  border-color:rgba(212,245,60,.16);
+}
+.hero::before{ /* retícula de puntos */
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.2px);background-size:18px 18px;
+  -webkit-mask-image:linear-gradient(115deg, transparent 35%, #000 100%);mask-image:linear-gradient(115deg, transparent 35%, #000 100%);
+}
+.hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 196px;gap:22px;height:100%}
+.hero-main{display:flex;flex-direction:column;min-width:0}
+.hero-top{display:flex;align-items:center;gap:10px}
+.hero-top .eyebrow{color:var(--volt)}
+.dot-live{width:7px;height:7px;border-radius:50%;background:var(--volt);box-shadow:0 0 0 4px rgba(212,245,60,.14);animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{50%{box-shadow:0 0 0 7px rgba(212,245,60,0)}}
+.pill-soft{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--text-2);font-size:11.5px;font-weight:600}
+.hero-count{display:flex;align-items:flex-end;gap:18px;margin:30px 0 22px}
+.hc{display:flex;align-items:flex-end;gap:10px}
+.hc-n{font:700 92px/.8 var(--display);letter-spacing:-.06em}
+.hc-l{font-weight:700;font-size:14px;line-height:1.15;color:var(--text-2);padding-bottom:4px}
+.hc-plus{font:500 38px/1 var(--display);color:var(--text-3);padding-bottom:12px}
+.hc.new .hc-n{color:var(--volt)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.hm-chip{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:10px;background:rgba(255,255,255,.045);border:1px solid var(--line);font-weight:600;font-size:13px;color:var(--text)}
+.hm-chip .ico{width:15px;height:15px;color:var(--text-2)}
+.hm-chip.xp{color:var(--volt);background:rgba(212,245,60,.08);border-color:rgba(212,245,60,.18)}
+.hm-chip.xp .ico{color:var(--volt)}
+.mix-bar{display:flex;gap:3px;height:10px;margin-bottom:10px}
+.mix-bar i{flex:var(--n);background:var(--c);border-radius:3px;transform-origin:left;animation:grow-x .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(300ms + var(--k,0) * 60ms)}
+.mix-bar i:first-child{border-radius:6px 3px 3px 6px}
+.mix-bar i:last-child{border-radius:3px 6px 6px 3px}
+@keyframes grow-x{from{transform:scaleX(0);opacity:0}}
+.mix-leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--text-2);font-weight:500}
+.mix-leg span{display:inline-flex;align-items:center;gap:6px}
+.mix-leg span::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--c)}
+.mix-leg b{color:var(--text);font-weight:700}
+.hero-cta{display:flex;align-items:center;gap:18px;margin-top:auto;padding-top:22px}
+.btn-go{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:16px;height:58px;padding:0 9px 0 26px;border-radius:18px;
+  background:var(--volt);color:var(--volt-ink);font:700 15.5px var(--display);letter-spacing:-.01em;white-space:nowrap;flex:none;
+  box-shadow:0 1px 0 rgba(255,255,255,.55) inset, 0 -3px 0 rgba(0,0,0,.14) inset, 0 12px 34px -8px rgba(212,245,60,.45), 0 0 0 1px rgba(212,245,60,.6);
+  transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .2s;
+}
+.btn-go:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.55) inset, 0 -3px 0 rgba(0,0,0,.14) inset, 0 18px 40px -8px rgba(212,245,60,.6), 0 0 0 1px rgba(212,245,60,.8)}
+.btn-go:active{transform:translateY(1px)}
+.btn-go::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:shine 5.5s ease-in-out 1.2s infinite}
+@keyframes shine{0%{left:-80px}18%,100%{left:120%}}
+.go-ico{display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:var(--volt-ink);color:var(--volt)}
+.go-ico .ico{width:18px;height:18px;stroke-width:2.2}
+.go-kbd{font:600 11px var(--ui);color:rgba(21,26,2,.55);margin-left:-6px}
+.lvlup{display:flex;align-items:center;gap:10px;line-height:1.25}
+.lvlup svg{width:34px;height:37px;flex:none}
+.lvlup b{display:block;font-size:13.5px}
+.lvlup span{font-size:12px;color:var(--text-3)}
+
+.hero-side{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding-left:22px;border-left:1px dashed var(--line-2)}
+.rings{width:176px;height:176px;display:block}
+.rings circle{fill:none;stroke-width:14;stroke-linecap:round}
+.rings .rt{opacity:.14}
+.rings .rp{animation:ring-in 1.4s cubic-bezier(.2,.8,.2,1) both .35s}
+@keyframes ring-in{from{stroke-dasharray:0 600}}
+.rings text{fill:var(--text);text-anchor:middle}
+.ring-leg{width:100%;display:grid;gap:8px}
+.ring-leg li{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);font-weight:500}
+.ring-leg li i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.ring-leg li b{margin-left:auto;color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+.ring-leg li b small{color:var(--text-3);font-weight:600;font-size:11.5px}
+
+/* ───────────────────────── Jugador ───────────────────────── */
+.player{display:flex;flex-direction:column;gap:18px;justify-content:space-between}
+.pl-top{display:flex;align-items:center;gap:14px}
+.pl-top .hex{width:58px;height:64px;flex:none;filter:drop-shadow(0 8px 18px rgba(212,245,60,.22))}
+.pl-id{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pl-id b{font:600 19px/1 var(--display);letter-spacing:-.03em}
+.pl-today{margin-left:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:8px;background:rgba(212,245,60,.1);color:var(--volt);font-weight:700;font-size:11.5px;white-space:nowrap}
+.pl-today .ico{width:12px;height:12px}
+.xp-bar{position:relative;height:18px;border-radius:9px;background:#0F1012;box-shadow:inset 0 1px 2px rgba(0,0,0,.6), 0 0 0 1px var(--line);overflow:hidden}
+.xp-fill{position:absolute;inset:0 auto 0 0;width:89.4%;border-radius:9px;background:linear-gradient(180deg,#E4FF62 0%, var(--volt) 45%, #B9D82A 100%);box-shadow:0 0 18px rgba(212,245,60,.45);animation:grow-w 1.3s cubic-bezier(.2,.8,.2,1) both .4s}
+.xp-fill::after{content:"";position:absolute;inset:3px 8px auto 8px;height:4px;border-radius:4px;background:rgba(255,255,255,.35)}
+.xp-proj{position:absolute;inset:0 0 0 calc(89.4% - 6px);background:repeating-linear-gradient(-45deg, rgba(212,245,60,.35) 0 4px, rgba(212,245,60,.12) 4px 8px);border-radius:0 9px 9px 0}
+.xp-ticks{position:absolute;inset:0;background:repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(0,0,0,.28) calc(10% - 1px) 10%)}
+@keyframes grow-w{from{width:0}}
+.xp-meta{display:flex;justify-content:space-between;margin-top:9px;font-size:12.5px;color:var(--text-3);font-weight:500}
+.xp-meta b{color:var(--text);font-weight:700}
+.xp-meta .v{color:var(--volt)}
+.pl-streak{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:linear-gradient(120deg, rgba(255,110,40,.10), rgba(255,255,255,.02) 60%);border:1px solid rgba(255,140,60,.14)}
+.pl-streak .flame{width:34px;height:34px;flex:none;filter:drop-shadow(0 4px 12px rgba(255,110,40,.45))}
+.st-n{display:block;font:700 26px/1 var(--display);letter-spacing:-.04em}
+.st-l{display:block;font-size:12px;color:var(--text-2);font-weight:600;margin-top:3px}
+.st-l{white-space:nowrap}
+.st-rec{display:block;font-size:11px;color:var(--text-3);font-weight:500;margin-top:2px;white-space:nowrap}
+.shields{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.shields .row{display:flex;gap:2px}
+.shields svg{width:20px;height:20px}
+.shields small{font-size:11px;color:var(--ice);font-weight:600;white-space:nowrap}
+.wk-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;font-size:12.5px;color:var(--text-3);font-weight:500}
+.wk-head b{color:var(--text);font-weight:700}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.wd{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-3)}
+.wd i{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;border:1.5px dashed rgba(255,255,255,.12)}
+.wd.done i{border:0;background:var(--volt);color:var(--volt-ink);box-shadow:0 -2px 0 rgba(0,0,0,.18) inset}
+.wd.done i .ico{width:14px;height:14px;stroke-width:3}
+.wd.today{color:var(--text)}
+.wd.today i{box-shadow:0 -2px 0 rgba(0,0,0,.18) inset, 0 0 0 2px var(--surface), 0 0 0 3.5px var(--volt)}
+
+/* ───────────────────────── Hitos ───────────────────────── */
+.ms-list{display:grid;gap:4px}
+.ms{display:flex;align-items:center;gap:12px;padding:6px;margin:0 -6px;border-radius:14px;transition:background .2s}
+.ms-rd{flex:none;display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+.ms-rd b{font:700 13px var(--display);letter-spacing:-.03em;color:var(--text)}
+.ms-rd small{font-size:10.5px;color:var(--text-3);font-weight:600;margin-top:3px}
+.ms-rd.low b{color:var(--warm)}
+.ms:hover{background:var(--surface-2)}
+.ms-days{flex:none;width:46px;height:46px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:color-mix(in srgb, var(--c) 13%, transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 22%, transparent)}
+.ms-days b{font:700 18px/1 var(--display);color:var(--c);letter-spacing:-.04em}
+.ms-days span{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb, var(--c) 70%, var(--text-3));margin-top:3px}
+.ms-body{flex:1;min-width:0}
+.ms-t{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-s{font-size:12px;color:var(--text-3);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.ms-r{display:flex;align-items:center;gap:8px;margin-top:6px}
+.ms-r .bar{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.ms-r .bar i{display:block;height:100%;border-radius:4px;background:var(--c);animation:grow-w 1.1s cubic-bezier(.2,.8,.2,1) both .5s}
+.ms-r small{font-size:11px;font-weight:700;color:var(--text-2);font-variant-numeric:tabular-nums;min-width:30px;text-align:right}
+.ms.urgent .ms-days{background:var(--c);box-shadow:0 8px 20px -8px var(--c)}
+.ms.urgent .ms-days b,.ms.urgent .ms-days span{color:#10240F}
+.ms-card{display:flex;flex-direction:column}
+.ms-foot{margin-top:auto!important;display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line-2);font-size:12px;color:var(--text-3);font-weight:500;white-space:nowrap}
+.grade{display:inline-flex;align-items:center;gap:5px;color:var(--text-2);font-weight:600}
+.grade i{width:6px;height:6px;border-radius:50%;background:var(--c)}
+.grade b{color:var(--text);font:700 12px var(--display)}
+
+/* ───────────────────────── Cola ───────────────────────── */
+.seg{display:flex;padding:3px;background:#101113;border:1px solid var(--line);border-radius:11px}
+.seg button{height:26px;padding:0 11px;border-radius:8px;font-size:12px;font-weight:600;color:var(--text-3);display:flex;align-items:center;gap:6px}
+.seg button em{font-style:normal;color:var(--text-3);font-weight:700;font-size:11px}
+.seg button.on{background:var(--surface-3);color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.seg button.on em{color:var(--volt)}
+.queue{display:flex;flex-direction:column}
+.q{display:grid;grid-template-columns:20px 36px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px 12px;margin:0 -12px;border-radius:15px;position:relative;transition:background .2s}
+.q + .q::before{content:"";position:absolute;top:0;left:78px;right:12px;height:1px;background:var(--line)}
+.q:hover{background:var(--surface-2)}
+.q:hover::before,.q:hover + .q::before{opacity:0}
+.q-rank{font:600 10.5px var(--display);color:var(--text-3);text-align:center}
+.q-kind{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb, var(--c) 14%, transparent);color:var(--c);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 18%, transparent)}
+.q-kind .ico{width:17px;height:17px}
+.q-body{min-width:0}
+.q-title{display:flex;align-items:center;gap:10px;min-width:0}
+.q-title b{font-weight:700;font-size:14.5px;white-space:nowrap}
+.q-subj{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--c);white-space:nowrap}
+.q-subj::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.q-type{font-size:11px;font-weight:600;color:var(--text-3);white-space:nowrap}
+.q-why{margin-top:4px;font-size:12.5px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-why b{color:var(--text);font-weight:700}
+.why{display:inline-flex;align-items:center;gap:4px;height:19px;padding:0 6px;margin-right:7px;border-radius:6px;vertical-align:-4px;font-weight:700;font-size:10.5px;letter-spacing:.02em;color:var(--wc);background:color-mix(in srgb, var(--wc) 13%, transparent)}
+.why .ico{width:11px;height:11px;stroke-width:2.2}
+.w-key{--wc:var(--volt)} .w-cold{--wc:var(--ice)} .w-due{--wc:var(--warm)} .w-bridge{--wc:var(--gold)} .w-next{--wc:#CFD2D8}
+.q-side{display:flex;align-items:center;gap:10px}
+.lv{display:flex;gap:3px}
+.lv i{width:5px;height:15px;border-radius:2px;background:rgba(255,255,255,.1)}
+.lv[data-l="1"] i:nth-child(-n+1),.lv[data-l="2"] i:nth-child(-n+2),.lv[data-l="3"] i:nth-child(-n+3){background:var(--c)}
+.lv.cold i{background:rgba(143,211,255,.22)!important}
+.lv.cold i:nth-child(-n+2){background:var(--ice)!important;opacity:.85}
+.q-min{font-size:12px;font-weight:600;color:var(--text-3);width:40px;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.q.top{background:linear-gradient(90deg, rgba(212,245,60,.075), rgba(212,245,60,0) 70%)}
+.q.top .q-rank{color:var(--volt)}
+.q-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--text-3);font-weight:500}
+.q-foot b{color:var(--text-2)}
+
+/* ───────────────────────── Asignaturas ───────────────────────── */
+.legend{display:flex;align-items:center;gap:14px;font-size:11.5px;color:var(--text-3);font-weight:600}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:14px;height:14px}
+.subj-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+.col-h{display:flex;justify-content:space-between;align-items:center;padding-bottom:6px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+.col-h .eyebrow{color:var(--text-2)}
+.col-h small{font-size:11.5px;color:var(--text-3);font-weight:500}
+.sj{display:flex;align-items:center;gap:13px;padding:10px 8px;margin:0 -8px;border-radius:14px;transition:background .2s}
+.sj:hover{background:var(--surface-2)}
+.sj-ring{width:54px;height:54px;flex:none}
+.sj-ring circle{fill:none;stroke-width:5.5;stroke-linecap:round}
+.sj-ring .t1{stroke:var(--c);opacity:.13}
+.sj-ring .o{stroke:var(--c);opacity:.5}
+.sj-ring .i{stroke:var(--c)}
+.sj-ring .o,.sj-ring .i{animation:ring-in 1.3s cubic-bezier(.2,.8,.2,1) both .45s}
+.sj-ring text{font:700 11px var(--display);fill:var(--text);text-anchor:middle;letter-spacing:-.04em}
+.sj-ring text tspan{font-size:7px;fill:var(--text-3)}
+.sj-body{flex:1;min-width:0}
+.sj-name{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sj-line{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;color:var(--text-3);font-weight:500}
+.sj-line .cov{white-space:nowrap}
+.sj-line .cov b{color:var(--text-2);font-weight:700}
+.fr{margin-left:auto;display:flex;align-items:center;gap:7px}
+.pips{display:flex;gap:2px}
+.pips i{width:4px;height:10px;border-radius:1.5px;background:rgba(255,255,255,.08)}
+.fr.hot .pips i.on{background:var(--volt)}
+.fr.ok .pips i.on{background:#C9CCD2}
+.fr.cold .pips i.on{background:var(--ice)}
+.fr b{font-size:11.5px;font-weight:700;width:30px;text-align:right;font-variant-numeric:tabular-nums}
+.fr.hot b{color:var(--volt)} .fr.ok b{color:var(--text-2)} .fr.cold b{color:var(--ice)}
+
+.subj-card{display:flex;flex-direction:column}
+.split{margin-top:auto;padding-top:18px;border-top:1px solid var(--line)}
+.split-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.split-h .eyebrow{color:var(--text-2)}
+.split-h small{font-size:11.5px;color:var(--text-3);font-weight:500}
+.split-bar{display:flex;gap:3px;height:12px}
+.split-bar i{flex:var(--n);background:var(--c);border-radius:3px;opacity:.9;transform-origin:left;animation:grow-x .9s cubic-bezier(.2,.8,.2,1) both .6s;transition:opacity .2s}
+.split-bar i:first-child{border-radius:6px 3px 3px 6px}
+.split-bar i:last-child{border-radius:3px 6px 6px 3px;box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--tco)}
+.split-bar:hover i{opacity:.45}
+.split-bar i:hover{opacity:1}
+.split-note{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:12.5px;color:var(--text-2);line-height:1.4}
+.split-note b{color:var(--tco);font-weight:700}
+.sn-ico{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb, var(--tco) 14%, transparent);color:var(--tco)}
+.sn-ico .ico{width:14px;height:14px}
+
+/* ───────────────────────── Mapa ───────────────────────── */
+.map-card{padding-bottom:18px}
+.path-pick{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:10px;background:#101113;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--text-2)}
+.path-pick b{color:var(--text)}
+.path-pick .dot{width:7px;height:7px;border-radius:50%;background:var(--pmd);box-shadow:0 0 8px var(--pmd)}
+.tree{display:block;width:100%;height:auto;overflow:visible}
+.tree .band{fill:var(--c);fill-opacity:.035}
+.tree .acc{fill:var(--c)}
+.tree .ln{font:700 12.5px var(--ui);fill:var(--text)}
+.tree .ls{font:500 11px var(--ui);fill:var(--text-3)}
+.tree .ls.ice{fill:var(--ice)}
+.tree .tl{font:700 9.5px var(--ui);letter-spacing:.14em;fill:var(--text-3)}
+.tree .tn{font:600 10px var(--display);fill:var(--text-3);text-anchor:middle}
+.tree .tg{stroke:rgba(255,255,255,.045);stroke-dasharray:2 5}
+.e{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.e.dim{stroke:#3B3E46;stroke-width:1.6;stroke-dasharray:3 5}
+.e.stub{stroke:url(#fadeR);stroke-width:1.6;stroke-dasharray:3 5}
+.e.act{stroke:var(--c);stroke-opacity:.45;stroke-width:2.2}
+.e.lit{stroke:var(--c);stroke-width:3;filter:url(#glowLine)}
+.e.flow{stroke:#fff;stroke-opacity:.8;stroke-width:1.6;stroke-dasharray:1.5 11;animation:flow 1.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-25}}
+.stub-t{font:600 10.5px var(--ui);fill:var(--text-3)}
+.node .lbl{font:600 11px var(--ui);fill:var(--text-2);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.node.m .lbl{fill:var(--text)}
+.node .lbl.ice{fill:var(--ice);font-size:10px}
+.node.m .halo{fill:var(--c);opacity:.13}
+.node.m .core,.node.cool .core{fill:var(--c)}
+.node .shine{fill:url(#shine)}
+.node .tick{fill:none;stroke:#16170F;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.node.cool .core{opacity:.34}
+.node.cool .tick{stroke:rgba(255,255,255,.5)}
+.node.cool .frost{fill:none;stroke:var(--ice);stroke-width:1.4;stroke-dasharray:2 3.3;opacity:.85;transform-box:fill-box;transform-origin:center;animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.node .badge-bg{fill:var(--bg);stroke-width:1.4}
+.node .flake{fill:none;stroke:var(--ice);stroke-width:1.3;stroke-linecap:round}
+.node.p .track,.node.a .track{fill:var(--surface-2);stroke:var(--c);stroke-opacity:.2;stroke-width:3}
+.node.a .track{stroke-opacity:.75;stroke-width:1.6}
+.node.p .arc{fill:none;stroke:var(--c);stroke-width:3;stroke-linecap:round}
+.node .pip{fill:var(--c);opacity:.22}
+.node .pip.on{opacity:1}
+.node.x .track{fill:#141518;stroke:#383B42;stroke-width:1.5;stroke-dasharray:3 3}
+.node .lock{fill:none;stroke:#5A5E67;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.node.goal .track{stroke:var(--c);stroke-opacity:.8}
+.node.goal .lock{stroke:var(--c)}
+.node .pulse{fill:none;stroke:var(--volt);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:pulse 2.4s cubic-bezier(.2,.7,.3,1) infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.85);opacity:0}}
+.node.next .track{stroke:var(--volt);stroke-opacity:.35}
+.next-pill rect{fill:var(--volt)}
+.next-pill text{font:800 8.5px var(--ui);letter-spacing:.12em;fill:var(--volt-ink);text-anchor:middle}
+.goal-pill rect{fill:color-mix(in srgb, var(--pmd) 14%, transparent);stroke:var(--pmd);stroke-opacity:.55}
+.goal-pill text{font:800 8.5px var(--ui);letter-spacing:.12em;fill:var(--pmd)}
+.lightup{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.lightup .eyebrow{margin-right:6px;white-space:nowrap}
+.lu{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:10px;background:color-mix(in srgb, var(--c) 9%, transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 20%, transparent);font-size:12.5px;font-weight:700;white-space:nowrap}
+.lu i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+.lu em{font-style:normal;font-weight:600;color:var(--text-3);font-size:11.5px}
+.map-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.map-leg{display:flex;gap:16px;font-size:11.5px;font-weight:600;color:var(--text-3)}
+.map-leg span{display:inline-flex;align-items:center;gap:6px}
+.map-leg svg{width:14px;height:14px;overflow:visible}
+.map-sum{font-size:12.5px;color:var(--text-2);font-weight:500;white-space:nowrap}
+.map-sum b{color:var(--text)}
+
+/* ───────────────────────── Logros ───────────────────────── */
+.ach{display:flex;flex-direction:column}
+.feat{display:flex;gap:16px;align-items:center;padding:16px;border-radius:18px;background:linear-gradient(135deg, rgba(255,214,107,.09), rgba(255,255,255,.02) 55%);border:1px solid rgba(255,214,107,.16)}
+.feat-badge{position:relative;width:74px;height:78px;flex:none}
+.feat-badge svg{position:absolute;inset:0;width:100%;height:100%}
+.feat-body{flex:1;min-width:0}
+.feat-body .eyebrow{color:var(--gold)}
+.feat-body h4{font:600 17px/1.1 var(--display);letter-spacing:-.03em;margin:7px 0 4px}
+.feat-body p{font-size:12.5px;color:var(--text-2);line-height:1.35}
+.feat-prog{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11.5px;color:var(--text-3);font-weight:600}
+.feat-prog .bar{flex:1;height:6px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden}
+.feat-prog .bar i{display:block;height:100%;width:66.6%;border-radius:6px;background:var(--gold);box-shadow:0 0 12px rgba(255,214,107,.5);animation:grow-w 1.2s cubic-bezier(.2,.8,.2,1) both .6s}
+.feat-prog b{color:var(--gold)}
+.sub-h{display:flex;justify-content:space-between;align-items:baseline;margin:20px 0 12px}
+.sub-h .eyebrow{color:var(--text-2)}
+.sub-h small{font-size:11.5px;color:var(--text-3);font-weight:500}
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bd{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:10px 4px 8px;border-radius:14px;transition:background .2s, transform .2s}
+.bd:hover{background:var(--surface-2);transform:translateY(-2px)}
+.bd svg{width:50px;height:55px;margin-bottom:6px}
+.bd b{font-size:12px;font-weight:700;line-height:1.2}
+.bd small{font-size:10.5px;color:var(--text-3);font-weight:500}
+.next-list{display:grid;gap:10px;margin-top:4px}
+.nl{display:flex;align-items:center;gap:12px;font-size:12.5px}
+.nl svg{width:32px;height:35px;flex:none}
+.nl .nm{font-weight:700;white-space:nowrap}
+.nl .nm small{display:block;font-size:11px;color:var(--text-3);font-weight:500}
+.nl .bar{flex:1;height:5px;border-radius:5px;background:rgba(255,255,255,.07);overflow:hidden}
+.nl .bar i{display:block;height:100%;border-radius:5px;background:#8C9099}
+.nl .v{font-size:11.5px;font-weight:700;color:var(--text-2);font-variant-numeric:tabular-nums;min-width:48px;text-align:right}
+
+/* ───────────────────────── Actividad ───────────────────────── */
+.act-body{display:flex;align-items:flex-start;gap:32px}
+.heat-svg .wb{fill:#3A4128;animation:cell .5s ease both;animation-delay:calc(500ms + var(--d,0ms))}
+.heat-svg .wb.max{fill:var(--h3)}
+.heat-svg .wb.now{fill:var(--volt)}
+.heat-svg .wb-base{stroke:rgba(255,255,255,.08)}
+.heat-svg .wb-lab{font:700 10px var(--display);fill:var(--text-2)}
+.heat-svg{display:block;flex:none}
+.heat-svg .hm-lab{font:600 10.5px var(--ui);fill:var(--text-3)}
+.heat-svg rect{animation:cell .5s ease both;animation-delay:calc(200ms + var(--d,0ms))}
+@keyframes cell{from{opacity:0;transform:scale(.6)}}
+.heat-svg rect{transform-box:fill-box;transform-origin:center}
+.c0{fill:var(--h0)}.c1{fill:var(--h1)}.c2{fill:var(--h2)}.c3{fill:var(--h3)}.c4{fill:var(--h4)}
+.hm-today{stroke:#fff;stroke-width:2}
+.hm-future{fill:none;stroke:rgba(255,255,255,.1);stroke-dasharray:2 3}
+.heat-leg{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--text-3);font-weight:600}
+.heat-leg i{width:11px;height:11px;border-radius:3px}
+.heat-leg span{margin:0 4px}
+.act-stats{flex:1;display:grid;gap:0;min-width:0;align-self:stretch;align-content:space-between}
+.as{padding:10px 0;border-top:1px solid var(--line)}
+.as:first-child{border-top:0;padding-top:0}
+.as:last-child{padding-bottom:0}
+.as-n{display:block;font:700 21px/1 var(--display);letter-spacing:-.04em}
+.as-n small{font-size:12px;font-weight:600;color:var(--text-2);letter-spacing:0;margin-left:2px}
+.as-l{display:block;font-size:12px;color:var(--text-3);margin-top:5px;font-weight:500;line-height:1.3}
+.as-l b{color:var(--text-2);font-weight:600}
+
+/* ───────────────────────── Objetivos ───────────────────────── */
+.goals{display:grid;gap:14px}
+.goal{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center}
+.g-ico{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.05);color:var(--text-2);box-shadow:inset 0 0 0 1px var(--line)}
+.g-ico .ico{width:17px;height:17px}
+.g-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px}
+.g-top b{font-size:13.5px;font-weight:700;white-space:nowrap}
+.g-val{font-size:12px;color:var(--text-2);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.g-val i{font-style:normal;color:var(--text-3);font-weight:500}
+.g-bar{height:7px;border-radius:7px;background:rgba(255,255,255,.07);overflow:hidden}
+.g-bar i{display:block;height:100%;border-radius:7px;background:var(--volt);animation:grow-w 1.2s cubic-bezier(.2,.8,.2,1) both .6s}
+.g-note{font-size:11.5px;color:var(--text-3);margin-top:6px;font-weight:500}
+.g-note b{color:var(--ice);font-weight:700}
+.g-xp{min-width:66px;text-align:center;height:26px;line-height:26px;padding:0 9px;border-radius:8px;font-size:11.5px;font-weight:700;color:var(--volt);background:rgba(212,245,60,.08);white-space:nowrap}
+.goal.done .g-ico{background:var(--volt);color:var(--volt-ink);box-shadow:0 -2px 0 rgba(0,0,0,.18) inset}
+.goal.done .g-ico .ico{stroke-width:2.8}
+.goal.done .g-top b{color:var(--text-2);text-decoration:line-through;text-decoration-color:rgba(255,255,255,.25)}
+.goal.done .g-xp{background:transparent;color:var(--text-3);box-shadow:inset 0 0 0 1px var(--line-2)}
+.goal.cold .g-bar i{background:var(--ice)}
+.goal.cold .g-ico{color:var(--ice);background:rgba(143,211,255,.08)}
+.chest{display:flex;align-items:center;gap:12px;margin-top:16px;padding:11px 14px;border-radius:14px;background:#111214;border:1px dashed var(--line-2);font-size:12.5px;color:var(--text-2);font-weight:500}
+.chest svg{width:26px;height:26px;flex:none}
+.chest b{color:var(--text)}
+.chest .pp{margin-left:auto;display:flex;gap:4px}
+.chest .pp i{width:18px;height:6px;border-radius:3px;background:rgba(255,255,255,.1)}
+.chest .pp i.on{background:var(--volt)}
+
+.foot{display:flex;justify-content:space-between;margin-top:28px;padding:0 4px;font-size:12px;color:var(--text-3);font-weight:500}
+.foot .sync{display:inline-flex;align-items:center;gap:7px}
+.foot .sync i{width:6px;height:6px;border-radius:50%;background:var(--pro);box-shadow:0 0 8px var(--pro)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Iconos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2M12 19.2v2M4.6 4.6 6 6M18 18l1.4 1.4M2.8 12h2M19.2 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5 21 8l-9 4.5L3 8z"/><path d="m3 12.2 9 4.5 9-4.5"/><path d="m3 16.4 9 4.5 9-4.5"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="12" cy="18.5" r="2.2"/><circle cx="12" cy="9.5" r="1.6"/><path d="M7.2 6h9.6M6.1 8l4.7 8.6M17.9 8l-4.7 8.6M12 11.1v5.2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3.5 20.5h17"/><path d="M6.5 16.5v-4M11 16.5v-9M15.5 16.5v-6M20 16.5V4.5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 2.5 4.5 13.6h6.6l-1.2 7.9 8.7-11.2H12z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4.8h-4.8"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.4 2.6 6.9 7.5 8.5-4.9 1.6-6.9 4.1-7.5 8.5-.6-4.4-2.6-6.9-7.5-8.5 4.9-1.6 6.9-4.1 7.5-8.5z"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/><path d="m9.5 4.5 2.5 2 2.5-2M9.5 19.5l2.5-2 2.5 2"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15.5" r="4"/><path d="m10.9 12.6 8.6-8.6M16.5 7l2.5 2.5M14.5 9l1.8 1.8"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3.1-3.1a4 4 0 0 0-5.7-5.7l-.9.9"/><path d="M14 10a4 4 0 0 0-5.7 0l-3.1 3.1a4 4 0 0 0 5.7 5.7l.9-.9"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5.5 21V4M5.5 4.5h11.5l-2.4 4 2.4 4H5.5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/></symbol>
+    <symbol id="i-brain" viewBox="0 0 24 24"><path d="M9 4.5a3 3 0 0 0-3 3 3 3 0 0 0-2 5.2A3.2 3.2 0 0 0 7 18a2.5 2.5 0 0 0 5 .5V6.8A2.5 2.5 0 0 0 9 4.5z"/><path d="M15 4.5a3 3 0 0 1 3 3 3 3 0 0 1 2 5.2 3.2 3.2 0 0 1-3 5.3 2.5 2.5 0 0 1-5 .5"/></symbol>
+  </defs>
+</svg>
+
+<!-- ═════════════════════ Barra superior ═════════════════════ -->
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#" aria-label="Atlas, inicio">
+      <svg viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="27" height="27" rx="8.5" fill="#1C1E22" stroke="rgba(255,255,255,.1)"/>
+        <path d="M8 20.5 14 7.5l6 13M10.6 15h6.8" fill="none" stroke="#5B5F68" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="14" cy="7.5" r="2.6" fill="#D4F53C"/>
+        <circle cx="8" cy="20.5" r="2.2" fill="#F3F2ED"/>
+        <circle cx="20" cy="20.5" r="2.2" fill="#F3F2ED"/>
+      </svg>
+      Atlas
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#" class="active" aria-current="page"><svg class="ico"><use href="#i-sun"/></svg>Hoy</a>
+      <a href="#"><svg class="ico"><use href="#i-layers"/></svg>Asignaturas</a>
+      <a href="#"><svg class="ico"><use href="#i-map"/></svg>Mapa</a>
+      <a href="#"><svg class="ico"><use href="#i-chart"/></svg>Progreso</a>
+    </nav>
+    <button class="search" type="button" aria-label="Buscar (Ctrl K)">
+      <svg class="ico"><use href="#i-search"/></svg>
+      <span>Buscar conceptos, temas o asignaturas…</span>
+      <kbd>Ctrl</kbd><kbd>K</kbd>
+    </button>
+    <button class="btn-log" type="button"><svg class="ico"><use href="#i-plus"/></svg>Registrar estudio</button>
+    <div class="avatar" title="Nivel 7 · 2.860 / 3.200 XP">
+      <svg viewBox="0 0 42 42" aria-hidden="true">
+        <circle cx="21" cy="21" r="19.5" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="2.5"/>
+        <circle cx="21" cy="21" r="19.5" fill="none" stroke="#D4F53C" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="109.5 122.5" transform="rotate(-90 21 21)"/>
+      </svg>
+      <span class="face">H</span>
+      <span class="lv">7</span>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- ═════════════════════ Saludo ═════════════════════ -->
+  <section class="hello">
+    <div>
+      <p class="eyebrow">Jueves, 24 de septiembre · Semana 2 de 20 del cuatrimestre</p>
+      <h1>Buenas tardes, Hugo<span class="wave">.</span></h1>
+      <p class="sub">Te quedan <b>18 repasos</b> y <b>6 conceptos nuevos</b>. <span class="ice">Matrices</span> empieza a enfriarse. Termina la sesión de hoy y subes a <b>Nivel 8</b>.</p>
+    </div>
+    <div class="hello-stats">
+      <div class="hs"><span class="hs-n tnum">14<small>h</small> 05<small>min</small></span><span class="hs-l">esta semana · meta 25 h</span></div>
+      <div class="hs"><span class="hs-n tnum">23<small>%</small></span><span class="hs-l">dominio global</span></div>
+      <div class="hs"><span class="hs-n tnum">91<small>%</small></span><span class="hs-l">recuerdo medio</span></div>
+    </div>
+  </section>
+
+  <section class="bento">
+
+    <!-- ═════════════ 1 · Sesión de hoy ═════════════ -->
+    <article class="card hero span-6" style="--delay:40ms" aria-labelledby="t-session">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <div class="hero-top">
+            <span class="dot-live"></span>
+            <span class="eyebrow" id="t-session">Sesión de hoy</span>
+            <span class="pill-soft"><svg class="ico" style="width:13px;height:13px"><use href="#i-refresh"/></svg>Planificada con FSRS</span>
+          </div>
+
+          <div class="hero-count">
+            <div class="hc"><span class="hc-n tnum">18</span><span class="hc-l">repasos</span></div>
+            <span class="hc-plus">+</span>
+            <div class="hc new"><span class="hc-n tnum">6</span><span class="hc-l">conceptos<br>nuevos</span></div>
+          </div>
+
+          <div class="hero-meta">
+            <span class="hm-chip"><svg class="ico"><use href="#i-clock"/></svg>~2 h 10 min</span>
+            <span class="hm-chip"><svg class="ico"><use href="#i-layers"/></svg>7 asignaturas</span>
+            <span class="hm-chip xp"><svg class="ico fill"><use href="#i-bolt"/></svg>+420 XP</span>
+          </div>
+
+          <div class="mix" aria-label="Reparto por asignatura">
+            <div class="mix-bar">
+              <i style="--n:6;--c:var(--cal);--k:0"></i>
+              <i style="--n:5;--c:var(--eda);--k:1"></i>
+              <i style="--n:4;--c:var(--alg);--k:2"></i>
+              <i style="--n:3;--c:var(--log);--k:3"></i>
+              <i style="--n:3;--c:var(--pro);--k:4"></i>
+              <i style="--n:2;--c:var(--moe);--k:5"></i>
+              <i style="--n:1;--c:var(--tco);--k:6"></i>
+            </div>
+            <div class="mix-leg">
+              <span style="--c:var(--cal)">Cálculo <b>6</b></span>
+              <span style="--c:var(--eda)">Estructuras <b>5</b></span>
+              <span style="--c:var(--alg)">Álgebra <b>4</b></span>
+              <span style="--c:var(--log)">Lógica <b>3</b></span>
+              <span style="--c:var(--pro)">Programación <b>3</b></span>
+              <span style="--c:var(--moe)">Métodos <b>2</b></span>
+              <span style="--c:var(--tco)">Teoría <b>1</b></span>
+            </div>
+          </div>
+
+          <div class="hero-cta">
+            <button class="btn-go" type="button">Empezar sesión <span class="go-ico"><svg class="ico"><use href="#i-arrow"/></svg></span></button>
+            <div class="lvlup">
+              <svg viewBox="0 0 60 66" aria-hidden="true">
+                <path d="M30 8 52.5 21v26L30 60 7.5 47V21z" fill="#23261B" stroke="#23261B" stroke-width="5" stroke-linejoin="round"/>
+                <path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#1A1C14" stroke="#D4F53C" stroke-width="3" stroke-linejoin="round" stroke-dasharray="5 4"/>
+                <text x="30" y="37" text-anchor="middle" style="font:800 20px var(--display);fill:#D4F53C">8</text>
+              </svg>
+              <div><b>Subes a Nivel 8</b><span>rango Navegante</span></div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-side" aria-label="Tu día">
+          <svg class="rings" viewBox="0 0 200 200" role="img" aria-label="Progreso de hoy">
+            <g transform="rotate(-90 100 100)">
+              <circle class="rt" cx="100" cy="100" r="86" stroke="#D4F53C"/>
+              <circle class="rp" cx="100" cy="100" r="86" stroke="#D4F53C" stroke-dasharray="94.6 540.4"/>
+              <circle class="rt" cx="100" cy="100" r="68" stroke="#FF9B5E"/>
+              <circle class="rp" cx="100" cy="100" r="68" stroke="#FF9B5E" stroke-dasharray="170.9 427.3"/>
+              <circle class="rt" cx="100" cy="100" r="50" stroke="#8AB4FF"/>
+              <circle class="rp" cx="100" cy="100" r="50" stroke="#8AB4FF" stroke-dasharray="44.9 314.2"/>
+            </g>
+            <text x="100" y="98" style="font:700 22px var(--display);letter-spacing:-.04em">0:42</text>
+            <text x="100" y="116" style="font:600 10.5px var(--ui);fill:var(--text-3);letter-spacing:.08em">DE 4 H</text>
+          </svg>
+          <ul class="ring-leg">
+            <li style="--c:#D4F53C"><i></i>Tiempo<b class="tnum">0 h 42 <small>/ 4 h</small></b></li>
+            <li style="--c:#FF9B5E"><i></i>Repasos<b class="tnum">12 <small>/ 30</small></b></li>
+            <li style="--c:#8AB4FF"><i></i>Nuevos<b class="tnum">1 <small>/ 7</small></b></li>
+          </ul>
+        </aside>
+      </div>
+    </article>
+
+    <!-- ═════════════ 2 · Jugador ═════════════ -->
+    <article class="card player span-3" style="--delay:110ms" aria-label="Tu progreso como jugador">
+      <div class="pl-top">
+        <svg class="hex" viewBox="0 0 60 66" aria-hidden="true">
+          <path d="M30 9 52.5 22v26L30 61 7.5 48V22z" fill="#8FA81F" stroke="#8FA81F" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#D4F53C" stroke="#D4F53C" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M30 11.5 46 20.8v18.4L30 48.5 14 39.2V20.8z" fill="rgba(255,255,255,.18)" stroke="rgba(21,26,2,.16)" stroke-width="1.2" stroke-linejoin="round"/>
+          <text x="30" y="38" text-anchor="middle" style="font:800 21px var(--display);fill:#151A02;letter-spacing:-.04em">7</text>
+        </svg>
+        <div class="pl-id">
+          <span class="eyebrow">Nivel 7</span>
+          <b>Cartógrafo</b>
+        </div>
+        <span class="pl-today"><svg class="ico fill"><use href="#i-bolt"/></svg>+96 hoy</span>
+      </div>
+
+      <div class="xp">
+        <div class="xp-bar" role="progressbar" aria-valuenow="2860" aria-valuemin="0" aria-valuemax="3200" aria-label="Experiencia">
+          <div class="xp-proj" title="+420 XP con la sesión de hoy"></div>
+          <div class="xp-fill"></div>
+          <div class="xp-ticks"></div>
+        </div>
+        <div class="xp-meta tnum"><span><b>2.860</b> / 3.200 XP</span><span>Nivel 8 en <b class="v">340 XP</b></span></div>
+      </div>
+
+      <div class="pl-streak">
+        <svg class="flame" viewBox="0 0 24 24" aria-hidden="true">
+          <defs><linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF4F1F"/><stop offset=".6" stop-color="#FF8A2B"/><stop offset="1" stop-color="#FFC53D"/></linearGradient></defs>
+          <path fill="url(#fl)" d="M12 1.8c1 3.6 5.6 5.9 5.6 11.6a5.6 5.6 0 0 1-11.2 0c0-2.6 1.2-4.4 2.7-5.8.2 1.9 1 3.1 2.3 3.7C10.6 8.3 10.8 4.8 12 1.8z"/>
+          <path fill="#FFE39A" d="M12 12.3c.5 1.6 2.5 2.5 2.5 4.6a2.5 2.5 0 0 1-5 0c0-1.3.8-2.2 1.6-2.8.1.7.4 1.1.9 1.3-.2-1.1-.2-2.1 0-3.1z"/>
+        </svg>
+        <div>
+          <span class="st-n tnum">12</span>
+          <span class="st-l">días de racha</span><span class="st-rec">récord 23 días</span>
+        </div>
+        <div class="shields" title="Un comodín protege tu racha si un día no llegas">
+          <div class="row">
+            <svg viewBox="0 0 24 24"><path d="M12 2.8 19 5.8v5.5c0 4.6-3 8-7 9.7-4-1.7-7-5.1-7-9.7V5.8z" fill="rgba(143,211,255,.16)" stroke="#8FD3FF" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 8.2v7.2M8.9 10l6.2 3.6M15.1 10l-6.2 3.6" stroke="#8FD3FF" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2.8 19 5.8v5.5c0 4.6-3 8-7 9.7-4-1.7-7-5.1-7-9.7V5.8z" fill="rgba(143,211,255,.16)" stroke="#8FD3FF" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 8.2v7.2M8.9 10l6.2 3.6M15.1 10l-6.2 3.6" stroke="#8FD3FF" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </div>
+          <small>2 comodines</small>
+        </div>
+      </div>
+
+      <div>
+        <div class="wk-head"><span>Días activos esta semana</span><b class="tnum">4 de 4</b></div>
+        <div class="wk">
+          <div class="wd done"><i><svg class="ico"><use href="#i-check"/></svg></i>L</div>
+          <div class="wd done"><i><svg class="ico"><use href="#i-check"/></svg></i>M</div>
+          <div class="wd done"><i><svg class="ico"><use href="#i-check"/></svg></i>X</div>
+          <div class="wd done today"><i><svg class="ico"><use href="#i-check"/></svg></i>J</div>
+          <div class="wd"><i></i>V</div>
+          <div class="wd"><i></i>S</div>
+          <div class="wd"><i></i>D</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ═════════════ 3 · Próximos hitos ═════════════ -->
+    <article class="card ms-card span-3" style="--delay:170ms" aria-labelledby="t-ms">
+      <div class="card-h">
+        <h2 class="card-t" id="t-ms">Próximos hitos</h2>
+        <a class="link" href="#"><svg class="ico"><use href="#i-cal"/></svg>Calendario</a>
+      </div>
+      <ul class="ms-list">
+        <li class="ms urgent" style="--c:var(--pro)">
+          <div class="ms-days"><b class="tnum">9</b><span>días</span></div>
+          <div class="ms-body">
+            <p class="ms-t">Entrega · Práctica 1</p>
+            <p class="ms-s">Programación · sáb 3 oct</p>
+          </div>
+          <div class="ms-rd" style="--p:72"><b class="tnum">72 %</b><small>listo</small></div>
+        </li>
+        <li class="ms" style="--c:var(--log)">
+          <div class="ms-days"><b class="tnum">14</b><span>días</span></div>
+          <div class="ms-body">
+            <p class="ms-t">Test · Tema 2</p>
+            <p class="ms-s">Lógica · jue 8 oct</p>
+          </div>
+          <div class="ms-rd"><b class="tnum">48 %</b><small>listo</small></div>
+        </li>
+        <li class="ms" style="--c:var(--pmd)">
+          <div class="ms-days"><b class="tnum">18</b><span>días</span></div>
+          <div class="ms-body">
+            <p class="ms-t">Entrega · Actividad PCA</p>
+            <p class="ms-s">Preprocesamiento · lun 12 oct</p>
+          </div>
+          <div class="ms-rd low"><b class="tnum">31 %</b><small>listo</small></div>
+        </li>
+        <li class="ms" style="--c:var(--cal)">
+          <div class="ms-days"><b class="tnum">23</b><span>días</span></div>
+          <div class="ms-body">
+            <p class="ms-t">Parcial 1 · Cálculo</p>
+            <p class="ms-s">sáb 17 oct · temas 1–3</p>
+          </div>
+          <div class="ms-rd"><b class="tnum">44 %</b><small>listo</small></div>
+        </li>
+        <li class="ms" style="--c:var(--eda)">
+          <div class="ms-days"><b class="tnum">35</b><span>días</span></div>
+          <div class="ms-body">
+            <p class="ms-t">Parcial 1 · Estructuras</p>
+            <p class="ms-s">jue 29 oct · temas 1–4</p>
+          </div>
+          <div class="ms-rd low"><b class="tnum">22 %</b><small>listo</small></div>
+        </li>
+      </ul>
+      <div class="ms-foot">
+        Notas
+        <span class="grade" style="--c:var(--log)"><i></i>Lógica T1 <b>9,5</b></span>
+        <span class="grade" style="--c:var(--alg)"><i></i>Álgebra C1 <b>10</b></span>
+      </div>
+    </article>
+
+    <!-- ═════════════ 4 · Cola de estudio ═════════════ -->
+    <article class="card span-6" style="--delay:230ms" aria-labelledby="t-queue">
+      <div class="card-h">
+        <h2 class="card-t" id="t-queue">Cola de estudio <span class="meta">ordenada por impacto</span></h2>
+        <div class="seg" role="tablist">
+          <button class="on" role="tab" aria-selected="true">Todo <em>24</em></button>
+          <button role="tab">Repasos <em>18</em></button>
+          <button role="tab">Nuevos <em>6</em></button>
+        </div>
+      </div>
+
+      <ol class="queue">
+        <li class="q top" style="--c:var(--cal)">
+          <span class="q-rank">01</span>
+          <span class="q-kind" title="Repaso"><svg class="ico"><use href="#i-refresh"/></svg></span>
+          <div class="q-body">
+            <div class="q-title"><b>Regla de la cadena</b><span class="q-subj">Cálculo</span></div>
+            <p class="q-why"><span class="why w-key"><svg class="ico"><use href="#i-key"/></svg>CLAVE</span>Desbloquea <b>9 conceptos</b> · la usarás en <b>Preprocesamiento</b> y <b>Algoritmia</b></p>
+          </div>
+          <div class="q-side"><span class="lv" data-l="1" title="Dominio 1/3"><i></i><i></i><i></i></span><span class="q-min">8 min</span></div>
+        </li>
+        <li class="q" style="--c:var(--alg)">
+          <span class="q-rank">02</span>
+          <span class="q-kind" title="Repaso"><svg class="ico"><use href="#i-refresh"/></svg></span>
+          <div class="q-body">
+            <div class="q-title"><b>Matrices</b><span class="q-subj">Álgebra</span></div>
+            <p class="q-why"><span class="why w-cold"><svg class="ico"><use href="#i-snow"/></svg>SE ENFRÍA</span>Último repaso hace <b>11 días</b> · frescura al <b>62 %</b> y bajando</p>
+          </div>
+          <div class="q-side"><span class="lv cold" data-l="3" title="Dominio 3/3, enfriándose"><i></i><i></i><i></i></span><span class="q-min">5 min</span></div>
+        </li>
+        <li class="q" style="--c:var(--pro)">
+          <span class="q-rank">03</span>
+          <span class="q-kind" title="Repaso"><svg class="ico"><use href="#i-refresh"/></svg></span>
+          <div class="q-body">
+            <div class="q-title"><b>Recursividad</b><span class="q-subj">Programación</span></div>
+            <p class="q-why"><span class="why w-due"><svg class="ico"><use href="#i-cal"/></svg>ENTREGA EN 9 D</span>La pide la <b>Práctica 1</b> · base de <b>DFS</b> y <b>Árboles binarios</b></p>
+          </div>
+          <div class="q-side"><span class="lv" data-l="2" title="Dominio 2/3"><i></i><i></i><i></i></span><span class="q-min">6 min</span></div>
+        </li>
+        <li class="q" style="--c:var(--log)">
+          <span class="q-rank">04</span>
+          <span class="q-kind" title="Concepto nuevo"><svg class="ico"><use href="#i-spark"/></svg></span>
+          <div class="q-body">
+            <div class="q-title"><b>Resolución</b><span class="q-subj">Lógica</span><span class="q-type">· nuevo</span></div>
+            <p class="q-why"><span class="why w-due"><svg class="ico"><use href="#i-cal"/></svg>TEST 8 OCT</span>Entra en el <b>Tema 2</b> · ya dominas <b>Forma clausal</b> y <b>Unificación</b></p>
+          </div>
+          <div class="q-side"><span class="lv" data-l="0" title="Dominio 0/3"><i></i><i></i><i></i></span><span class="q-min">14 min</span></div>
+        </li>
+        <li class="q" style="--c:var(--moe)">
+          <span class="q-rank">05</span>
+          <span class="q-kind" title="Repaso"><svg class="ico"><use href="#i-refresh"/></svg></span>
+          <div class="q-body">
+            <div class="q-title"><b>Varianza</b><span class="q-subj">Métodos operativos</span></div>
+            <p class="q-why"><span class="why w-bridge"><svg class="ico"><use href="#i-link"/></svg>PUENTE</span>Se usa en <b>3 asignaturas</b> · a un nivel del logro <b>Puente</b></p>
+          </div>
+          <div class="q-side"><span class="lv" data-l="2" title="Dominio 2/3"><i></i><i></i><i></i></span><span class="q-min">4 min</span></div>
+        </li>
+        <li class="q" style="--c:var(--eda)">
+          <span class="q-rank">06</span>
+          <span class="q-kind" title="Concepto nuevo"><svg class="ico"><use href="#i-spark"/></svg></span>
+          <div class="q-body">
+            <div class="q-title"><b>Árboles binarios de búsqueda</b><span class="q-subj">Estructuras</span><span class="q-type">· nuevo</span></div>
+            <p class="q-why"><span class="why w-next"><svg class="ico"><use href="#i-arrow"/></svg>SIGUIENTE</span>Siguiente en el temario · abre <b>AVL</b>, <b>árboles B</b> y <b>montículos</b></p>
+          </div>
+          <div class="q-side"><span class="lv" data-l="0" title="Dominio 0/3"><i></i><i></i><i></i></span><span class="q-min">15 min</span></div>
+        </li>
+        <li class="q" style="--c:var(--tco)">
+          <span class="q-rank">07</span>
+          <span class="q-kind" title="Concepto nuevo"><svg class="ico"><use href="#i-spark"/></svg></span>
+          <div class="q-body">
+            <div class="q-title"><b>Autómatas finitos</b><span class="q-subj">Teoría de la computación</span><span class="q-type">· nuevo</span></div>
+            <p class="q-why"><span class="why w-key"><svg class="ico"><use href="#i-key"/></svg>CLAVE</span>Base de <b>6 conceptos</b> · abre <b>Lenguajes regulares</b> y <b>Máquinas de Turing</b></p>
+          </div>
+          <div class="q-side"><span class="lv" data-l="0" title="Dominio 0/3"><i></i><i></i><i></i></span><span class="q-min">12 min</span></div>
+        </li>
+      </ol>
+      <div class="q-foot">
+        <span><b>+17 más</b> en la cola · 12 repasos + 5 nuevos</span>
+        <a class="link" href="#">Ver cola completa <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </div>
+    </article>
+
+    <!-- ═════════════ 5 · Asignaturas ═════════════ -->
+    <article class="card subj-card span-6" style="--delay:290ms" aria-labelledby="t-subj">
+      <div class="card-h">
+        <h2 class="card-t" id="t-subj">Asignaturas</h2>
+        <div class="legend">
+          <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="#A7A9AF" stroke-opacity=".45" stroke-width="2.2"/></svg>Cobertura</span>
+          <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="3.2" fill="none" stroke="#F3F2ED" stroke-width="2.2"/></svg>Dominio</span>
+          <span><svg viewBox="0 0 14 14"><rect x="1" y="3" width="2.5" height="8" rx="1" fill="#D4F53C"/><rect x="5.2" y="3" width="2.5" height="8" rx="1" fill="#D4F53C"/><rect x="9.4" y="3" width="2.5" height="8" rx="1" fill="#3A3C42"/></svg>Frescura</span>
+        </div>
+      </div>
+
+      <div class="subj-cols">
+        <!-- 1º -->
+        <div>
+          <div class="col-h"><span class="eyebrow">1º curso</span><small>dominio medio 34 %</small></div>
+
+          <div class="sj" style="--c:var(--iac)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="50.3 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="25.6 106.8"/></g><text x="30" y="34">24<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">IA y conocimiento</div>
+              <div class="sj-line"><span class="cov"><b>32 %</b> visto</span><span class="fr hot"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>88 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--cal)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="59.7 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="28.8 106.8"/></g><text x="30" y="34">27<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Cálculo y métodos numéricos</div>
+              <div class="sj-line"><span class="cov"><b>38 %</b> visto</span><span class="fr ok"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><b>74 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--log)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="66.0 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="37.4 106.8"/></g><text x="30" y="34">35<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Lógica computacional</div>
+              <div class="sj-line"><span class="cov"><b>42 %</b> visto</span><span class="fr hot"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>91 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--alg)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="75.4 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="35.2 106.8"/></g><text x="30" y="34">33<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Álgebra y matemática discreta</div>
+              <div class="sj-line"><span class="cov"><b>48 %</b> visto</span><span class="fr cold"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><b>58 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--pro)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="89.5 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="52.3 106.8"/></g><text x="30" y="34">49<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Fundamentos de programación</div>
+              <div class="sj-line"><span class="cov"><b>57 %</b> visto</span><span class="fr hot"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>94 %</b></span></div></div>
+          </div>
+        </div>
+
+        <!-- 2º -->
+        <div>
+          <div class="col-h"><span class="eyebrow">2º curso</span><small>dominio medio 12 %</small></div>
+
+          <div class="sj" style="--c:var(--alc)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="31.4 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="12.8 106.8"/></g><text x="30" y="34">12<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Algoritmia y complejidad</div>
+              <div class="sj-line"><span class="cov"><b>20 %</b> visto</span><span class="fr ok"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><b>81 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--eda)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="40.8 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="18.2 106.8"/></g><text x="30" y="34">17<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Estructuras de datos</div>
+              <div class="sj-line"><span class="cov"><b>26 %</b> visto</span><span class="fr hot"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>86 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--tco)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="23.6 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="9.6 106.8"/></g><text x="30" y="34">9<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Teoría de la computación</div>
+              <div class="sj-line"><span class="cov"><b>15 %</b> visto</span><span class="fr ok"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><b>70 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--moe)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="34.6 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="15.0 106.8"/></g><text x="30" y="34">14<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Métodos operativos y estadísticos</div>
+              <div class="sj-line"><span class="cov"><b>22 %</b> visto</span><span class="fr cold"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><b>62 %</b></span></div></div>
+          </div>
+          <div class="sj" style="--c:var(--pmd)">
+            <svg class="sj-ring" viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="t1" cx="30" cy="30" r="25"/><circle class="o" cx="30" cy="30" r="25" stroke-dasharray="28.3 157.1"/><circle class="t1" cx="30" cy="30" r="17"/><circle class="i" cx="30" cy="30" r="17" stroke-dasharray="10.7 106.8"/></g><text x="30" y="34">10<tspan>%</tspan></text></svg>
+            <div class="sj-body"><div class="sj-name">Preprocesamiento y modelos de datos</div>
+              <div class="sj-line"><span class="cov"><b>18 %</b> visto</span><span class="fr ok"><span class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><b>77 %</b></span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="split-h"><span class="eyebrow">Reparto de esta semana</span><small class="tnum">14 h 05 min en 10 asignaturas</small></div>
+        <div class="split-bar">
+          <i style="--n:150;--c:var(--cal)" title="Cálculo · 2 h 30 min"></i>
+          <i style="--n:120;--c:var(--alg)" title="Álgebra · 2 h"></i>
+          <i style="--n:115;--c:var(--pro)" title="Programación · 1 h 55 min"></i>
+          <i style="--n:100;--c:var(--log)" title="Lógica · 1 h 40 min"></i>
+          <i style="--n:95;--c:var(--eda)" title="Estructuras de datos · 1 h 35 min"></i>
+          <i style="--n:70;--c:var(--iac)" title="IA y conocimiento · 1 h 10 min"></i>
+          <i style="--n:65;--c:var(--alc)" title="Algoritmia · 1 h 05 min"></i>
+          <i style="--n:55;--c:var(--moe)" title="Métodos operativos · 55 min"></i>
+          <i style="--n:40;--c:var(--pmd)" title="Preprocesamiento · 40 min"></i>
+          <i style="--n:35;--c:var(--tco)" title="Teoría de la computación · 35 min"></i>
+        </div>
+        <p class="split-note"><span class="sn-ico"><svg class="ico"><use href="#i-spark"/></svg></span><span><b>Teoría de la computación</b> solo suma 35 min esta semana. Atlas le reserva 40 min en la sesión de mañana.</span></p>
+      </div>
+    </article>
+
+    <!-- ═════════════ 6 · Mapa (árbol de habilidades) ═════════════ -->
+    <article class="card map-card span-8" style="--delay:350ms" aria-labelledby="t-map">
+      <div class="card-h">
+        <h2 class="card-t" id="t-map">Mapa de habilidades <span class="meta">árbol por carriles · fragmento</span></h2>
+        <div style="display:flex;gap:14px;align-items:center">
+          <span class="path-pick"><span class="dot"></span>Camino a <b>PCA</b><svg class="ico" style="width:14px;height:14px"><use href="#i-chev"/></svg></span>
+          <a class="link" href="#">Abrir mapa <svg class="ico"><use href="#i-up-right"/></svg></a>
+        </div>
+      </div>
+
+      <svg class="tree" viewBox="0 0 864 364" role="img" aria-label="Árbol de habilidades: Cálculo, Álgebra, Métodos operativos y Preprocesamiento, camino hacia PCA">
+        <defs>
+          <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowLine" filterUnits="userSpaceOnUse" x="0" y="0" width="864" height="364"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <radialGradient id="shine" cx="35%" cy="28%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <linearGradient id="fadeR" gradientUnits="userSpaceOnUse" x1="779" y1="0" x2="828" y2="0"><stop offset="0" stop-color="#4A4D55"/><stop offset="1" stop-color="#4A4D55" stop-opacity="0"/></linearGradient>
+        </defs>
+
+        <!-- carriles -->
+        <g>
+          <g style="--c:var(--cal)"><rect class="band" x="0" y="38" width="864" height="76" rx="14"/><rect class="acc" x="0" y="52" width="3" height="48" rx="1.5"/><text class="ln" x="18" y="67">Cálculo</text><text class="ls" x="18" y="84">2 de 5 dominados</text></g>
+          <g style="--c:var(--alg)"><rect class="band" x="0" y="118" width="864" height="76" rx="14"/><rect class="acc" x="0" y="132" width="3" height="48" rx="1.5"/><text class="ln" x="18" y="147">Álgebra</text><text class="ls ice" x="18" y="164">2 de 5 · 1 se enfría</text></g>
+          <g style="--c:var(--moe)"><rect class="band" x="0" y="198" width="864" height="76" rx="14"/><rect class="acc" x="0" y="212" width="3" height="48" rx="1.5"/><text class="ln" x="18" y="227">Métodos op. y est.</text><text class="ls" x="18" y="244">1 de 4 dominados</text></g>
+          <g style="--c:var(--pmd)"><rect class="band" x="0" y="278" width="864" height="76" rx="14"/><rect class="acc" x="0" y="292" width="3" height="48" rx="1.5"/><text class="ln" x="18" y="307">Preprocesamiento</text><text class="ls" x="18" y="324">1 de 3 dominados</text></g>
+        </g>
+
+        <!-- niveles de profundidad -->
+        <g>
+          <text class="tl" x="18" y="23">PROFUNDIDAD</text>
+          <text class="tn" x="232" y="23">I</text><text class="tn" x="364" y="23">II</text><text class="tn" x="496" y="23">III</text><text class="tn" x="628" y="23">IV</text><text class="tn" x="760" y="23">V</text>
+          <path class="tg" d="M232 38V354M364 38V354M496 38V354M628 38V354M760 38V354"/>
+        </g>
+
+        <!-- conexiones -->
+        <g>
+          <path class="e dim" d="M515 70H609M647 70H741M647 150H741M515 310H741"/>
+          <path class="e dim" d="M647 230C690 230 722 282 748 298"/>
+          <path class="e dim" d="M647 150C674 150 680 202 706 202H736C752 202 760 214 760 232V291"/>
+          <path class="e stub" d="M779 70H826M779 150H826"/>
+          <text class="stub-t" x="832" y="74">+4</text>
+          <text class="stub-t" x="832" y="154">+2</text>
+
+          <path class="e act" style="--c:var(--alg)" d="M383 150H477M515 150H609"/>
+          <path class="e act" style="--c:var(--alg)" d="M383 150C412 150 416 202 444 202H574C596 202 608 209 616 218"/>
+          <path class="e act" style="--c:var(--moe)" d="M383 230H477M515 230H609"/>
+          <path class="e act" style="--c:var(--moe)" d="M383 230C424 230 456 280 484 298"/>
+
+          <path class="e lit" style="--c:var(--cal)" d="M251 70H345M383 70H477"/>
+          <path class="e lit" style="--c:var(--alg)" d="M251 150H345"/>
+          <path class="e lit" style="--c:var(--moe)" d="M251 230H345"/>
+          <path class="e lit" style="--c:var(--pmd)" d="M251 310H477"/>
+          <path class="e flow" d="M383 70H477"/>
+        </g>
+
+        <!-- nodos -->
+        <g>
+          <!-- Cálculo -->
+          <g class="node m" style="--c:var(--cal)" transform="translate(232 70)"><circle class="halo" r="23"/><circle class="core" r="15" filter="url(#glow)"/><circle class="shine" r="15"/><path class="tick" d="M-5 .5l3.2 3.2L5.2-3.6"/><text class="lbl" y="32">Límites</text></g>
+          <g class="node m" style="--c:var(--cal)" transform="translate(364 70)"><circle class="halo" r="23"/><circle class="core" r="15" filter="url(#glow)"/><circle class="shine" r="15"/><path class="tick" d="M-5 .5l3.2 3.2L5.2-3.6"/><text class="lbl" y="32">Derivadas</text></g>
+          <g class="node p next" style="--c:var(--cal)" transform="translate(496 70)">
+            <circle class="pulse" r="15"/><circle class="track" r="15"/><circle class="arc" r="15" stroke-dasharray="31.4 94.3" transform="rotate(-90)"/>
+            <circle class="pip on" cx="-5.5" r="2.1"/><circle class="pip" r="2.1"/><circle class="pip" cx="5.5" r="2.1"/>
+            <g class="next-pill" transform="translate(0 -30)"><rect x="-34" y="-9" width="68" height="18" rx="9"/><text y="3">SIGUIENTE</text></g>
+            <text class="lbl" y="32" style="fill:var(--text)">Regla de la</text><text class="lbl" y="45" style="fill:var(--text)">cadena</text>
+          </g>
+          <g class="node x" transform="translate(628 70)"><circle class="track" r="15"/><path class="lock" d="M-4 -.5h8v6h-8z M-2.4 -.5v-2.3a2.4 2.4 0 0 1 4.8 0v2.3"/><text class="lbl" y="32">Gradiente</text></g>
+          <g class="node x" transform="translate(760 70)"><circle class="track" r="15"/><path class="lock" d="M-4 -.5h8v6h-8z M-2.4 -.5v-2.3a2.4 2.4 0 0 1 4.8 0v2.3"/><text class="lbl" y="32">Descenso de</text><text class="lbl" y="45">gradiente</text></g>
+
+          <!-- Álgebra -->
+          <g class="node m" style="--c:var(--alg)" transform="translate(232 150)"><circle class="halo" r="23"/><circle class="core" r="15" filter="url(#glow)"/><circle class="shine" r="15"/><path class="tick" d="M-5 .5l3.2 3.2L5.2-3.6"/><text class="lbl" y="32">Vectores</text></g>
+          <g class="node cool" style="--c:var(--alg)" transform="translate(364 150)">
+            <circle class="frost" r="21"/><circle class="core" r="15"/><path class="tick" d="M-5 .5l3.2 3.2L5.2-3.6"/>
+            <g transform="translate(12 -12)"><circle class="badge-bg" r="7.5" stroke="#8FD3FF"/><path class="flake" d="M0-3.8V3.8M-3.3-1.9 3.3 1.9M-3.3 1.9 3.3-1.9"/></g>
+            <text class="lbl" y="32">Matrices</text><text class="lbl ice" y="45">62 % · se enfría</text>
+          </g>
+          <g class="node p" style="--c:var(--alg)" transform="translate(496 150)"><circle class="track" r="15"/><circle class="arc" r="15" stroke-dasharray="62.8 94.3" transform="rotate(-90)"/><circle class="pip on" cx="-5.5" r="2.1"/><circle class="pip on" r="2.1"/><circle class="pip" cx="5.5" r="2.1"/><text class="lbl" y="32">Determinantes</text></g>
+          <g class="node p" style="--c:var(--alg)" transform="translate(628 150)"><circle class="track" r="15"/><circle class="arc" r="15" stroke-dasharray="31.4 94.3" transform="rotate(-90)"/><circle class="pip on" cx="-5.5" r="2.1"/><circle class="pip" r="2.1"/><circle class="pip" cx="5.5" r="2.1"/><text class="lbl" y="32">Autovalores</text></g>
+          <g class="node x" transform="translate(760 150)"><circle class="track" r="15"/><path class="lock" d="M-4 -.5h8v6h-8z M-2.4 -.5v-2.3a2.4 2.4 0 0 1 4.8 0v2.3"/><text class="lbl" y="32">Diagonalización</text></g>
+
+          <!-- Métodos operativos y estadísticos -->
+          <g class="node m" style="--c:var(--moe)" transform="translate(232 230)"><circle class="halo" r="23"/><circle class="core" r="15" filter="url(#glow)"/><circle class="shine" r="15"/><path class="tick" d="M-5 .5l3.2 3.2L5.2-3.6"/><text class="lbl" y="32">Media</text></g>
+          <g class="node p" style="--c:var(--moe)" transform="translate(364 230)">
+            <circle class="track" r="15"/><circle class="arc" r="15" stroke-dasharray="62.8 94.3" transform="rotate(-90)"/><circle class="pip on" cx="-5.5" r="2.1"/><circle class="pip on" r="2.1"/><circle class="pip" cx="5.5" r="2.1"/>
+            <g transform="translate(12 -12)"><circle class="badge-bg" r="7.5" stroke="#FFD66B"/><path d="M-3.6 1.8h7.2M-2.6 1.8V.2M2.6 1.8V.2M-3.8.4Q0-3.6 3.8.4" fill="none" stroke="#FFD66B" stroke-width="1.3" stroke-linecap="round"/></g>
+            <text class="lbl" y="32">Varianza</text>
+          </g>
+          <g class="node p" style="--c:var(--moe)" transform="translate(496 230)"><circle class="track" r="15"/><circle class="arc" r="15" stroke-dasharray="31.4 94.3" transform="rotate(-90)"/><circle class="pip on" cx="-5.5" r="2.1"/><circle class="pip" r="2.1"/><circle class="pip" cx="5.5" r="2.1"/><text class="lbl" y="32">Covarianza</text></g>
+          <g class="node a" style="--c:var(--moe)" transform="translate(628 230)"><circle class="track" r="15"/><circle class="pip" cx="-5.5" r="2.1"/><circle class="pip" r="2.1"/><circle class="pip" cx="5.5" r="2.1"/><text class="lbl" y="32">Matriz de</text><text class="lbl" y="45">covarianza</text></g>
+
+          <!-- Preprocesamiento -->
+          <g class="node m" style="--c:var(--pmd)" transform="translate(232 310)"><circle class="halo" r="23"/><circle class="core" r="15" filter="url(#glow)"/><circle class="shine" r="15"/><path class="tick" d="M-5 .5l3.2 3.2L5.2-3.6"/><text class="lbl" y="32">Limpieza de</text><text class="lbl" y="45">datos</text></g>
+          <g class="node p" style="--c:var(--pmd)" transform="translate(496 310)"><circle class="track" r="15"/><circle class="arc" r="15" stroke-dasharray="31.4 94.3" transform="rotate(-90)"/><circle class="pip on" cx="-5.5" r="2.1"/><circle class="pip" r="2.1"/><circle class="pip" cx="5.5" r="2.1"/><text class="lbl" y="32">Normalización</text></g>
+          <g class="node x goal" style="--c:var(--pmd)" transform="translate(760 310)">
+            <circle class="track" r="15"/><path class="lock" d="M-4 -.5h8v6h-8z M-2.4 -.5v-2.3a2.4 2.4 0 0 1 4.8 0v2.3"/>
+            <g class="goal-pill" transform="translate(24 0)"><rect x="0" y="-9" width="68" height="18" rx="9"/><text x="34" y="3" text-anchor="middle">OBJETIVO</text></g>
+            <text class="lbl" y="32" style="fill:var(--text)">PCA</text>
+          </g>
+        </g>
+      </svg>
+
+      <div class="lightup">
+        <span class="eyebrow">Hoy se iluminan</span>
+        <span class="lu" style="--c:var(--cal)"><i></i>Regla de la cadena <em>1 → 2</em></span>
+        <span class="lu" style="--c:var(--alg)"><i></i>Matrices <em>recupera el brillo</em></span>
+        <span class="lu" style="--c:var(--moe)"><i></i>Varianza <em>2 → 3 · Puente</em></span>
+        <span class="lu" style="--c:var(--pmd)"><i></i>Normalización <em>1 → 2</em></span>
+      </div>
+      <div class="map-foot">
+        <div class="map-leg">
+          <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="#FF9148" style="filter:drop-shadow(0 0 4px #FF9148)"/></svg>Dominado</span>
+          <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="#1C1D21" stroke="#FF9148" stroke-opacity=".25" stroke-width="2"/><path d="M7 2a5 5 0 0 1 4.33 7.5" fill="none" stroke="#FF9148" stroke-width="2" stroke-linecap="round"/></svg>En progreso</span>
+          <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="4.4" fill="#FFC53D" fill-opacity=".34"/><circle cx="7" cy="7" r="6.4" fill="none" stroke="#8FD3FF" stroke-width="1.2" stroke-dasharray="1.5 2"/></svg>Se enfría</span>
+          <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="#141518" stroke="#4A4D55" stroke-width="1.3" stroke-dasharray="2 2"/></svg>Bloqueado</span>
+        </div>
+        <p class="map-sum">Te faltan <b>5 conceptos</b> para desbloquear PCA · <b>~6 h</b></p>
+      </div>
+    </article>
+
+    <!-- ═════════════ 7 · Logros ═════════════ -->
+    <article class="card ach span-4" style="--delay:410ms" aria-labelledby="t-ach">
+      <div class="card-h">
+        <h2 class="card-t" id="t-ach">Logros <span class="meta">14 de 60</span></h2>
+        <a class="link" href="#">Vitrina <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </div>
+
+      <div class="feat">
+        <div class="feat-badge">
+          <svg viewBox="0 0 74 78" aria-hidden="true">
+            <circle cx="37" cy="37" r="34" fill="none" stroke="rgba(255,214,107,.14)" stroke-width="3.5"/>
+            <circle cx="37" cy="37" r="34" fill="none" stroke="#FFD66B" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="142.4 213.6" transform="rotate(-90 37 37)"/>
+            <g transform="translate(13 11)">
+              <path d="M24 7.5 43.5 18.75v22.5L24 52.5 4.5 41.25v-22.5z" fill="#6B5A2A" stroke="#6B5A2A" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M24 4 43.5 15.25v22.5L24 49 4.5 37.75v-22.5z" fill="#2A2518" stroke="#FFD66B" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12.5 33h23M15 33v-5M33 33v-5M13 28.5Q24 16 35 28.5" fill="none" stroke="#FFD66B" stroke-width="2.2" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="feat-body">
+          <span class="eyebrow">Próximo logro · +150 XP</span>
+          <h4>Puente</h4>
+          <p>Domina un concepto que se use en 3 asignaturas.</p>
+          <div class="feat-prog"><span class="bar"><i></i></span><span>Varianza <b>2/3</b></span></div>
+        </div>
+      </div>
+
+      <div class="sub-h"><span class="eyebrow">Recientes</span><small>esta semana y la anterior</small></div>
+      <div class="badges">
+        <div class="bd">
+          <svg viewBox="0 0 60 66" aria-hidden="true"><path d="M30 9 52.5 22v26L30 61 7.5 48V22z" fill="#B8541C" stroke="#B8541C" stroke-width="6" stroke-linejoin="round"/><path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="6" stroke-linejoin="round"/><path d="M30 11.5 46 20.8v18.4L30 48.5 14 39.2V20.8z" fill="rgba(255,255,255,.16)" stroke="rgba(0,0,0,.14)" stroke-width="1.2" stroke-linejoin="round"/><text x="30" y="37.5" text-anchor="middle" style="font:800 19px var(--display);fill:#3A1605">7</text></svg>
+          <b>Semana redonda</b><small>19 sep</small>
+        </div>
+        <div class="bd">
+          <svg viewBox="0 0 60 66" aria-hidden="true"><path d="M30 9 52.5 22v26L30 61 7.5 48V22z" fill="#8FA81F" stroke="#8FA81F" stroke-width="6" stroke-linejoin="round"/><path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#D4F53C" stroke="#D4F53C" stroke-width="6" stroke-linejoin="round"/><path d="M30 11.5 46 20.8v18.4L30 48.5 14 39.2V20.8z" fill="rgba(255,255,255,.18)" stroke="rgba(0,0,0,.12)" stroke-width="1.2" stroke-linejoin="round"/><path d="M20 38h20M23 31.5h14M26 25h8" stroke="#1E2606" stroke-width="3.6" stroke-linecap="round"/></svg>
+          <b>Cimientos</b><small>18 sep</small>
+        </div>
+        <div class="bd">
+          <svg viewBox="0 0 60 66" aria-hidden="true"><path d="M30 9 52.5 22v26L30 61 7.5 48V22z" fill="#B24B72" stroke="#B24B72" stroke-width="6" stroke-linejoin="round"/><path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#FF8FB1" stroke="#FF8FB1" stroke-width="6" stroke-linejoin="round"/><path d="M30 11.5 46 20.8v18.4L30 48.5 14 39.2V20.8z" fill="rgba(255,255,255,.16)" stroke="rgba(0,0,0,.12)" stroke-width="1.2" stroke-linejoin="round"/><path d="M19 36h22M23 36a7 7 0 0 1 14 0M30 22.5v2.6M21.8 26l1.8 1.8M38.2 26l-1.8 1.8" fill="none" stroke="#3B0D1E" stroke-width="2.6" stroke-linecap="round"/></svg>
+          <b>Madrugador</b><small>15 sep</small>
+        </div>
+        <div class="bd">
+          <svg viewBox="0 0 60 66" aria-hidden="true"><path d="M30 9 52.5 22v26L30 61 7.5 48V22z" fill="#3A84B8" stroke="#3A84B8" stroke-width="6" stroke-linejoin="round"/><path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#8FD3FF" stroke="#8FD3FF" stroke-width="6" stroke-linejoin="round"/><path d="M30 11.5 46 20.8v18.4L30 48.5 14 39.2V20.8z" fill="rgba(255,255,255,.18)" stroke="rgba(0,0,0,.12)" stroke-width="1.2" stroke-linejoin="round"/><path d="M22 26.5 25.8 21h8.4l3.8 5.5L30 38z M22 26.5h16M27 21l-1.3 5.5L30 38l4.3-11.5L33 21" fill="none" stroke="#0B2A40" stroke-width="2.1" stroke-linejoin="round"/></svg>
+          <b>Memoria de acero</b><small>11 sep</small>
+        </div>
+      </div>
+
+      <div class="sub-h" style="margin-top:14px"><span class="eyebrow">En camino</span></div>
+      <div class="next-list">
+        <div class="nl">
+          <svg viewBox="0 0 60 66" aria-hidden="true"><path d="M30 9 52.5 22v26L30 61 7.5 48V22z" fill="#202226" stroke="#202226" stroke-width="6" stroke-linejoin="round"/><path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#2C2F35" stroke="#2C2F35" stroke-width="6" stroke-linejoin="round"/><text x="30" y="37" text-anchor="middle" style="font:800 16px var(--display);fill:#6F727A">30</text></svg>
+          <span class="nm">Mes de hierro<small>30 días de racha</small></span>
+          <span class="bar"><i style="width:40%"></i></span><span class="v">12 / 30</span>
+        </div>
+        <div class="nl">
+          <svg viewBox="0 0 60 66" aria-hidden="true"><path d="M30 9 52.5 22v26L30 61 7.5 48V22z" fill="#202226" stroke="#202226" stroke-width="6" stroke-linejoin="round"/><path d="M30 4 52.5 17v26L30 56 7.5 43V17z" fill="#2C2F35" stroke="#2C2F35" stroke-width="6" stroke-linejoin="round"/><text x="30" y="36" text-anchor="middle" style="font:800 13px var(--display);fill:#6F727A">100</text></svg>
+          <span class="nm">Centenario<small>100 conceptos dominados</small></span>
+          <span class="bar"><i style="width:61%"></i></span><span class="v">61 / 100</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- ═════════════ 8 · Actividad ═════════════ -->
+    <article class="card span-7" style="--delay:470ms" aria-labelledby="t-act">
+      <div class="card-h">
+        <h2 class="card-t" id="t-act">Actividad <span class="meta">últimas 20 semanas</span></h2>
+        <div class="heat-leg">Menos<span></span><i style="background:var(--h0)"></i><i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><span></span>Más</div>
+      </div>
+      <div class="act-body">
+<svg class="heat-svg" viewBox="0 0 500 239" width="500" height="239" role="img" aria-label="Actividad de las últimas 20 semanas">
+<text x="0" y="35" class="hm-lab">L</text>
+<text x="0" y="83" class="hm-lab">X</text>
+<text x="0" y="131" class="hm-lab">V</text>
+<text x="24" y="11" class="hm-lab">may</text>
+<rect x="24" y="20" width="20" height="20" rx="5" class="c2" style="--d:0ms"><title>11 may: 1 h 07 min</title></rect>
+<rect x="24" y="44" width="20" height="20" rx="5" class="c0" style="--d:6ms"><title>12 may: sin actividad</title></rect>
+<rect x="24" y="68" width="20" height="20" rx="5" class="c1" style="--d:12ms"><title>13 may: 0 h 36 min</title></rect>
+<rect x="24" y="92" width="20" height="20" rx="5" class="c1" style="--d:18ms"><title>14 may: 0 h 49 min</title></rect>
+<rect x="24" y="116" width="20" height="20" rx="5" class="c2" style="--d:24ms"><title>15 may: 1 h 19 min</title></rect>
+<rect x="24" y="140" width="20" height="20" rx="5" class="c0" style="--d:30ms"><title>16 may: sin actividad</title></rect>
+<rect x="24" y="164" width="20" height="20" rx="5" class="c0" style="--d:36ms"><title>17 may: sin actividad</title></rect>
+<rect x="48" y="20" width="20" height="20" rx="5" class="c0" style="--d:18ms"><title>18 may: sin actividad</title></rect>
+<rect x="48" y="44" width="20" height="20" rx="5" class="c2" style="--d:24ms"><title>19 may: 1 h 11 min</title></rect>
+<rect x="48" y="68" width="20" height="20" rx="5" class="c0" style="--d:30ms"><title>20 may: sin actividad</title></rect>
+<rect x="48" y="92" width="20" height="20" rx="5" class="c2" style="--d:36ms"><title>21 may: 1 h 27 min</title></rect>
+<rect x="48" y="116" width="20" height="20" rx="5" class="c1" style="--d:42ms"><title>22 may: 0 h 29 min</title></rect>
+<rect x="48" y="140" width="20" height="20" rx="5" class="c1" style="--d:48ms"><title>23 may: 0 h 45 min</title></rect>
+<rect x="48" y="164" width="20" height="20" rx="5" class="c0" style="--d:54ms"><title>24 may: sin actividad</title></rect>
+<rect x="72" y="20" width="20" height="20" rx="5" class="c0" style="--d:36ms"><title>25 may: sin actividad</title></rect>
+<rect x="72" y="44" width="20" height="20" rx="5" class="c1" style="--d:42ms"><title>26 may: 0 h 32 min</title></rect>
+<rect x="72" y="68" width="20" height="20" rx="5" class="c2" style="--d:48ms"><title>27 may: 1 h 29 min</title></rect>
+<rect x="72" y="92" width="20" height="20" rx="5" class="c0" style="--d:54ms"><title>28 may: sin actividad</title></rect>
+<rect x="72" y="116" width="20" height="20" rx="5" class="c0" style="--d:60ms"><title>29 may: sin actividad</title></rect>
+<rect x="72" y="140" width="20" height="20" rx="5" class="c0" style="--d:66ms"><title>30 may: sin actividad</title></rect>
+<rect x="72" y="164" width="20" height="20" rx="5" class="c1" style="--d:72ms"><title>31 may: 0 h 44 min</title></rect>
+<text x="96" y="11" class="hm-lab">jun</text>
+<rect x="96" y="20" width="20" height="20" rx="5" class="c2" style="--d:54ms"><title>1 jun: 1 h 25 min</title></rect>
+<rect x="96" y="44" width="20" height="20" rx="5" class="c0" style="--d:60ms"><title>2 jun: sin actividad</title></rect>
+<rect x="96" y="68" width="20" height="20" rx="5" class="c0" style="--d:66ms"><title>3 jun: sin actividad</title></rect>
+<rect x="96" y="92" width="20" height="20" rx="5" class="c0" style="--d:72ms"><title>4 jun: sin actividad</title></rect>
+<rect x="96" y="116" width="20" height="20" rx="5" class="c0" style="--d:78ms"><title>5 jun: sin actividad</title></rect>
+<rect x="96" y="140" width="20" height="20" rx="5" class="c0" style="--d:84ms"><title>6 jun: sin actividad</title></rect>
+<rect x="96" y="164" width="20" height="20" rx="5" class="c1" style="--d:90ms"><title>7 jun: 0 h 56 min</title></rect>
+<rect x="120" y="20" width="20" height="20" rx="5" class="c0" style="--d:72ms"><title>8 jun: sin actividad</title></rect>
+<rect x="120" y="44" width="20" height="20" rx="5" class="c1" style="--d:78ms"><title>9 jun: 0 h 38 min</title></rect>
+<rect x="120" y="68" width="20" height="20" rx="5" class="c0" style="--d:84ms"><title>10 jun: sin actividad</title></rect>
+<rect x="120" y="92" width="20" height="20" rx="5" class="c2" style="--d:90ms"><title>11 jun: 1 h 13 min</title></rect>
+<rect x="120" y="116" width="20" height="20" rx="5" class="c2" style="--d:96ms"><title>12 jun: 1 h 21 min</title></rect>
+<rect x="120" y="140" width="20" height="20" rx="5" class="c1" style="--d:102ms"><title>13 jun: 0 h 50 min</title></rect>
+<rect x="120" y="164" width="20" height="20" rx="5" class="c0" style="--d:108ms"><title>14 jun: sin actividad</title></rect>
+<rect x="144" y="20" width="20" height="20" rx="5" class="c2" style="--d:90ms"><title>15 jun: 1 h 46 min</title></rect>
+<rect x="144" y="44" width="20" height="20" rx="5" class="c2" style="--d:96ms"><title>16 jun: 1 h 13 min</title></rect>
+<rect x="144" y="68" width="20" height="20" rx="5" class="c0" style="--d:102ms"><title>17 jun: sin actividad</title></rect>
+<rect x="144" y="92" width="20" height="20" rx="5" class="c2" style="--d:108ms"><title>18 jun: 1 h 04 min</title></rect>
+<rect x="144" y="116" width="20" height="20" rx="5" class="c2" style="--d:114ms"><title>19 jun: 1 h 52 min</title></rect>
+<rect x="144" y="140" width="20" height="20" rx="5" class="c0" style="--d:120ms"><title>20 jun: sin actividad</title></rect>
+<rect x="144" y="164" width="20" height="20" rx="5" class="c2" style="--d:126ms"><title>21 jun: 1 h 07 min</title></rect>
+<rect x="168" y="20" width="20" height="20" rx="5" class="c0" style="--d:108ms"><title>22 jun: sin actividad</title></rect>
+<rect x="168" y="44" width="20" height="20" rx="5" class="c2" style="--d:114ms"><title>23 jun: 1 h 13 min</title></rect>
+<rect x="168" y="68" width="20" height="20" rx="5" class="c0" style="--d:120ms"><title>24 jun: sin actividad</title></rect>
+<rect x="168" y="92" width="20" height="20" rx="5" class="c0" style="--d:126ms"><title>25 jun: sin actividad</title></rect>
+<rect x="168" y="116" width="20" height="20" rx="5" class="c2" style="--d:132ms"><title>26 jun: 1 h 22 min</title></rect>
+<rect x="168" y="140" width="20" height="20" rx="5" class="c1" style="--d:138ms"><title>27 jun: 0 h 40 min</title></rect>
+<rect x="168" y="164" width="20" height="20" rx="5" class="c0" style="--d:144ms"><title>28 jun: sin actividad</title></rect>
+<rect x="192" y="20" width="20" height="20" rx="5" class="c1" style="--d:126ms"><title>29 jun: 0 h 44 min</title></rect>
+<rect x="192" y="44" width="20" height="20" rx="5" class="c0" style="--d:132ms"><title>30 jun: sin actividad</title></rect>
+<text x="192" y="11" class="hm-lab">jul</text>
+<rect x="192" y="68" width="20" height="20" rx="5" class="c2" style="--d:138ms"><title>1 jul: 1 h 37 min</title></rect>
+<rect x="192" y="92" width="20" height="20" rx="5" class="c2" style="--d:144ms"><title>2 jul: 1 h 01 min</title></rect>
+<rect x="192" y="116" width="20" height="20" rx="5" class="c3" style="--d:150ms"><title>3 jul: 2 h 11 min</title></rect>
+<rect x="192" y="140" width="20" height="20" rx="5" class="c3" style="--d:156ms"><title>4 jul: 2 h 17 min</title></rect>
+<rect x="192" y="164" width="20" height="20" rx="5" class="c2" style="--d:162ms"><title>5 jul: 1 h 23 min</title></rect>
+<rect x="216" y="20" width="20" height="20" rx="5" class="c3" style="--d:144ms"><title>6 jul: 2 h 41 min</title></rect>
+<rect x="216" y="44" width="20" height="20" rx="5" class="c3" style="--d:150ms"><title>7 jul: 2 h 59 min</title></rect>
+<rect x="216" y="68" width="20" height="20" rx="5" class="c2" style="--d:156ms"><title>8 jul: 1 h 27 min</title></rect>
+<rect x="216" y="92" width="20" height="20" rx="5" class="c2" style="--d:162ms"><title>9 jul: 1 h 20 min</title></rect>
+<rect x="216" y="116" width="20" height="20" rx="5" class="c2" style="--d:168ms"><title>10 jul: 1 h 43 min</title></rect>
+<rect x="216" y="140" width="20" height="20" rx="5" class="c3" style="--d:174ms"><title>11 jul: 2 h 11 min</title></rect>
+<rect x="216" y="164" width="20" height="20" rx="5" class="c3" style="--d:180ms"><title>12 jul: 2 h 59 min</title></rect>
+<rect x="240" y="20" width="20" height="20" rx="5" class="c3" style="--d:162ms"><title>13 jul: 2 h 11 min</title></rect>
+<rect x="240" y="44" width="20" height="20" rx="5" class="c3" style="--d:168ms"><title>14 jul: 2 h 23 min</title></rect>
+<rect x="240" y="68" width="20" height="20" rx="5" class="c2" style="--d:174ms"><title>15 jul: 1 h 50 min</title></rect>
+<rect x="240" y="92" width="20" height="20" rx="5" class="c3" style="--d:180ms"><title>16 jul: 2 h 08 min</title></rect>
+<rect x="240" y="116" width="20" height="20" rx="5" class="c3" style="--d:186ms"><title>17 jul: 2 h 46 min</title></rect>
+<rect x="240" y="140" width="20" height="20" rx="5" class="c3" style="--d:192ms"><title>18 jul: 2 h 31 min</title></rect>
+<rect x="240" y="164" width="20" height="20" rx="5" class="c3" style="--d:198ms"><title>19 jul: 2 h 38 min</title></rect>
+<rect x="264" y="20" width="20" height="20" rx="5" class="c3" style="--d:180ms"><title>20 jul: 3 h 02 min</title></rect>
+<rect x="264" y="44" width="20" height="20" rx="5" class="c2" style="--d:186ms"><title>21 jul: 1 h 36 min</title></rect>
+<rect x="264" y="68" width="20" height="20" rx="5" class="c2" style="--d:192ms"><title>22 jul: 1 h 55 min</title></rect>
+<rect x="264" y="92" width="20" height="20" rx="5" class="c3" style="--d:198ms"><title>23 jul: 2 h 37 min</title></rect>
+<rect x="264" y="116" width="20" height="20" rx="5" class="c0" style="--d:204ms"><title>24 jul: sin actividad</title></rect>
+<rect x="264" y="140" width="20" height="20" rx="5" class="c0" style="--d:210ms"><title>25 jul: sin actividad</title></rect>
+<rect x="264" y="164" width="20" height="20" rx="5" class="c1" style="--d:216ms"><title>26 jul: 0 h 47 min</title></rect>
+<rect x="288" y="20" width="20" height="20" rx="5" class="c0" style="--d:198ms"><title>27 jul: sin actividad</title></rect>
+<rect x="288" y="44" width="20" height="20" rx="5" class="c0" style="--d:204ms"><title>28 jul: sin actividad</title></rect>
+<rect x="288" y="68" width="20" height="20" rx="5" class="c0" style="--d:210ms"><title>29 jul: sin actividad</title></rect>
+<rect x="288" y="92" width="20" height="20" rx="5" class="c1" style="--d:216ms"><title>30 jul: 0 h 30 min</title></rect>
+<rect x="288" y="116" width="20" height="20" rx="5" class="c0" style="--d:222ms"><title>31 jul: sin actividad</title></rect>
+<text x="288" y="11" class="hm-lab">ago</text>
+<rect x="288" y="140" width="20" height="20" rx="5" class="c0" style="--d:228ms"><title>1 ago: sin actividad</title></rect>
+<rect x="288" y="164" width="20" height="20" rx="5" class="c0" style="--d:234ms"><title>2 ago: sin actividad</title></rect>
+<rect x="312" y="20" width="20" height="20" rx="5" class="c0" style="--d:216ms"><title>3 ago: sin actividad</title></rect>
+<rect x="312" y="44" width="20" height="20" rx="5" class="c2" style="--d:222ms"><title>4 ago: 1 h 05 min</title></rect>
+<rect x="312" y="68" width="20" height="20" rx="5" class="c1" style="--d:228ms"><title>5 ago: 0 h 34 min</title></rect>
+<rect x="312" y="92" width="20" height="20" rx="5" class="c0" style="--d:234ms"><title>6 ago: sin actividad</title></rect>
+<rect x="312" y="116" width="20" height="20" rx="5" class="c2" style="--d:240ms"><title>7 ago: 1 h 09 min</title></rect>
+<rect x="312" y="140" width="20" height="20" rx="5" class="c0" style="--d:246ms"><title>8 ago: sin actividad</title></rect>
+<rect x="312" y="164" width="20" height="20" rx="5" class="c0" style="--d:252ms"><title>9 ago: sin actividad</title></rect>
+<rect x="336" y="20" width="20" height="20" rx="5" class="c0" style="--d:234ms"><title>10 ago: sin actividad</title></rect>
+<rect x="336" y="44" width="20" height="20" rx="5" class="c0" style="--d:240ms"><title>11 ago: sin actividad</title></rect>
+<rect x="336" y="68" width="20" height="20" rx="5" class="c0" style="--d:246ms"><title>12 ago: sin actividad</title></rect>
+<rect x="336" y="92" width="20" height="20" rx="5" class="c0" style="--d:252ms"><title>13 ago: sin actividad</title></rect>
+<rect x="336" y="116" width="20" height="20" rx="5" class="c0" style="--d:258ms"><title>14 ago: sin actividad</title></rect>
+<rect x="336" y="140" width="20" height="20" rx="5" class="c0" style="--d:264ms"><title>15 ago: sin actividad</title></rect>
+<rect x="336" y="164" width="20" height="20" rx="5" class="c0" style="--d:270ms"><title>16 ago: sin actividad</title></rect>
+<rect x="360" y="20" width="20" height="20" rx="5" class="c0" style="--d:252ms"><title>17 ago: sin actividad</title></rect>
+<rect x="360" y="44" width="20" height="20" rx="5" class="c2" style="--d:258ms"><title>18 ago: 1 h 19 min</title></rect>
+<rect x="360" y="68" width="20" height="20" rx="5" class="c0" style="--d:264ms"><title>19 ago: sin actividad</title></rect>
+<rect x="360" y="92" width="20" height="20" rx="5" class="c1" style="--d:270ms"><title>20 ago: 0 h 30 min</title></rect>
+<rect x="360" y="116" width="20" height="20" rx="5" class="c2" style="--d:276ms"><title>21 ago: 1 h 04 min</title></rect>
+<rect x="360" y="140" width="20" height="20" rx="5" class="c2" style="--d:282ms"><title>22 ago: 1 h 03 min</title></rect>
+<rect x="360" y="164" width="20" height="20" rx="5" class="c0" style="--d:288ms"><title>23 ago: sin actividad</title></rect>
+<rect x="384" y="20" width="20" height="20" rx="5" class="c3" style="--d:270ms"><title>24 ago: 2 h 04 min</title></rect>
+<rect x="384" y="44" width="20" height="20" rx="5" class="c3" style="--d:276ms"><title>25 ago: 2 h 09 min</title></rect>
+<rect x="384" y="68" width="20" height="20" rx="5" class="c3" style="--d:282ms"><title>26 ago: 2 h 02 min</title></rect>
+<rect x="384" y="92" width="20" height="20" rx="5" class="c3" style="--d:288ms"><title>27 ago: 2 h 53 min</title></rect>
+<rect x="384" y="116" width="20" height="20" rx="5" class="c3" style="--d:294ms"><title>28 ago: 3 h 13 min</title></rect>
+<rect x="384" y="140" width="20" height="20" rx="5" class="c3" style="--d:300ms"><title>29 ago: 2 h 18 min</title></rect>
+<rect x="384" y="164" width="20" height="20" rx="5" class="c0" style="--d:306ms"><title>30 ago: sin actividad</title></rect>
+<rect x="408" y="20" width="20" height="20" rx="5" class="c2" style="--d:288ms"><title>31 ago: 1 h 44 min</title></rect>
+<text x="408" y="11" class="hm-lab">sep</text>
+<rect x="408" y="44" width="20" height="20" rx="5" class="c2" style="--d:294ms"><title>1 sep: 1 h 47 min</title></rect>
+<rect x="408" y="68" width="20" height="20" rx="5" class="c0" style="--d:300ms"><title>2 sep: sin actividad</title></rect>
+<rect x="408" y="92" width="20" height="20" rx="5" class="c3" style="--d:306ms"><title>3 sep: 2 h 22 min</title></rect>
+<rect x="408" y="116" width="20" height="20" rx="5" class="c3" style="--d:312ms"><title>4 sep: 3 h 24 min</title></rect>
+<rect x="408" y="140" width="20" height="20" rx="5" class="c3" style="--d:318ms"><title>5 sep: 3 h 30 min</title></rect>
+<rect x="408" y="164" width="20" height="20" rx="5" class="c2" style="--d:324ms"><title>6 sep: 1 h 41 min</title></rect>
+<rect x="432" y="20" width="20" height="20" rx="5" class="c3" style="--d:306ms"><title>7 sep: 3 h 20 min</title></rect>
+<rect x="432" y="44" width="20" height="20" rx="5" class="c3" style="--d:312ms"><title>8 sep: 2 h 43 min</title></rect>
+<rect x="432" y="68" width="20" height="20" rx="5" class="c3" style="--d:318ms"><title>9 sep: 2 h 42 min</title></rect>
+<rect x="432" y="92" width="20" height="20" rx="5" class="c3" style="--d:324ms"><title>10 sep: 2 h 40 min</title></rect>
+<rect x="432" y="116" width="20" height="20" rx="5" class="c0" style="--d:330ms"><title>11 sep: sin actividad</title></rect>
+<rect x="432" y="140" width="20" height="20" rx="5" class="c0" style="--d:336ms"><title>12 sep: sin actividad</title></rect>
+<rect x="432" y="164" width="20" height="20" rx="5" class="c4" style="--d:342ms"><title>13 sep: 3 h 54 min</title></rect>
+<rect x="456" y="20" width="20" height="20" rx="5" class="c4" style="--d:324ms"><title>14 sep: 3 h 55 min</title></rect>
+<rect x="456" y="44" width="20" height="20" rx="5" class="c4" style="--d:330ms"><title>15 sep: 4 h 09 min</title></rect>
+<rect x="456" y="68" width="20" height="20" rx="5" class="c4" style="--d:336ms"><title>16 sep: 4 h 39 min</title></rect>
+<rect x="456" y="92" width="20" height="20" rx="5" class="c4" style="--d:342ms"><title>17 sep: 3 h 43 min</title></rect>
+<rect x="456" y="116" width="20" height="20" rx="5" class="c4" style="--d:348ms"><title>18 sep: 4 h 48 min</title></rect>
+<rect x="456" y="140" width="20" height="20" rx="5" class="c4" style="--d:354ms"><title>19 sep: 4 h 35 min</title></rect>
+<rect x="456" y="164" width="20" height="20" rx="5" class="c4" style="--d:360ms"><title>20 sep: 4 h 23 min</title></rect>
+<rect x="480" y="20" width="20" height="20" rx="5" class="c4" style="--d:342ms"><title>21 sep: 4 h 35 min</title></rect>
+<rect x="480" y="44" width="20" height="20" rx="5" class="c4" style="--d:348ms"><title>22 sep: 4 h 10 min</title></rect>
+<rect x="480" y="68" width="20" height="20" rx="5" class="c4" style="--d:354ms"><title>23 sep: 4 h 38 min</title></rect>
+<rect x="480" y="92" width="20" height="20" rx="5" class="c1 hm-today" style="--d:360ms"><title>24 sep: 0 h 42 min</title></rect>
+<rect x="480.5" y="116.5" width="19" height="19" rx="5" class="hm-future"/>
+<rect x="480.5" y="140.5" width="19" height="19" rx="5" class="hm-future"/>
+<rect x="480.5" y="164.5" width="19" height="19" rx="5" class="hm-future"/>
+<text x="0" y="236" class="hm-lab">h</text>
+<line x1="24" x2="500" y1="238.5" y2="238.5" class="wb-base"/>
+<rect x="24" y="233.4" width="20" height="4.6" rx="3" class="wb" style="--d:0ms"><title>Semana del 11 may: 3,8 h</title></rect>
+<rect x="48" y="233.4" width="20" height="4.6" rx="3" class="wb" style="--d:18ms"><title>Semana del 18 may: 3,9 h</title></rect>
+<rect x="72" y="234.7" width="20" height="3.3" rx="3" class="wb" style="--d:36ms"><title>Semana del 25 may: 2,8 h</title></rect>
+<rect x="96" y="235.2" width="20" height="2.8" rx="3" class="wb" style="--d:54ms"><title>Semana del 1 jun: 2,4 h</title></rect>
+<rect x="120" y="233.2" width="20" height="4.8" rx="3" class="wb" style="--d:72ms"><title>Semana del 8 jun: 4,0 h</title></rect>
+<rect x="144" y="229.7" width="20" height="8.3" rx="3" class="wb" style="--d:90ms"><title>Semana del 15 jun: 7,0 h</title></rect>
+<rect x="168" y="234.1" width="20" height="3.9" rx="3" class="wb" style="--d:108ms"><title>Semana del 22 jun: 3,3 h</title></rect>
+<rect x="192" y="227.1" width="20" height="10.9" rx="3" class="wb" style="--d:126ms"><title>Semana del 29 jun: 9,2 h</title></rect>
+<rect x="216" y="219.8" width="20" height="18.2" rx="3" class="wb" style="--d:144ms"><title>Semana del 6 jul: 15,4 h</title></rect>
+<rect x="240" y="218.5" width="20" height="19.5" rx="3" class="wb" style="--d:162ms"><title>Semana del 13 jul: 16,4 h</title></rect>
+<rect x="264" y="226.2" width="20" height="11.8" rx="3" class="wb" style="--d:180ms"><title>Semana del 20 jul: 9,9 h</title></rect>
+<rect x="288" y="236.0" width="20" height="2.0" rx="3" class="wb" style="--d:198ms"><title>Semana del 27 jul: 0,5 h</title></rect>
+<rect x="312" y="234.7" width="20" height="3.3" rx="3" class="wb" style="--d:216ms"><title>Semana del 3 ago: 2,8 h</title></rect>
+<rect x="336" y="236.0" width="20" height="2.0" rx="3" class="wb" style="--d:234ms"><title>Semana del 10 ago: 0,0 h</title></rect>
+<rect x="360" y="233.3" width="20" height="4.7" rx="3" class="wb" style="--d:252ms"><title>Semana del 17 ago: 3,9 h</title></rect>
+<rect x="384" y="220.6" width="20" height="17.4" rx="3" class="wb" style="--d:270ms"><title>Semana del 24 ago: 14,7 h</title></rect>
+<rect x="408" y="220.8" width="20" height="17.2" rx="3" class="wb" style="--d:288ms"><title>Semana del 31 ago: 14,5 h</title></rect>
+<rect x="432" y="219.8" width="20" height="18.2" rx="3" class="wb" style="--d:306ms"><title>Semana del 7 sep: 15,3 h</title></rect>
+<rect x="456" y="202.1" width="20" height="35.9" rx="3" class="wb max" style="--d:324ms"><title>Semana del 14 sep: 30,2 h</title></rect>
+<text x="466" y="197.1" class="wb-lab" text-anchor="middle">30 h</text>
+<rect x="480" y="221.3" width="20" height="16.7" rx="3" class="wb now" style="--d:342ms"><title>Semana del 21 sep: 14,1 h</title></rect>
+</svg>
+        <div class="act-stats">
+          <div class="as"><span class="as-n tnum">4<small>h</small> 21<small>min</small></span><span class="as-l">media diaria desde el inicio de las clases <b>(14 sep)</b></span></div>
+          <div class="as"><span class="as-n tnum">174<small>h</small></span><span class="as-l">estudiadas desde mayo</span></div>
+          <div class="as"><span class="as-n tnum">86<small>/ 137</small></span><span class="as-l">días activos</span></div>
+          <div class="as"><span class="as-n tnum">23<small>días</small></span><span class="as-l">mejor racha, 1–23 jul</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ═════════════ 9 · Objetivos semanales ═════════════ -->
+    <article class="card span-5" style="--delay:530ms" aria-labelledby="t-goals">
+      <div class="card-h">
+        <h2 class="card-t" id="t-goals">Objetivos de la semana</h2>
+        <span class="link" style="cursor:default"><svg class="ico"><use href="#i-clock"/></svg>Se renuevan el lunes 28</span>
+      </div>
+      <ul class="goals">
+        <li class="goal">
+          <span class="g-ico"><svg class="ico"><use href="#i-clock"/></svg></span>
+          <div><div class="g-top"><b>Estudia 25 horas</b><span class="g-val">14 h 05 <i>/ 25 h</i></span></div><div class="g-bar"><i style="width:56%"></i></div></div>
+          <span class="g-xp">+150 XP</span>
+        </li>
+        <li class="goal">
+          <span class="g-ico"><svg class="ico"><use href="#i-target"/></svg></span>
+          <div><div class="g-top"><b>Domina 12 conceptos</b><span class="g-val">7 <i>/ 12</i></span></div><div class="g-bar"><i style="width:58%"></i></div></div>
+          <span class="g-xp">+200 XP</span>
+        </li>
+        <li class="goal done">
+          <span class="g-ico"><svg class="ico"><use href="#i-check"/></svg></span>
+          <div><div class="g-top"><b>Toca las 10 asignaturas</b><span class="g-val">10 <i>/ 10</i></span></div><div class="g-bar"><i style="width:100%"></i></div></div>
+          <span class="g-xp">+100 ✓</span>
+        </li>
+        <li class="goal cold">
+          <span class="g-ico"><svg class="ico"><use href="#i-snow"/></svg></span>
+          <div><div class="g-top"><b>Nada por debajo del 50 % de frescura</b><span class="g-val">4 <i>/ 7 días</i></span></div><div class="g-bar"><i style="width:57%"></i></div></div>
+          <span class="g-xp">+120 XP</span>
+        </li>
+      </ul>
+      <div class="chest">
+        <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="10" width="20" height="12" rx="2.5" fill="#2A2D33" stroke="#D4F53C" stroke-width="1.5"/><path d="M3 12.5V9a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v3.5" fill="#1F2226" stroke="#D4F53C" stroke-width="1.5"/><rect x="10.5" y="10.5" width="5" height="5.5" rx="1.2" fill="#D4F53C"/><path d="M3 14h20" stroke="#D4F53C" stroke-width="1.2" stroke-opacity=".4"/></svg>
+        <span>Cofre semanal: cumple <b>3 de 4</b> y ganas <b>+1 comodín</b></span>
+        <span class="pp" aria-label="1 de 3"><i class="on"></i><i></i><i></i></span>
+      </div>
+    </article>
+
+  </section>
+
+  <footer class="foot">
+    <span>Atlas · Grado en Inteligencia Artificial · 1er cuatrimestre 2026/27</span>
+    <span class="sync"><i></i>Guardado en local · hace 2 min</span>
+  </footer>
+</main>
+</body>
+</html>

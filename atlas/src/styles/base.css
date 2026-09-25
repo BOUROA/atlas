@@ -1,0 +1,142 @@
+/* Atlas v2 · base: Tailwind (solo utilidades de layout), fuentes locales, tokens,
+   reset y utilidades de texto. Los estilos de las primitivas viven en src/ui/ui.css. */
+@import "tailwindcss";
+
+@import "@fontsource/cormorant-garamond/latin-500.css";
+@import "@fontsource/cormorant-garamond/latin-600.css";
+@import "@fontsource/cormorant-garamond/latin-700.css";
+@import "@fontsource/cormorant-garamond/latin-500-italic.css";
+@import "@fontsource/cormorant-garamond/latin-600-italic.css";
+@import "@fontsource-variable/hanken-grotesk/index.css";
+@import "@fontsource/dm-mono/latin-400.css";
+@import "@fontsource/dm-mono/latin-500.css";
+
+@import "./tokens.css";
+@import "../ui/ui.css";
+
+@layer base {
+  html {
+    background: var(--ink-0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--line-2) transparent;
+    scrollbar-width: thin;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: var(--fs-body);
+    line-height: 1.45;
+    font-feature-settings: "ss01";
+    font-variant-numeric: lining-nums; /* Cormorant usa cifras elzevirianas por defecto */
+    background: var(--sky);
+    background-color: var(--ink-1);
+    background-attachment: fixed;
+  }
+
+  /* grano muy fino por encima de todo (no intercepta el ratón) */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* un contenedor con data-theme dentro de otro tema pinta su propio cielo */
+  body [data-theme] {
+    color: var(--text);
+    background-color: var(--ink-1);
+  }
+
+  ::selection {
+    background: var(--selection);
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--serif);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: .003em;
+    font-variant-numeric: lining-nums;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  b, strong { font-weight: 600; }
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  input, textarea, select { color: inherit; }
+  ::placeholder { color: var(--text-3); opacity: 1; }
+  hr { border: 0; border-top: 1px solid var(--line); }
+  [hidden] { display: none !important; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-2);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--text-4); }
+}
+
+/* ───────── Utilidades de texto ───────── */
+@layer components {
+  .mono-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .mono-label.is-gold { color: var(--gold-fg); }
+  .serif { font-family: var(--serif); font-variant-numeric: lining-nums; }
+  .serif-italic { font-family: var(--serif); font-style: italic; font-weight: 500; }
+  .mono { font-family: var(--mono); }
+  .num { font-variant-numeric: tabular-nums lining-nums; }
+  .tone-2 { color: var(--text-2); }
+  .tone-3 { color: var(--text-3); }
+  .gold-text { color: var(--gold-fg); }
+  .frost-text { color: var(--frost-fg); }
+  .ember-text { color: var(--ember-fg); }
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+}
+
+/* ───────── Movimiento reducido: sin animaciones ni transiciones ─────────
+   Duración casi nula (no "none") para que los estados finales de las
+   animaciones con fill-mode se apliquen igualmente. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}

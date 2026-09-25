@@ -1,0 +1,220 @@
+/* Atlas v2 · Ficha de concepto (cuerpo del panel lateral). Prefijo concept-.
+   Solo tokens de src/styles/tokens.css; el host (SidePanel) pone el marco. */
+@layer components {
+  .concept-body { display: flex; flex-direction: column; gap: 26px; }
+
+  /* ───────── Cabecera ───────── */
+  .concept-header { display: flex; flex-direction: column; gap: 12px; }
+  .concept-kind-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .concept-kind-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--hover);
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .concept-diff-dots { display: inline-flex; gap: 3px; align-items: center; }
+  .concept-diff-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--line-2); }
+  .concept-diff-dots i.is-on { background: var(--ember-fg); }
+
+  .concept-level-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .concept-level-name { font-size: 13.5px; color: var(--text-2); }
+  .concept-declared-note { font-size: 12px; color: var(--gold-fg); }
+  .concept-fresh-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-3); }
+
+  .concept-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+
+  /* ───────── Registrar estudio (menú) ───────── */
+  .concept-studymenu { position: relative; }
+  .concept-studymenu-chevron { transition: transform var(--dur) var(--ease); }
+  .concept-studymenu-chevron.is-open { transform: rotate(180deg); }
+  .concept-studymenu-pop {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 280px;
+    padding: 12px;
+    border-radius: var(--r-card);
+    background: var(--surface-solid);
+    border: 1px solid var(--line-2);
+    box-shadow: var(--shadow-pop);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: concept-pop var(--dur) var(--ease-soft) both;
+  }
+  @keyframes concept-pop { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+  .concept-studymenu-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 10px;
+    border-radius: var(--r-ctl);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+    text-align: left;
+  }
+  .concept-studymenu-row:hover { background: var(--hover-2); }
+  .concept-studymenu-row--main { background: var(--gold-soft); box-shadow: inset 0 0 0 1px var(--gold-line); color: var(--gold-fg); }
+  .concept-studymenu-group { border-top: 1px solid var(--line); padding-top: 10px; }
+  .concept-studymenu-group-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .concept-studymenu-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .concept-studymenu-grade {
+    padding: 7px 4px;
+    border-radius: 9px;
+    background: var(--well);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    text-align: center;
+  }
+  .concept-studymenu-grade:hover { background: var(--hover-2); border-color: var(--line-2); color: var(--text); }
+
+  /* ───────── Impacto ───────── */
+  .concept-impact { display: flex; flex-direction: column; gap: 14px; }
+  .concept-impact-needed b { display: block; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .concept-impact-needed-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .concept-impact-needed-list li { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 13.5px; }
+  .concept-impact-via { color: var(--text-2); line-height: 1.5; }
+  .concept-impact-stats { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--text-2); }
+  .concept-impact-early { font-size: 13px; font-style: italic; font-family: var(--serif); }
+  .concept-inline-link {
+    font: inherit;
+    color: var(--gold-fg);
+    text-decoration: underline;
+    text-decoration-color: var(--gold-line);
+    text-underline-offset: 2px;
+  }
+  .concept-inline-link:hover { text-decoration-color: currentColor; }
+
+  /* ───────── Resumen / teoría ───────── */
+  .concept-summary { font-family: var(--serif); font-size: 18px; line-height: 1.5; color: var(--text); }
+  .concept-theory-block + .concept-theory-block { margin-top: 14px; }
+  .concept-list { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--text-2); display: flex; flex-direction: column; gap: 4px; }
+  .concept-question { border: 1px solid var(--line); border-radius: var(--r-ctl); padding: 10px 12px; margin-top: 8px; }
+  .concept-question summary { cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text); }
+  .concept-question-answer { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 13px; color: var(--text-2); }
+
+  /* ───────── Bases / dependientes ───────── */
+  .concept-bases-list, .concept-dependents-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .concept-base-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+  .concept-base-name { flex: none; }
+  .concept-base-reason { color: var(--text-3); font-size: 12.5px; }
+  .concept-dependents-row { display: flex; align-items: baseline; gap: 10px; font-size: 13.5px; color: var(--text-2); flex-wrap: wrap; }
+  .concept-textbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--gold-fg);
+  }
+  .concept-textbtn svg { transition: transform var(--dur) var(--ease); }
+  .concept-textbtn svg.is-rot { transform: rotate(90deg); }
+  .concept-empty-note { font-size: 13px; color: var(--text-3); font-style: italic; font-family: var(--serif); }
+
+  /* ───────── Aparece en ───────── */
+  .concept-appears-group + .concept-appears-group { margin-top: 14px; }
+  .concept-block-title { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+  .concept-appears-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .concept-appears-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 11px;
+    border-radius: var(--r-ctl);
+    background: var(--well);
+    font-size: 13px;
+    color: var(--text-2);
+    transition: background-color var(--dur), color var(--dur);
+  }
+  .concept-appears-row:hover { background: var(--hover-2); color: var(--text); }
+  .concept-appears-pct { color: var(--gold-fg); white-space: nowrap; }
+
+  /* ───────── Mis apuntes ───────── */
+  .concept-notes { display: flex; flex-direction: column; gap: 10px; }
+  .concept-note-text {
+    width: 100%;
+    min-height: 90px;
+    padding: 10px 12px;
+    border-radius: var(--r-ctl);
+    border: 1px solid var(--line);
+    background: var(--well);
+    color: var(--text);
+    font: inherit;
+    font-size: 13.5px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .concept-note-text:focus-visible { border-color: var(--gold-line); }
+  .concept-note-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .concept-note-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .concept-note-link a {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: var(--r-ctl);
+    background: var(--well);
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .concept-note-link a:hover { background: var(--hover-2); color: var(--text); }
+  .concept-note-link a svg { width: 14px; height: 14px; flex: none; color: var(--text-3); }
+  .concept-note-link a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .concept-note-empty { font-size: 12.5px; color: var(--text-3); }
+  .concept-note-addlink { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: var(--r-ctl); background: var(--well); }
+  .concept-note-input {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1px solid var(--line-2);
+    background: var(--surface-solid);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+  }
+  .concept-note-input:focus-visible { border-color: var(--gold-line); }
+  .concept-note-error { font-size: 12px; color: var(--ember-fg); margin: 0; }
+  .concept-note-addlink-actions { display: flex; gap: 8px; }
+
+  /* ───────── Historial ───────── */
+  .concept-history-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .concept-history-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+  }
+  .concept-history-row svg { flex: none; color: var(--text-3); }
+  .concept-history-text { flex: 1; color: var(--text-2); }
+  .concept-history-date { flex: none; color: var(--text-3); white-space: nowrap; }
+}

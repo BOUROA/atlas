@@ -1,0 +1,155 @@
+/* Atlas v2 · Apuntes (#/apuntes/:id). Prefijo notes-. Solo tokens de
+   src/styles/tokens.css. El cuerpo (TrialMd) usa las clases .trial-md* de
+   src/features/trial/trial.css, importado desde este feature (index.tsx). */
+@layer components {
+  .notes-page { max-width: 1180px; display: flex; flex-direction: column; gap: 18px; }
+
+  /* ───────── Miga y cabecera ───────── */
+  .notes-crumb { display: flex; align-items: center; gap: 8px; }
+  .notes-crumb-link { display: inline-flex; align-items: center; gap: 6px; color: inherit; }
+  .notes-crumb-link:hover { color: var(--gold-fg); }
+  .notes-crumb-sep { color: var(--text-4); }
+
+  .notes-head { display: flex; flex-direction: column; gap: 10px; }
+  .notes-head-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .notes-head-top h1 { font-size: var(--fs-28); line-height: 1.18; max-width: 40ch; }
+  .notes-head-actions { flex: none; }
+  .notes-head-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+  .notes-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: var(--r-pill);
+    font-size: 12.5px; color: var(--text-2); background: var(--well);
+    box-shadow: inset 0 0 0 1px var(--line-2);
+  }
+  .notes-chip svg { color: var(--text-3); flex: none; }
+
+  .notes-loading { min-height: 40vh; border-radius: var(--r-card); background: var(--well); animation: shell-blink 1.4s ease-in-out infinite; }
+
+  /* ───────── Índice móvil (< 1100px) ───────── */
+  .notes-index-mobile { border: 1px solid var(--line); border-radius: var(--r-ctl); background: var(--well); overflow: hidden; }
+  .notes-index-mobile > summary {
+    display: flex; align-items: center; gap: 8px; padding: 11px 14px; cursor: pointer; list-style: none;
+    font-size: 13.5px; font-weight: 500; color: var(--text-2);
+  }
+  .notes-index-mobile > summary::-webkit-details-marker { display: none; }
+  .notes-index-mobile > summary svg { transition: transform var(--dur-fast) var(--ease); }
+  .notes-index-mobile[open] > summary svg { transform: rotate(90deg); }
+  .notes-index-mobile ul { list-style: none; margin: 0; padding: 0 6px 8px; border-top: 1px solid var(--line); }
+  .notes-index-mobile li button {
+    display: block; width: 100%; padding: 8px 8px; text-align: left; border-radius: 8px;
+    font-size: 13px; color: var(--text-2); background: none; border: 0;
+  }
+  .notes-index-mobile li button:hover { background: var(--hover); color: var(--text); }
+  @media (min-width: 1100px) {
+    .notes-index-mobile { display: none; }
+  }
+
+  /* ───────── Cuerpo: lectura + índice fijo ───────── */
+  .notes-layout { display: flex; flex-direction: column; gap: 28px; }
+  .notes-main { display: flex; flex-direction: column; gap: 30px; max-width: 74ch; min-width: 0; }
+  .notes-index { display: none; }
+  @media (min-width: 1100px) {
+    .notes-layout { display: grid; grid-template-columns: minmax(0, 1fr) 232px; align-items: start; gap: 48px; }
+    .notes-index {
+      display: block; position: sticky; top: calc(var(--shell-top-h, 0px) + 24px);
+      max-height: calc(100vh - var(--shell-top-h, 0px) - 48px); overflow-y: auto;
+    }
+  }
+
+  .notes-intro { font-size: 16.5px; line-height: 1.7; color: var(--text-2); }
+  .notes-intro .ui-md, .notes-intro.trial-md { font-size: 16.5px; }
+
+  .notes-section { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: calc(var(--shell-top-h, 0px) + 16px); }
+  .notes-section h2 { font-family: var(--serif); font-size: var(--fs-22); font-weight: 600; color: var(--text); line-height: 1.25; }
+  .notes-section + .notes-section { padding-top: 26px; border-top: 1px solid var(--line); }
+  .notes-section .trial-md, .notes-section .trial-md--split { font-size: 16px; line-height: 1.72; }
+  .notes-section .trial-md h3 { font-family: var(--serif); font-size: var(--fs-18); font-weight: 600; color: var(--text); margin-top: .3em; }
+
+  /* la sección Chuleta se distingue con un recuadro */
+  .notes-section--cheat {
+    padding: 18px 20px; border: 1px solid var(--gold-line); border-radius: var(--r-card);
+    background: var(--gold-soft);
+  }
+  .notes-section--cheat + .notes-section { border-top: 0; }
+  .notes-section--cheat h2 { color: var(--gold-fg); }
+
+  /* ───────── Índice (móvil y escritorio) ───────── */
+  .notes-index-title { margin: 0 0 8px; }
+  .notes-index ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--line); }
+  .notes-index-link {
+    display: block; width: 100%; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 1.5px solid transparent;
+    text-align: left; background: none; border-top: 0; border-right: 0; border-bottom: 0;
+    font-size: 12.5px; line-height: 1.4; color: var(--text-3);
+  }
+  .notes-index-link:hover { color: var(--text-2); }
+  .notes-index-link.is-active { color: var(--gold-fg); border-left-color: var(--gold); font-weight: 500; }
+
+  /* ───────── Citas-llamada (blockquote) ───────── */
+  .notes-section .trial-md blockquote,
+  .notes-intro blockquote {
+    margin: 0; padding: 12px 16px; border-radius: 10px; border-left: 3px solid var(--line-2);
+    background: var(--well); color: var(--text-2); font-size: .95em;
+    font-family: var(--sans); font-style: normal; /* las citas de las fichas van en serif cursiva; aquí se estudia */
+  }
+  .notes-section .trial-md blockquote > *, .notes-intro blockquote > * { margin: 0; }
+  .notes-section .trial-md blockquote > * + *, .notes-intro blockquote > * + * { margin-top: .5em; }
+  .notes-callout.is-idea { border-left-color: var(--gold); background: var(--gold-soft); }
+  .notes-callout.is-idea strong { color: var(--gold-fg); }
+  .notes-callout.is-error { border-left-color: var(--ember); background: var(--ember-soft); }
+  .notes-callout.is-error strong { color: var(--ember-fg); }
+  .notes-callout.is-truco { border-left-color: var(--frost); background: var(--frost-soft); }
+  .notes-callout.is-truco strong { color: var(--frost-fg); }
+  .notes-callout.is-ojo { border-left-color: var(--text-3); background: var(--hover-2); }
+  .notes-callout.is-ojo strong { color: var(--text); }
+
+  /* ───────── Pie: ponte a prueba + tema anterior/siguiente ───────── */
+  .notes-footer { display: flex; flex-direction: column; gap: 18px; margin-top: 14px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .notes-footer-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  .notes-footer-sim { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-2); }
+  .notes-footer-sim:hover { color: var(--gold-fg); }
+  .notes-footer-sim svg { color: var(--text-3); }
+
+  .notes-footer-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .notes-footer-navlink {
+    display: flex; align-items: center; gap: 8px; min-width: 0; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: var(--r-ctl); font-size: 13px; color: var(--text-2);
+  }
+  .notes-footer-navlink:hover { border-color: var(--line-2); background: var(--hover); color: var(--text); }
+  .notes-footer-navlink span, .notes-footer-navlink { overflow: hidden; }
+  .notes-footer-navlink svg { flex: none; color: var(--text-3); }
+  .notes-footer-navlink--prev svg { transform: scaleX(-1); }
+  .notes-footer-navlink--next { grid-column: 2; justify-content: flex-end; text-align: right; flex-direction: row-reverse; }
+  @media (max-width: 640px) {
+    .notes-footer-nav { grid-template-columns: 1fr; }
+    .notes-footer-navlink--next { grid-column: 1; }
+  }
+
+  @media (max-width: 767px) {
+    .notes-head-top { flex-direction: column; gap: 10px; }
+    .notes-head-actions { align-self: flex-start; }
+  }
+}
+
+/* ───────── Impresión: solo el contenido de lectura, tinta negra sobre blanco ───────── */
+@media print {
+  body:has(.notes-page) { background: #fff !important; }
+  body:has(.notes-page) .shell-top,
+  body:has(.notes-page) .shell-bottom,
+  body:has(.notes-page) .ui-toaster,
+  .notes-index-mobile, .notes-index, .notes-head-actions, .notes-crumb, .notes-footer { display: none !important; }
+
+  .notes-page {
+    max-width: none; padding: 0;
+    --text: #111; --text-2: #1d1d1d; --text-3: #555; --text-4: #888;
+    --gold-fg: #111; --gold-line: #999; --gold-soft: transparent; --line: #bbb; --line-2: #999;
+    --code-bg: transparent; --well: transparent;
+    color: #111; background: #fff; font-size: 11pt; line-height: 1.5;
+    print-color-adjust: exact; -webkit-print-color-adjust: exact;
+  }
+  .notes-layout { display: block !important; }
+  .notes-main { max-width: none; }
+  .notes-section--cheat { border-color: #999; background: none; }
+  .notes-section, .notes-page .trial-md-table, .notes-page blockquote, .notes-page .md-math {
+    break-inside: avoid; page-break-inside: avoid;
+  }
+}
