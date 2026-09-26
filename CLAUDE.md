@@ -69,25 +69,31 @@ migra, health check y rollback.
 
 ## Estado (2026-09-26)
 
-Hecho: rama `academy/fase1` con el modo multiusuario, contenido inicial, tests y
-ficheros de despliegue. Subida a GitHub (`origin` = BOUROA/atlas).
+Hecho:
+
+- Modo multiusuario, contenido inicial, tests y ficheros de despliegue,
+  fusionados en `main` (fast-forward desde `academy/fase1`) y subidos a GitHub
+  (`origin` = BOUROA/atlas).
+- Probado en local contra PostgreSQL 16 real: bootstrap del admin → login →
+  invitar con itinerario «cero» → aceptar → estudiar un concepto → panel admin.
+  El estado queda en `user_states` por alumno y el panel refleja el progreso.
+
+Probar en local (el 5433 y el 5434 los usan los Postgres de FlipyERP y Odoo):
+`docker run -d --name academy-pg -e POSTGRES_PASSWORD=dev -p 127.0.0.1:5435:5432 postgres:16`
+y, desde `atlas/`, `DATABASE_URL=postgres://postgres:dev@127.0.0.1:5435/postgres npm run dev`.
+Admin con `ACADEMY_PASSWORD=... node server/academy/cli.mjs bootstrap --org ... --email ... --name ...`.
 
 Siguiente, en este orden:
 
-1. Revisar y fusionar `academy/fase1` en `main` (la guía clona `main`).
-2. Probar en local contra un PostgreSQL real (Docker Desktop estaba parado;
-   los tests usan pg-mem). Con Docker:
-   `docker run -d --name academy-pg -e POSTGRES_PASSWORD=dev -p 5433:5432 postgres:16`
-   y `DATABASE_URL=postgres://postgres:dev@localhost:5433/postgres npm run dev`.
-   Crear admin con `node server/academy/cli.mjs bootstrap ...` y recorrer
-   login → invitar → aceptar → estudiar → panel.
-3. Instalación en Hetzner siguiendo `deploy/DESPLIEGUE.md`. **Es el servidor de
+1. Instalación en Hetzner siguiendo `deploy/DESPLIEGUE.md`. **Es el servidor de
    producción de FlipyERP: enseñar cada comando a Raul antes de ejecutarlo.**
-4. Contenido: Bloque 1 de evals y observabilidad de agentes, apuntes largos por
+2. Contenido: Bloque 1 de evals y observabilidad de agentes, apuntes largos por
    tema, constelaciones de herramientas (Git/GitHub, Python/Django) y de
    operaciones (Vendor Central, GPSR, supresión de búsqueda).
-5. Después: prueba de nivel inicial, misiones ligadas a PRs de BOUROA/FlipyERP,
+3. Después: prueba de nivel inicial, misiones ligadas a PRs de BOUROA/FlipyERP,
    aviso en CI cuando cambian las `sources` de una lección, tutor con Claude.
 
 Pendientes menores: el favicon no carga en `/login` (el estático exige sesión);
-los ajustes por defecto de Atlas están pensados para un grado (120 min/día, nota 10).
+los ajustes por defecto de Atlas están pensados para un grado (120 min/día, nota 10,
+«Faltan N días para el inicio · primer cuatrimestre» en Hoy); el título de la
+pestaña sigue diciendo «Hoy · Atlas» / «Sesión · Atlas».
