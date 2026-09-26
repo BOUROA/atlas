@@ -13,7 +13,7 @@ desarrolla FlipyERP y para formar a empleados nuevos con itinerarios por nivel
   salvo que sea imprescindible: así se pueden seguir trayendo mejoras de `upstream`.
   Los cambios de la academia van en `server/academy/`, `src/state/session.ts`,
   `content/` y en extensiones opcionales de tipos.
-- **Tests siempre en verde** antes de commit: `npm test` (hoy 186/186), `npm run check`
+- **Tests siempre en verde** antes de commit: `npm test` (hoy 194/194), `npm run check`
   y `node scripts/validate-content.cjs content` (0 errores).
 - En este Windows hay **`NODE_ENV=production` global**: instalar con
   `npm ci --include=dev` o los tests y `tsc` no existen.
@@ -52,6 +52,11 @@ desarrolla FlipyERP y para formar a empleados nuevos con itinerarios por nivel
   código real de FlipyERP. Cada concepto lleva `sources` (rutas relativas a
   `FlipyERP_v1.0.1/`); el validador comprueba que existen con
   `FLIPYERP_ROOT=D:\Claude\Projects\FlipyERP\FlipyERP_v1.0.1`.
+- `evals.json` — «Evals y observabilidad de agentes» (EVO, nivel 2, itinerarios
+  desarrollo y avanzado), 15 conceptos en 3 temas: observar, evaluar, cerrar el
+  bucle. Enfoque mixto: idea general y, cuando existe, cómo está en FlipyERP
+  (con `sources`, incluidos los huecos actuales). Diseño y plan en
+  `atlas/docs/superpowers/`; `tests/evals-content.test.ts` fija su estructura.
 - Ids de concepto: `^[a-z]+\.[a-z0-9_]+$`; ≥3 preguntas por concepto si tiene alguna;
   sin `$` sueltos (es KaTeX). Guía de apuntes: `docs/apuntes-guia.md`.
 
@@ -100,9 +105,10 @@ antes de cada recarga.
 
 Siguiente, en este orden:
 
-1. Contenido: Bloque 1 de evals y observabilidad de agentes, apuntes largos por
-   tema, constelaciones de herramientas (Git/GitHub, Python/Django) y de
-   operaciones (Vendor Central, GPSR, supresión de búsqueda).
+1. Contenido: apuntes largos por tema, constelaciones de herramientas
+   (Git/GitHub, Python/Django) y de operaciones (Vendor Central, GPSR,
+   supresión de búsqueda). Bloque 1 de evals hecho (2026-09-26), pendiente de
+   desplegar con `deploy.sh`.
 2. Después: prueba de nivel inicial, misiones ligadas a PRs de BOUROA/FlipyERP,
    aviso en CI cuando cambian las `sources` de una lección, tutor con Claude.
 
