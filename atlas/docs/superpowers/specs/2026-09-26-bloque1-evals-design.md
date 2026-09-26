@@ -86,6 +86,12 @@ seguridad y enterarse a tiempo cuando algo se tuerce.
 | `evo.regresion` | `evo.version_prompt` | Sin versiones no hay nada que comparar. |
 | `evo.senal_humana` | `evo.eval` | La revisión humana es un eval hecho por personas. |
 | `evo.tests_vs_evals` | `evo.eval` | Se distinguen a partir de qué mide un eval. |
+| `evo.latencia` | `evo.traza` | La duración de cada paso se lee en la traza. |
+| `evo.errores_proveedor` | `evo.traza` | Un error o un fallback solo se ve si queda en la traza. |
+| `evo.salida_estructurada` | `evo.criterios` | Validar el esquema es el criterio determinista más barato. |
+
+Nota (plan de implementación): las tres últimas se añaden porque el validador
+avisa de conceptos sin ninguna relación `requires`, y el objetivo es 0 avisos.
 
 ## Redacción de cada concepto
 

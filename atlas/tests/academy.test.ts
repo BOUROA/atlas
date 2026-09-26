@@ -217,7 +217,7 @@ test("formador: solo gestiona alumnos de su organización", async () => {
 
   const mineId = me.json.user.id as string;
   const upd = await form.req("PUT", `/api/admin/users/${mineId}/enrollment`, { itineraryId: "desarrollo", subjectIds: [] });
-  assert.deepEqual(upd.json.enrollment.subjectIds, ["fundamentos", "tenancy"]);
+  assert.deepEqual(upd.json.enrollment.subjectIds, ["fundamentos", "tenancy", "evals"]);
   assert.deepEqual((await alumna.req("GET", "/api/me")).json.enrollment.itineraryId, "desarrollo");
   assert.equal((await form.req("PUT", `/api/admin/users/${mineId}/enrollment`, { itineraryId: "no-existe" })).status, 400);
 });

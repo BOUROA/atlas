@@ -34,5 +34,23 @@
     "audience": ["desarrollo"],
     "prerequisites": [],
     "description": "Cómo separa FlipyERP los datos de cada empresa del grupo: el modelo row-level, la empresa activa por petición, los roles y las defensas contra fugas entre sociedades."
+  },
+  {
+    "id": "evals",
+    "name": "Evals y observabilidad de agentes",
+    "shortName": "Evals",
+    "abbr": "EVO",
+    "year": 2,
+    "semester": 1,
+    "status": "current",
+    "color": "#8FD3B6",
+    "colorLight": "#2E7A5B",
+    "order": 3,
+    "file": "evals.json",
+    "level": 2,
+    "track": "ia",
+    "audience": ["desarrollo"],
+    "prerequisites": ["fundamentos"],
+    "description": "Cómo saber qué hace un agente de IA y si lo hace bien: qué registrar de cada llamada, cómo construir evals y cómo usarlos para cambiar prompts y modelos sin romper nada. Con ejemplos del agente de FlipyERP."
   }
 ]

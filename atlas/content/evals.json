@@ -1,0 +1,25 @@
+{
+  "subjectId": "evals",
+  "units": [
+    {
+      "id": "evals.t1",
+      "number": 1,
+      "title": "Observar un agente",
+      "summary": "Qué dejar registrado de cada ejecución de un agente para poder entender, depurar y pagar lo que hace."
+    },
+    {
+      "id": "evals.t2",
+      "number": 2,
+      "title": "Evaluar",
+      "summary": "Cómo medir si un agente lo hace bien: casos, criterios, jueces y la señal que ya dejan las personas al revisar."
+    },
+    {
+      "id": "evals.t3",
+      "number": 3,
+      "title": "Cerrar el bucle",
+      "summary": "Usar lo observado y lo evaluado para cambiar prompts y modelos con seguridad y enterarse a tiempo cuando algo se tuerce."
+    }
+  ],
+  "concepts": [],
+  "relations": []
+}

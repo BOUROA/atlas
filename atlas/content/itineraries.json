@@ -8,13 +8,13 @@
   {
     "id": "desarrollo",
     "name": "Desarrollador que se incorpora",
-    "description": "Para una persona que va a programar en FlipyERP: fundamentos de IA y cómo está construido el ERP por dentro.",
-    "subjects": ["fundamentos", "tenancy"]
+    "description": "Para una persona que va a programar en FlipyERP: fundamentos de IA, cómo está construido el ERP por dentro y cómo observar y evaluar sus agentes.",
+    "subjects": ["fundamentos", "tenancy", "evals"]
   },
   {
     "id": "avanzado",
     "name": "Avanzado",
-    "description": "Para perfiles técnicos que ya dominan la IA generativa: directamente al funcionamiento interno de FlipyERP.",
-    "subjects": ["tenancy"]
+    "description": "Para perfiles técnicos que ya dominan la IA generativa: el funcionamiento interno de FlipyERP y la evaluación y observabilidad de sus agentes.",
+    "subjects": ["tenancy", "evals"]
   }
 ]
