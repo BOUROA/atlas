@@ -114,8 +114,7 @@ Siguiente, en este orden:
 
 1. Contenido: apuntes largos por tema, constelaciones de herramientas
    (Git/GitHub, Python/Django) y de operaciones (Vendor Central, GPSR,
-   supresión de búsqueda). Bloque 1 de evals hecho (2026-09-26), pendiente de
-   desplegar con `deploy.sh`.
+   supresión de búsqueda). Bloque 1 de evals hecho y desplegado en producción (2026-09-26, c694b36).
 2. Después: prueba de nivel inicial, misiones ligadas a PRs de BOUROA/FlipyERP,
    aviso en CI cuando cambian las `sources` de una lección, tutor con Claude.
 
