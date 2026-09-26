@@ -147,7 +147,7 @@
           "id": "evo.latencia#q2",
           "kind": "distinguish",
           "prompt": "¿Por qué se usan percentiles como el p95 en lugar de la media para la latencia?",
-          "answer": "Porque la media apenas se mueve con unos pocos casos muy lentos, y son justamente esos los que sufre el usuario; el p95 dice cuánto tarda el 5 % más lento.",
+          "answer": "Porque la media apenas se mueve con unos pocos casos muy lentos, y son justamente esos los que sufre el usuario. El p95 es el tiempo por debajo del cual queda el 95 % de las llamadas: el 5 % más lento tarda eso o más.",
           "difficulty": 2
         },
         {
@@ -319,7 +319,7 @@
       "difficulty": 2,
       "summary": "Colección fija de casos, revisada por personas, que representa bien el trabajo real del agente y sobre la que se repite el eval.",
       "intuition": "Los platos de prueba de una cocina: siempre los mismos, elegidos para cubrir lo fácil, lo difícil y lo raro, y así saber si la receta nueva es mejor.",
-      "definition": "El **conjunto de referencia** (*golden set*) son los casos del eval. Debe ser **representativo** (parecerse a lo que llega de verdad), **cubrir los casos difíciles y raros** y estar **revisado por personas** cuando incluye la respuesta esperada. Para construirlo a partir de datos reales se usa **muestreo estratificado**: se toman casos de cada grupo relevante (estado, categoría, cliente…) en vez de los primeros o al azar, que dejaría fuera los grupos pequeños. Se mantiene estable para poder comparar; si cambia, se versiona.\n\n**En FlipyERP:** `pim/services/qa_fugas.py` tiene `muestra_estratificada`, que toma un número fijo de productos por estado del catálogo para revisarlos, en lugar de una muestra al azar.",
+      "definition": "El **conjunto de referencia** (*golden set*) son los casos del eval. Debe ser **representativo** (parecerse a lo que llega de verdad), **cubrir los casos difíciles y raros** y estar **revisado por personas** cuando incluye la respuesta esperada. Para construirlo a partir de datos reales se usa **muestreo estratificado**: se toman casos de cada grupo relevante (estado, categoría, cliente…) en vez de los primeros o de una muestra aleatoria simple de todo el conjunto, que dejaría fuera los grupos pequeños. Se mantiene estable para poder comparar; si cambia, se versiona.\n\n**En FlipyERP:** `pim/services/qa_fugas.py` tiene `muestra_estratificada`, que toma al azar un número fijo de productos de cada estado del catálogo, en lugar de una muestra aleatoria simple de todo el catálogo.",
       "formulas": [],
       "example": null,
       "mistakes": [
@@ -337,8 +337,8 @@
         {
           "id": "evo.golden_set#q2",
           "kind": "explain",
-          "prompt": "¿Por qué se usa muestreo estratificado en lugar de una muestra al azar?",
-          "answer": "Porque al azar los grupos pequeños pueden no salir nunca; estratificando se toman casos de cada grupo y el eval los cubre todos.",
+          "prompt": "¿Por qué se usa muestreo estratificado en lugar de una muestra aleatoria simple?",
+          "answer": "Porque en una muestra aleatoria simple los grupos pequeños pueden no salir nunca; estratificando se toman casos al azar dentro de cada grupo y el eval los cubre todos.",
           "difficulty": 2
         },
         {
@@ -599,7 +599,7 @@
       "difficulty": 3,
       "summary": "Antes de activar un cambio de prompt o de modelo, lanzar el mismo eval con la versión actual y con la nueva, y comparar caso a caso.",
       "intuition": "Antes de cambiar el proveedor de un ingrediente, cocinas el menú de prueba con el viejo y con el nuevo y los pruebas lado a lado.",
-      "definition": "Un cambio que mejora unos casos puede empeorar otros. El **eval de regresión** ejecuta la versión actual y la candidata sobre el **mismo conjunto de referencia** y compara la nota global y, sobre todo, **qué casos pasan de bien a mal**. La candidata solo se activa si no empeora lo que importa, o si se acepta ese empeoramiento a sabiendas. Como el modelo no es determinista, conviene repetir cada caso varias veces o fijar la temperatura, para no confundir ruido con cambio.\n\n**En FlipyERP:** `AiPromptVersion` (`ai/models.py`) permite tener varias versiones por agente, pero no existe ningún código que las compare con un eval antes de activar una.",
+      "definition": "Un cambio que mejora unos casos puede empeorar otros. El **eval de regresión** ejecuta la versión actual y la candidata sobre el **mismo conjunto de referencia** y compara la nota global y, sobre todo, **qué casos pasan de bien a mal**. La candidata solo se activa si no empeora lo que importa, o si se acepta ese empeoramiento a sabiendas. Como el modelo no es determinista, conviene repetir cada caso varias veces (bajar la temperatura reduce la variación, pero no la elimina), para no confundir ruido con cambio.\n\n**En FlipyERP:** `AiPromptVersion` (`ai/models.py`) permite tener varias versiones por agente, pero no existe ningún código que las compare con un eval antes de activar una.",
       "formulas": [],
       "example": null,
       "mistakes": [
@@ -705,7 +705,7 @@
       "difficulty": 2,
       "summary": "Avisar a una persona cuando el gasto, los errores o la calidad cruzan un umbral, en vez de descubrirlo al mirar un panel o la factura.",
       "intuition": "El aviso del banco cuando un cargo supera cierta cantidad: no tienes que revisar el extracto cada día para enterarte.",
-      "definition": "Un panel solo sirve si alguien lo mira. Una **alerta** convierte una métrica en un aviso cuando cruza un **umbral**: el gasto del mes pasa del 80 % del presupuesto, se dispara la tasa de errores o de salidas inválidas, cae la tasa de aprobación humana. Las buenas alertas son pocas, accionables (dicen qué pasa y dónde mirar) y llegan por el canal que el equipo ya usa.\n\n**En FlipyERP:** `ConfiguracionModuloIA` (`ai/models.py`) tiene `limite_gasto_mes_usd` y `alerta_gasto_pct`, pero `alerta_gasto_pct` no se usa en ninguna comprobación. El canal ya existe: `enviar_telegram_ops` y `registrar_alerta` (`core/utils_alertas.py`) se usan para alertas de operaciones, no de IA.",
+      "definition": "Un panel solo sirve si alguien lo mira. Una **alerta** convierte una métrica en un aviso cuando cruza un **umbral**: el gasto del mes pasa del 80 % del presupuesto, se dispara la tasa de errores o de salidas inválidas, cae la tasa de aprobación humana. Las buenas alertas son pocas, accionables (dicen qué pasa y dónde mirar) y llegan por el canal que el equipo ya usa.\n\n**En FlipyERP:** `ConfiguracionModuloIA` (`ai/models.py`) tiene `limite_gasto_mes_usd`, `alerta_gasto_pct` (un porcentaje, 80 por defecto) y los métodos `gasto_mes_actual()` y `pct_limite_usado()`, pero `alerta_gasto_pct` no se usa en ninguna comprobación. El canal ya existe: `enviar_telegram_ops` y `registrar_alerta` (`core/utils_alertas.py`) se usan para alertas de operaciones, no de IA.",
       "formulas": [],
       "example": null,
       "mistakes": [
@@ -732,7 +732,7 @@
           "id": "evo.alertas#q3",
           "kind": "apply",
           "prompt": "Con lo que ya existe en FlipyERP, ¿qué faltaría para avisar cuando un módulo gasta el 80 % de su presupuesto mensual?",
-          "answer": "Una tarea periódica que sume el coste del mes en `AiCosteLog` por módulo, lo compare con `limite_gasto_mes_usd` multiplicado por `alerta_gasto_pct` y, si lo supera, llame a `enviar_telegram_ops`. Los campos y el canal existen; falta esa lógica.",
+          "answer": "Una tarea periódica que, para cada `ConfiguracionModuloIA`, compare `pct_limite_usado()` con `alerta_gasto_pct` y, si lo alcanza, llame a `enviar_telegram_ops`. El cálculo del gasto y el canal ya existen; falta la tarea que los une.",
           "difficulty": 3
         }
       ],

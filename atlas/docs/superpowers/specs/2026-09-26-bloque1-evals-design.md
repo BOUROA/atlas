@@ -71,7 +71,7 @@ seguridad y enterarse a tiempo cuando algo se tuerce.
 | `evo.version_prompt` | Versionar prompts y modelo | estructura | `ai/models.py` (`AiPromptVersion`) |
 | `evo.regresion` | Eval de regresión | metodo | genérico; en FlipyERP no existe comparación entre versiones de `AiPromptVersion` |
 | `evo.salida_estructurada` | Salida estructurada y validación | metodo | `pim/content_studio/batch_processor.py` (`response_format`), `ai/agents/base.py` (`parsear_json_llm`) |
-| `evo.alertas` | Alertas de gasto y de calidad | metodo | `ai/models.py` (`ConfiguracionModuloIA.alerta_gasto_pct`, sin uso), `core/utils_alertas.py` (`enviar_telegram_ops`) |
+| `evo.alertas` | Alertas de gasto y de calidad | metodo | `ai/models.py` (`ConfiguracionModuloIA`: `alerta_gasto_pct` sin uso; `gasto_mes_actual()` y `pct_limite_usado()` ya calculan el gasto), `core/utils_alertas.py` (`enviar_telegram_ops`) |
 
 ### Relaciones (`type: "requires"`)
 

@@ -103,6 +103,13 @@ Cualquier cambio en el servidor: **es la producción de FlipyERP**; enseñar los
 comandos a Raul antes de ejecutarlos salvo que diga lo contrario, y `nginx -t`
 antes de cada recarga.
 
+Las matrículas guardan la lista de constelaciones resuelta al guardarlas
+(`enrollments.subject_ids`, también las invitaciones pendientes): si se añade
+una constelación a un itinerario, los alumnos ya matriculados no la ven hasta
+volver a guardar su matrícula desde `/admin` (y las invitaciones pendientes hay
+que reenviarlas). Al añadir `evals` (2026-09-26) en producción solo existía el
+admin, así que no hubo que migrar a nadie.
+
 Siguiente, en este orden:
 
 1. Contenido: apuntes largos por tema, constelaciones de herramientas
