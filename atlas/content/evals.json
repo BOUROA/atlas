@@ -544,6 +544,201 @@
       "alsoIn": [],
       "syllabus": true,
       "sources": ["ai/tests_router_agentes.py"]
+    },
+    {
+      "id": "evo.version_prompt",
+      "name": "Versionar prompts y modelo",
+      "aliases": ["versionado de prompts", "prompt versioning", "AiPromptVersion"],
+      "unitId": "evals.t3",
+      "order": 12,
+      "kind": "estructura",
+      "difficulty": 2,
+      "summary": "Guardar cada versión del prompt junto con el modelo y sus parámetros, y anotar en cada ejecución qué versión se usó, para poder comparar y volver atrás.",
+      "intuition": "Las revisiones de una receta: si cambias la cantidad de sal y el plato empeora, necesitas saber cuál era la versión anterior y qué platos salieron con cada una.",
+      "definition": "El comportamiento de un agente depende del **prompt de sistema**, de la **plantilla** del mensaje, del **modelo** y de parámetros como la temperatura. Versionar es guardar esas piezas juntas con un identificador, marcar cuál está activa y **enlazar cada ejecución con la versión** que la produjo. Así se puede atribuir un cambio de calidad o de coste, comparar versiones con el mismo eval y volver atrás sin adivinar.\n\n**En FlipyERP:** `AiPromptVersion` (`ai/models.py`) guarda `agente`, `version`, `system_prompt`, `user_prompt_template`, `modelo_llm`, `temperatura`, `max_tokens` y `activo`, y cada `AiTarea` apunta a su `prompt_version`. En cambio, `ChatService` (`ai/services/chat_service.py`) usa un modelo fijo en el código (`MODEL = 'claude-sonnet-4-5'`), fuera de ese versionado.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Versionar el texto del prompt pero no el modelo ni la temperatura: el cambio que importó puede estar ahí.",
+        "Editar la versión activa en lugar de crear una nueva: se pierde con qué se generaron las salidas antiguas."
+      ],
+      "questions": [
+        {
+          "id": "evo.version_prompt#q1",
+          "kind": "recall",
+          "prompt": "¿Qué piezas hay que versionar juntas para reproducir el comportamiento de un agente?",
+          "answer": "El prompt de sistema, la plantilla del mensaje, el modelo y los parámetros (temperatura, máximo de tokens).",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.version_prompt#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué cada ejecución debe guardar qué versión la produjo?",
+          "answer": "Para poder atribuir cambios de calidad o de coste a una versión concreta, comparar versiones y saber qué salidas habría que revisar si una versión resulta mala.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.version_prompt#q3",
+          "kind": "apply",
+          "prompt": "Quieres probar otro modelo en el chat de FlipyERP. ¿Qué obstáculo encuentras?",
+          "answer": "Que `ChatService` tiene el modelo fijo en el código (`MODEL`), fuera de `AiPromptVersion`: cambiarlo exige tocar el código, y las conversaciones no guardan con qué versión se hicieron.",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/models.py", "ai/services/chat_service.py"]
+    },
+    {
+      "id": "evo.regresion",
+      "name": "Eval de regresión",
+      "aliases": ["regresión", "regression eval", "comparar versiones"],
+      "unitId": "evals.t3",
+      "order": 13,
+      "kind": "metodo",
+      "difficulty": 3,
+      "summary": "Antes de activar un cambio de prompt o de modelo, lanzar el mismo eval con la versión actual y con la nueva, y comparar caso a caso.",
+      "intuition": "Antes de cambiar el proveedor de un ingrediente, cocinas el menú de prueba con el viejo y con el nuevo y los pruebas lado a lado.",
+      "definition": "Un cambio que mejora unos casos puede empeorar otros. El **eval de regresión** ejecuta la versión actual y la candidata sobre el **mismo conjunto de referencia** y compara la nota global y, sobre todo, **qué casos pasan de bien a mal**. La candidata solo se activa si no empeora lo que importa, o si se acepta ese empeoramiento a sabiendas. Como el modelo no es determinista, conviene repetir cada caso varias veces o fijar la temperatura, para no confundir ruido con cambio.\n\n**En FlipyERP:** `AiPromptVersion` (`ai/models.py`) permite tener varias versiones por agente, pero no existe ningún código que las compare con un eval antes de activar una.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Mirar solo la nota global: una misma media puede esconder casos importantes que se han roto.",
+        "Comparar con conjuntos distintos, o en días distintos, sin fijar las condiciones.",
+        "Tomar una diferencia de un par de casos como mejora real sin repetir las ejecuciones."
+      ],
+      "questions": [
+        {
+          "id": "evo.regresion#q1",
+          "kind": "recall",
+          "prompt": "¿Qué se compara en un eval de regresión?",
+          "answer": "La versión actual y la candidata sobre el mismo conjunto de referencia: la nota global y qué casos cambian de resultado.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.regresion#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué no basta con que la nota global de la versión nueva sea igual o mejor?",
+          "answer": "Porque puede mejorar casos poco importantes y romper otros críticos; hay que mirar qué casos pasan de bien a mal.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.regresion#q3",
+          "kind": "apply",
+          "prompt": "Vas a cambiar el modelo de un agente de FlipyERP que usa `AiPromptVersion`. Describe el proceso seguro.",
+          "answer": "Crear una versión nueva con el modelo nuevo, sin tocar la activa; lanzar las dos sobre el mismo conjunto de referencia; revisar los casos que empeoran, y solo entonces marcar la nueva como activa.",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/models.py"],
+      "resources": [
+        {
+          "title": "Demystifying evals for AI agents",
+          "url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "provider": "Anthropic Engineering",
+          "kind": "articulo"
+        }
+      ]
+    },
+    {
+      "id": "evo.salida_estructurada",
+      "name": "Salida estructurada y validación",
+      "aliases": ["structured outputs", "JSON schema", "validación de salida"],
+      "unitId": "evals.t3",
+      "order": 14,
+      "kind": "metodo",
+      "difficulty": 2,
+      "summary": "Pedir al modelo la respuesta en un formato fijo, como JSON con esquema, y validarla antes de usarla, con un plan B si no cumple.",
+      "intuition": "Un formulario con casillas en vez de una carta libre: es fácil ver si falta algo y el sistema puede leerlo sin interpretar.",
+      "definition": "Cuando otro programa va a usar la respuesta, se pide en un **formato estructurado**, normalmente JSON que cumple un **esquema**. Hay dos niveles: forzarlo en la API (salidas estructuradas o `response_format` con esquema, que garantizan el formato) o pedirlo en el prompt y **validarlo** después. En los dos casos el código debe comprobar la salida antes de usarla y tener un plan B si no cumple: reintentar, cambiar de modelo o dejar el caso para revisión. La tasa de salidas inválidas es en sí una métrica que vigilar.\n\n**En FlipyERP:** `pim/content_studio/batch_processor.py` pasa `response_format=JSON_SCHEMA_FICHA` y reintenta en la nube si el JSON no se puede leer. La mayoría de agentes usan `parsear_json_llm` (`ai/agents/base.py`), que quita los bloques de código, busca el primer `{...}` y devuelve `None` si no hay JSON válido, sin comprobar ningún esquema.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Pedir JSON en el prompt y usarlo sin validar: tarde o temprano llega un campo que falta o texto alrededor.",
+        "Validar solo que es JSON, no que tiene los campos y tipos esperados.",
+        "Descartar en silencio las salidas inválidas en lugar de contarlas."
+      ],
+      "questions": [
+        {
+          "id": "evo.salida_estructurada#q1",
+          "kind": "recall",
+          "prompt": "¿Cuáles son las dos formas de conseguir una salida estructurada?",
+          "answer": "Forzar el formato en la API con un esquema (salidas estructuradas, `response_format`) o pedirlo en el prompt y validarlo después en el código.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.salida_estructurada#q2",
+          "kind": "distinguish",
+          "prompt": "¿Qué diferencia hay entre comprobar que la salida es JSON y validarla contra un esquema?",
+          "answer": "Que sea JSON solo dice que se puede leer; el esquema comprueba además que están los campos obligatorios con el tipo correcto.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.salida_estructurada#q3",
+          "kind": "apply",
+          "prompt": "`parsear_json_llm` devuelve `None`. ¿Qué debería pasar y qué conviene registrar?",
+          "answer": "El agente debe aplicar su plan B (reintentar, cambiar de modelo o dejar el caso para revisión) y registrar que hubo una salida inválida, para vigilar la tasa de fallos de formato.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["pim/content_studio/batch_processor.py", "ai/agents/base.py"],
+      "resources": [
+        {
+          "title": "Structured outputs",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+          "provider": "Anthropic (documentación oficial)",
+          "kind": "documentacion"
+        }
+      ]
+    },
+    {
+      "id": "evo.alertas",
+      "name": "Alertas de gasto y de calidad",
+      "aliases": ["alertas", "alerting", "presupuesto de IA"],
+      "unitId": "evals.t3",
+      "order": 15,
+      "kind": "metodo",
+      "difficulty": 2,
+      "summary": "Avisar a una persona cuando el gasto, los errores o la calidad cruzan un umbral, en vez de descubrirlo al mirar un panel o la factura.",
+      "intuition": "El aviso del banco cuando un cargo supera cierta cantidad: no tienes que revisar el extracto cada día para enterarte.",
+      "definition": "Un panel solo sirve si alguien lo mira. Una **alerta** convierte una métrica en un aviso cuando cruza un **umbral**: el gasto del mes pasa del 80 % del presupuesto, se dispara la tasa de errores o de salidas inválidas, cae la tasa de aprobación humana. Las buenas alertas son pocas, accionables (dicen qué pasa y dónde mirar) y llegan por el canal que el equipo ya usa.\n\n**En FlipyERP:** `ConfiguracionModuloIA` (`ai/models.py`) tiene `limite_gasto_mes_usd` y `alerta_gasto_pct`, pero `alerta_gasto_pct` no se usa en ninguna comprobación. El canal ya existe: `enviar_telegram_ops` y `registrar_alerta` (`core/utils_alertas.py`) se usan para alertas de operaciones, no de IA.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Configurar umbrales que nadie comprueba: dan una falsa sensación de control.",
+        "Alertar de todo: el equipo acaba ignorando los avisos.",
+        "Mandar alertas sin contexto: hay que decir qué métrica, cuánto y dónde mirar."
+      ],
+      "questions": [
+        {
+          "id": "evo.alertas#q1",
+          "kind": "recall",
+          "prompt": "¿Qué convierte una métrica en una alerta?",
+          "answer": "Un umbral y un aviso automático a una persona cuando la métrica lo cruza.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.alertas#q2",
+          "kind": "explain",
+          "prompt": "¿Qué hace que una alerta sea útil y no ruido?",
+          "answer": "Que salte pocas veces, que sea accionable (qué pasa y dónde mirar) y que llegue por un canal que el equipo ya atiende.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.alertas#q3",
+          "kind": "apply",
+          "prompt": "Con lo que ya existe en FlipyERP, ¿qué faltaría para avisar cuando un módulo gasta el 80 % de su presupuesto mensual?",
+          "answer": "Una tarea periódica que sume el coste del mes en `AiCosteLog` por módulo, lo compare con `limite_gasto_mes_usd` multiplicado por `alerta_gasto_pct` y, si lo supera, llame a `enviar_telegram_ops`. Los campos y el canal existen; falta esa lógica.",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/models.py", "core/utils_alertas.py"]
     }
   ],
   "relations": [
@@ -554,6 +749,10 @@
     { "source": "evo.criterios", "target": "evo.eval", "type": "requires", "reason": "Un criterio es la pieza del eval que decide si una salida es buena." },
     { "source": "evo.llm_juez", "target": "evo.criterios", "type": "requires", "reason": "El juez aplica una rúbrica escrita como criterio." },
     { "source": "evo.senal_humana", "target": "evo.eval", "type": "requires", "reason": "La revisión humana es un eval hecho por personas." },
-    { "source": "evo.tests_vs_evals", "target": "evo.eval", "type": "requires", "reason": "Se distinguen a partir de qué mide un eval." }
+    { "source": "evo.tests_vs_evals", "target": "evo.eval", "type": "requires", "reason": "Se distinguen a partir de qué mide un eval." },
+    { "source": "evo.regresion", "target": "evo.golden_set", "type": "requires", "reason": "La regresión repite el mismo conjunto con la versión nueva." },
+    { "source": "evo.regresion", "target": "evo.version_prompt", "type": "requires", "reason": "Sin versiones no hay nada que comparar." },
+    { "source": "evo.salida_estructurada", "target": "evo.criterios", "type": "requires", "reason": "Validar el esquema es el criterio determinista más barato." },
+    { "source": "evo.alertas", "target": "evo.tokens_coste", "type": "requires", "reason": "Una alerta de gasto necesita el coste registrado." }
   ]
 }
