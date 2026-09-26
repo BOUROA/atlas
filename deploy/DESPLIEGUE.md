@@ -122,11 +122,7 @@ sudo nginx -t && sudo systemctl reload nginx
 ### 9. Tu usuario administrador
 
 ```bash
-sudo -iu academy
-cd /opt/academy/atlas
-set -a; . /opt/academy/academy.env; set +a
-/opt/node22/bin/node server/academy/cli.mjs bootstrap --org "Grupo Troviscal" --email tu@correo --name "Tu nombre"
-exit
+sudo -iu academy bash -c 'cd /opt/academy/atlas && set -a && . /opt/academy/academy.env && set +a && /opt/node22/bin/node server/academy/cli.mjs bootstrap --org "Grupo Troviscal" --email tu@correo --name "Tu nombre"'
 ```
 
 La contraseña se pide por consola: nunca como argumento, para que no quede en
