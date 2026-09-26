@@ -1,0 +1,31 @@
+[Unit]
+Description=FlipyERP Academy (Node)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=academy
+Group=academy
+WorkingDirectory=/opt/academy/atlas
+EnvironmentFile=/opt/academy/academy.env
+# Solo escucha en local: nginx es la única puerta de entrada.
+ExecStart=/usr/bin/node server/serve.mjs --port 8090
+Restart=on-failure
+RestartSec=5
+
+# Endurecimiento: el proceso no puede escalar privilegios ni escribir fuera de
+# lo imprescindible (el estado vive en PostgreSQL, no en disco).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/academy
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
