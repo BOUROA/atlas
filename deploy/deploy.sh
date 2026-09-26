@@ -16,6 +16,17 @@ SERVICE="flipyerp-academy"
 HEALTH_URL="http://127.0.0.1:8090/api/health"
 DB="academy"
 
+# Node 22 aislado (ver DESPLIEGUE.md); el del sistema es el 18 de Ubuntu.
+export PATH="/opt/node22/bin:$PATH"
+
+# Las fuentes de las lecciones solo se comprueban si el usuario academy puede
+# leer el código de FlipyERP. En el servidor no puede (y no debe: ahí están sus
+# secretos); esa comprobación se hace en local y en CI.
+FLIPY_DEFAULT="/opt/flipyerp/FlipyERP_v1.0.1"
+if [ -z "${FLIPYERP_ROOT:-}" ] && [ -r "$FLIPY_DEFAULT" ] && [ -x "$FLIPY_DEFAULT" ]; then
+    export FLIPYERP_ROOT="$FLIPY_DEFAULT"
+fi
+
 mkdir -p "$BACKUP_DIR" "$(dirname "$LOG")"
 
 notify() {
@@ -39,13 +50,15 @@ cd "$ROOT"
 PREV_COMMIT=$(git rev-parse HEAD)
 notify "<b>Academy deploy</b> · inicio $(date '+%H:%M:%S') · anterior ${PREV_COMMIT:0:8}"
 
+# Ojo: se llama dentro de `if !`, donde bash ignora `set -e`. Por eso cada paso
+# lleva `|| return 1`; sin ello, un test fallido no pararía el despliegue.
 build_app() {
-    cd "$APP"
+    cd "$APP" || return 1
     # NODE_ENV=production haría que npm omitiese las dependencias de build y test.
-    NODE_ENV=development npm ci --include=dev --no-audit --no-fund 2>&1 | tail -n 3 | tee -a "$LOG"
-    npm test 2>&1 | tail -n 8 | tee -a "$LOG"
-    FLIPYERP_ROOT="${FLIPYERP_ROOT:-/opt/flipyerp/FlipyERP_v1.0.1}" node scripts/validate-content.cjs content 2>&1 | tail -n 3 | tee -a "$LOG"
-    npm run build 2>&1 | tail -n 2 | tee -a "$LOG"
+    NODE_ENV=development npm ci --include=dev --no-audit --no-fund 2>&1 | tail -n 3 | tee -a "$LOG" || return 1
+    npm test 2>&1 | tail -n 8 | tee -a "$LOG" || return 1
+    node scripts/validate-content.cjs content 2>&1 | tail -n 3 | tee -a "$LOG" || return 1
+    npm run build 2>&1 | tail -n 2 | tee -a "$LOG" || return 1
     cd "$ROOT"
 }
 

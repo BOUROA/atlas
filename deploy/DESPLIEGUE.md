@@ -12,7 +12,7 @@ Internet ─► nginx :443 academy.flipyerp.com ─► node 127.0.0.1:8090 ─�
 ## Requisitos
 
 - DNS: registro `A` (y `AAAA` si hay IPv6) de `academy.flipyerp.com` apuntando al servidor.
-- Node.js 22.13 o superior (el servidor de FlipyERP no lo necesitaba hasta ahora).
+- Node.js 22.13 o superior, aislado en `/opt/node22` (paso 1).
 - PostgreSQL y nginx: los que ya usa FlipyERP.
 
 ## Primera instalación (una sola vez)
@@ -20,18 +20,29 @@ Internet ─► nginx :443 academy.flipyerp.com ─► node 127.0.0.1:8090 ─�
 En el servidor root está deshabilitado: se entra como `ssh flipy@88.99.212.58`
 y cada comando privilegiado va con `sudo` (pide la contraseña de `flipy`).
 
-### 1. Node.js 22 de sistema
+### 1. Node.js 22 aislado en `/opt/node22`
 
-El servicio usa `/usr/bin/node`. El Node de `flipy` (nvm, en su home) no sirve:
-el usuario `academy` no puede leer `/home/flipy`. Instalarlo no cambia el Node
-de `flipy`, porque nvm va primero en su PATH.
+El servidor ya tiene el Node 18 de Ubuntu (`/usr/bin/node`), del que dependen
+paquetes `node-*` del sistema. El `nodejs` de NodeSource chocaría con ellos, así
+que la academia usa su propio Node en `/opt/node22`, sin tocar el del sistema.
+El servicio y `deploy.sh` ya apuntan ahí. El Node de `flipy` (nvm, en su home)
+tampoco sirve: el usuario `academy` no puede leer `/home/flipy`.
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
-sudo bash /tmp/nodesource_setup.sh
-sudo apt-get install -y nodejs
-/usr/bin/node --version   # v22.x
+V=v22.23.3
+cd /tmp
+curl -fsSLO https://nodejs.org/dist/$V/node-$V-linux-x64.tar.xz
+echo "df450af89261115ef9f9e3830c3eeb2cc9213b63c720b1af623cb5dcbe2e02de  node-$V-linux-x64.tar.xz" | sha256sum -c -
+sudo tar -xJf node-$V-linux-x64.tar.xz -C /opt
+sudo chown -R root:root /opt/node-$V-linux-x64
+sudo ln -sfn /opt/node-$V-linux-x64 /opt/node22
+/opt/node22/bin/node --version   # v22.23.3
+rm node-$V-linux-x64.tar.xz
 ```
+
+Para actualizar: descargar la nueva versión igual (con el checksum de
+`https://nodejs.org/dist/<versión>/SHASUMS256.txt`), mover el enlace `/opt/node22`
+y reiniciar `flipyerp-academy`.
 
 ### 2. Usuario del sistema y código
 
@@ -82,8 +93,9 @@ sudo systemctl enable flipyerp-academy
 sudo -iu academy bash -c 'cd /opt/academy && FORCE=1 bash deploy/deploy.sh'
 ```
 
-El script instala, pasa los tests, valida el contenido contra
-`/opt/flipyerp/FlipyERP_v1.0.1`, compila, migra y arranca.
+El script instala, pasa los tests, valida el contenido, compila, migra y arranca.
+Las `sources` de las lecciones no se comprueban en el servidor: `academy` no
+puede (ni debe) leer `/opt/flipyerp`. Esa comprobación se hace en local.
 
 ### 8. nginx y certificado
 
@@ -113,7 +125,7 @@ sudo nginx -t && sudo systemctl reload nginx
 sudo -iu academy
 cd /opt/academy/atlas
 set -a; . /opt/academy/academy.env; set +a
-node server/academy/cli.mjs bootstrap --org "Grupo Troviscal" --email tu@correo --name "Tu nombre"
+/opt/node22/bin/node server/academy/cli.mjs bootstrap --org "Grupo Troviscal" --email tu@correo --name "Tu nombre"
 exit
 ```
 
@@ -146,7 +158,7 @@ Qué hace, en orden:
 | Logs | `sudo journalctl -u flipyerp-academy -f` |
 | Log de despliegues | `/opt/academy/logs/deploy.log` |
 | Copia manual de la BD | `sudo -u academy pg_dump academy -Fc -f /opt/academy/backups/manual.dump` |
-| Restablecer una contraseña | `node server/academy/cli.mjs reset-password --email x@y` (con el `.env` cargado) |
+| Restablecer una contraseña | `/opt/node22/bin/node server/academy/cli.mjs reset-password --email x@y` (con el `.env` cargado) |
 
 Las copias de la base de datos de FlipyERP **no** incluyen la academia: si
 tienes copias externas programadas, añade `academy` a la lista.

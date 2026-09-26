@@ -10,7 +10,8 @@ Group=academy
 WorkingDirectory=/opt/academy/atlas
 EnvironmentFile=/opt/academy/academy.env
 # Solo escucha en local: nginx es la única puerta de entrada.
-ExecStart=/usr/bin/node server/serve.mjs --port 8090
+# Node 22 aislado en /opt/node22: el Node 18 de Ubuntu del sistema no se toca.
+ExecStart=/opt/node22/bin/node server/serve.mjs --port 8090
 Restart=on-failure
 RestartSec=5
 
