@@ -10,11 +10,17 @@
 import { useRef, useSyncExternalStore } from "react";
 import { emptyUserState, type UserState } from "../domain/types";
 import { mergeStates } from "../domain/sync";
+import { redirectToLogin } from "./session";
 
 export type SaveStatus = "loading" | "saved" | "saving" | "offline" | "error";
 
 const API = "/api/state";
-const CACHE_KEY = "atlas.v2.cache";
+/**
+ * Clave de la caché en localStorage. En FlipyERP Academy se separa por usuario
+ * (setCacheNamespace) para que dos personas en el mismo navegador nunca
+ * fusionen sus progresos.
+ */
+let cacheKey = "atlas.v2.cache";
 const SAVE_DEBOUNCE_MS = 800;
 const CACHE_DEBOUNCE_MS = 250;
 const RETRY_MS = 15_000;
@@ -67,7 +73,7 @@ function normalize(s: UserState): UserState {
 
 function readCache(): CacheRecord | null {
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
+    const raw = localStorage.getItem(cacheKey);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as CacheRecord | UserState;
     if (isUserState(parsed)) return { rev: 0, dirty: true, state: normalize(parsed) };
@@ -85,7 +91,7 @@ function writeCacheNow() {
   }
   try {
     const rec: CacheRecord = { rev, dirty, state };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(rec));
+    localStorage.setItem(cacheKey, JSON.stringify(rec));
   } catch {
     /* sin espacio o sin almacenamiento: el servidor sigue siendo la copia buena */
   }
@@ -99,13 +105,20 @@ async function request(method: "GET" | "PUT", body?: unknown): Promise<Response>
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT_MS);
   try {
-    return await fetch(API, {
+    const res = await fetch(API, {
       method,
       cache: "no-store",
       signal: ctrl.signal,
       headers: body === undefined ? undefined : { "content-type": "application/json" },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
+    // FlipyERP Academy: la sesión ha caducado o se ha cerrado en otro sitio.
+    // La caché queda marcada como pendiente y se fusiona al volver a entrar.
+    if (res.status === 401) {
+      writeCacheNow();
+      redirectToLogin();
+    }
+    return res;
   } finally {
     clearTimeout(t);
   }
@@ -257,6 +270,10 @@ if (typeof window !== "undefined") {
 }
 
 export const store = {
+  /** Separa la caché local por usuario. Llamar antes de init(). */
+  setCacheNamespace(userId: string): void {
+    cacheKey = `academy.v1.cache.${userId}`;
+  },
   getState(): UserState {
     return state;
   },

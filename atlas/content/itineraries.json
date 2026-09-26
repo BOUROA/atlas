@@ -1,0 +1,20 @@
+[
+  {
+    "id": "cero",
+    "name": "Desde cero",
+    "description": "Para quien empieza sin conocimientos de IA: fundamentos, buen uso de Claude y protección de datos.",
+    "subjects": ["fundamentos"]
+  },
+  {
+    "id": "desarrollo",
+    "name": "Desarrollador que se incorpora",
+    "description": "Para una persona que va a programar en FlipyERP: fundamentos de IA y cómo está construido el ERP por dentro.",
+    "subjects": ["fundamentos", "tenancy"]
+  },
+  {
+    "id": "avanzado",
+    "name": "Avanzado",
+    "description": "Para perfiles técnicos que ya dominan la IA generativa: directamente al funcionamiento interno de FlipyERP.",
+    "subjects": ["tenancy"]
+  }
+]

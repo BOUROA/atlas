@@ -14,7 +14,7 @@ import { href } from "../../state/router";
 import { useUserState } from "../../state/store";
 import { Button, EmptyState, Freshness, Icons, LevelBars, Md, Section, TeX, relDays, toast } from "../../ui";
 import { StudyMenu } from "./StudyMenu";
-import { AppearsIn, BasesSection, DependentsSection, HistoryTimeline, ImpactBlock } from "./Sections";
+import { AppearsIn, BasesSection, DependentsSection, HistoryTimeline, ImpactBlock, ResourcesSection } from "./Sections";
 import { Notes } from "./Notes";
 import "./concept.css";
 
@@ -167,6 +167,8 @@ export function ConceptPanel({ conceptId }: { conceptId: string }) {
           ))}
         </Section>
       )}
+
+      <ResourcesSection resources={concept.resources} sources={concept.sources} />
 
       <Section eyebrow="Requisitos" title="Bases">
         <BasesSection conceptId={concept.id} direct={view.prerequisites} progress={derived.progress} />

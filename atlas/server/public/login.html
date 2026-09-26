@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>FlipyERP Academy · Acceso</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root { color-scheme: dark; --ink: #070B18; --card: #0F1528; --line: #232C47; --text: #E9ECF6; --text-2: #A9B1C9;
+    --text-3: #8189A8; --gold: #F3B64A; --gold-ink: #1C1405; --ember: #F08A6C; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--text);
+    background: radial-gradient(ellipse at 50% -20%, #1A2350 0%, var(--ink) 60%); display: grid; place-items: center; padding: 24px; }
+  .sky { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .sky i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #FFF6E4; opacity: .55; }
+  main { position: relative; z-index: 1; width: 100%; max-width: 380px; background: color-mix(in oklab, var(--card) 92%, transparent);
+    border: 1px solid var(--line); border-radius: 16px; padding: 32px 28px; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .brand svg { flex: none; }
+  h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 28px; margin: 0; letter-spacing: .01em; }
+  p.lead { color: var(--text-2); margin: 4px 0 24px; font-size: 14px; line-height: 1.5; }
+  label { display: block; font-size: 13px; color: var(--text-2); margin: 14px 0 6px; }
+  input { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: #0A1022; color: var(--text);
+    font: inherit; font-size: 15px; }
+  input:focus { outline: 2px solid color-mix(in oklab, var(--gold) 60%, transparent); outline-offset: 1px; border-color: transparent; }
+  input[readonly] { color: var(--text-3); }
+  button { width: 100%; margin-top: 22px; padding: 12px; border: 0; border-radius: 10px; background: var(--gold); color: var(--gold-ink);
+    font: inherit; font-weight: 600; font-size: 15px; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: progress; }
+  .error { color: var(--ember); font-size: 13px; margin-top: 14px; min-height: 1em; }
+  .hint { color: var(--text-3); font-size: 12px; margin-top: 6px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true" id="sky"></div>
+<main>
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="#F3B64A" stroke-opacity=".5"/>
+      <path d="M16 5l2.6 8.4L27 16l-8.4 2.6L16 27l-2.6-8.4L5 16l8.4-2.6z" fill="#F3B64A"/></svg>
+    <h1>FlipyERP Academy</h1>
+  </div>
+
+  <form id="login">
+    <p class="lead">Accede con tu cuenta para seguir tu itinerario de formación.</p>
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="username" required>
+    <label for="password">Contraseña</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <button type="submit">Entrar</button>
+    <div class="error" role="alert"></div>
+  </form>
+
+  <form id="invite" hidden>
+    <p class="lead">Te han invitado a <strong id="org"></strong>. Crea tu contraseña para empezar.</p>
+    <label for="inv-email">Email</label>
+    <input id="inv-email" type="email" readonly>
+    <label for="inv-name">Tu nombre</label>
+    <input id="inv-name" name="name" autocomplete="name" required>
+    <label for="inv-password">Contraseña</label>
+    <input id="inv-password" name="password" type="password" autocomplete="new-password" minlength="10" required>
+    <div class="hint">Mínimo 10 caracteres. Una frase corta es más segura y fácil de recordar.</div>
+    <label for="inv-password2">Repite la contraseña</label>
+    <input id="inv-password2" type="password" autocomplete="new-password" minlength="10" required>
+    <button type="submit">Crear cuenta y empezar</button>
+    <div class="error" role="alert"></div>
+  </form>
+</main>
+<script>
+(() => {
+  const sky = document.getElementById("sky");
+  for (let i = 0; i < 90; i++) {
+    const s = document.createElement("i");
+    s.style.left = Math.random() * 100 + "%";
+    s.style.top = Math.random() * 100 + "%";
+    s.style.opacity = (0.15 + Math.random() * 0.6).toFixed(2);
+    sky.appendChild(s);
+  }
+
+  const params = new URLSearchParams(location.search);
+  const next = (() => {
+    const n = params.get("next") || "/";
+    return n.startsWith("/") && !n.startsWith("//") && !n.startsWith("/\\") ? n : "/";
+  })();
+  const invite = params.get("invite");
+
+  async function post(url, body) {
+    const res = await fetch(url, {
+      method: "POST", credentials: "same-origin",
+      headers: { "content-type": "application/json" }, body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "No se ha podido completar");
+    return data;
+  }
+
+  function wire(form, handler) {
+    const error = form.querySelector(".error");
+    const button = form.querySelector("button");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      error.textContent = "";
+      button.disabled = true;
+      try { await handler(); } catch (err) { error.textContent = err.message; button.disabled = false; }
+    });
+  }
+
+  if (!invite) {
+    wire(document.getElementById("login"), async () => {
+      await post("/api/auth/login", {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+      });
+      location.replace(next);
+    });
+    document.getElementById("email").focus();
+    return;
+  }
+
+  const loginForm = document.getElementById("login");
+  const inviteForm = document.getElementById("invite");
+  loginForm.hidden = true;
+  inviteForm.hidden = false;
+  fetch("/api/auth/invite?token=" + encodeURIComponent(invite), { credentials: "same-origin" })
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Invitación no válida");
+      document.getElementById("org").textContent = data.organization;
+      document.getElementById("inv-email").value = data.email;
+      document.getElementById("inv-name").value = data.name || "";
+      document.getElementById("inv-name").focus();
+    })
+    .catch((err) => {
+      inviteForm.querySelector(".error").textContent = err.message;
+      inviteForm.querySelector("button").disabled = true;
+    });
+  wire(inviteForm, async () => {
+    const pw = document.getElementById("inv-password").value;
+    if (pw !== document.getElementById("inv-password2").value) throw new Error("Las contraseñas no coinciden");
+    await post("/api/auth/accept-invite", { token: invite, name: document.getElementById("inv-name").value, password: pw });
+    location.replace("/");
+  });
+})();
+</script>
+</body>
+</html>

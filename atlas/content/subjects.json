@@ -1,13 +1,38 @@
 [
   {
-    "id": "probabilidad",
-    "name": "Probabilidad (asignatura de ejemplo)",
-    "shortName": "Probabilidad",
+    "id": "fundamentos",
+    "name": "Fundamentos de IA generativa",
+    "shortName": "Fundamentos IA",
+    "abbr": "FIA",
     "year": 1,
     "semester": 1,
     "status": "current",
-    "color": "#7A8FD6",
+    "color": "#97AAFB",
+    "colorLight": "#4058B8",
     "order": 1,
-    "file": "probabilidad.json"
+    "file": "fundamentos.json",
+    "level": 0,
+    "track": "fundamentos",
+    "audience": ["todos"],
+    "prerequisites": [],
+    "description": "Qué es un modelo de lenguaje, cómo trabajar bien con Claude y qué no compartir nunca. Punto de partida para cualquier persona, sin conocimientos previos."
+  },
+  {
+    "id": "tenancy",
+    "name": "FlipyERP por dentro · Multi-empresa",
+    "shortName": "Multi-empresa",
+    "abbr": "MTE",
+    "year": 3,
+    "semester": 1,
+    "status": "current",
+    "color": "#E8C79A",
+    "colorLight": "#946126",
+    "order": 2,
+    "file": "tenancy.json",
+    "level": 2,
+    "track": "flipyerp",
+    "audience": ["desarrollo"],
+    "prerequisites": [],
+    "description": "Cómo separa FlipyERP los datos de cada empresa del grupo: el modelo row-level, la empresa activa por petición, los roles y las defensas contra fugas entre sociedades."
   }
 ]

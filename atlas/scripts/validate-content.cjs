@@ -59,6 +59,62 @@ const touched = new Set(rels.filter((r) => r.type === 'requires').flatMap((r) =>
 const isolated = [...concepts.keys()].filter((id) => !touched.has(id));
 if (isolated.length) warnings.push(`${isolated.length} conceptos sin ninguna relación requires: ${isolated.slice(0, 20).join(', ')}${isolated.length > 20 ? '…' : ''}`);
 const perSubject = Object.fromEntries(subjects.map((s) => [s.id, [...concepts.values()].filter((c) => c.subjectId === s.id).length]));
+
+// ───────── FlipyERP Academy: itinerarios, prerrequisitos, recursos y fuentes ─────────
+const LEVELS = [0, 1, 2, 3];
+const AUDIENCES = ['todos', 'desarrollo', 'operaciones'];
+const RESOURCE_KINDS = ['curso', 'documentacion', 'repositorio', 'articulo'];
+for (const s of subjects) {
+  if (s.level !== undefined && !LEVELS.includes(s.level)) errors.push(`asignatura ${s.id}: level no válido (${s.level})`);
+  for (const a of s.audience ?? []) if (!AUDIENCES.includes(a)) errors.push(`asignatura ${s.id}: audience no válida (${a})`);
+  for (const p of s.prerequisites ?? []) {
+    if (!subjectIds.has(p)) errors.push(`asignatura ${s.id}: prerrequisito desconocido ${p}`);
+    if (p === s.id) errors.push(`asignatura ${s.id}: se requiere a sí misma`);
+  }
+  if (!/^[a-z0-9-]+$/.test(s.id)) errors.push(`asignatura ${s.id}: el id solo admite minúsculas, dígitos y guiones (se usa en variables CSS)`);
+}
+// Ciclos entre prerrequisitos de asignaturas.
+const subjState = new Map();
+const byId = new Map(subjects.map((s) => [s.id, s]));
+function dfsSubject(id, stack) {
+  subjState.set(id, 1); stack.push(id);
+  for (const p of byId.get(id)?.prerequisites ?? []) {
+    if (subjState.get(p) === 1) errors.push(`ciclo de prerrequisitos: ${[...stack.slice(stack.indexOf(p)), p].join(' → ')}`);
+    else if (!subjState.get(p) && byId.has(p)) dfsSubject(p, stack);
+  }
+  stack.pop(); subjState.set(id, 2);
+}
+for (const s of subjects) if (!subjState.get(s.id)) dfsSubject(s.id, []);
+
+const itinerariesFile = path.join(dir, 'itineraries.json');
+if (fs.existsSync(itinerariesFile)) {
+  const itineraries = JSON.parse(fs.readFileSync(itinerariesFile, 'utf8'));
+  const ids = new Set();
+  for (const it of itineraries) {
+    if (!it.id || !it.name || !it.description) errors.push(`itinerario ${it.id ?? '?'}: faltan id, name o description`);
+    if (ids.has(it.id)) errors.push(`itinerario duplicado ${it.id}`);
+    ids.add(it.id);
+    if (!Array.isArray(it.subjects) || it.subjects.length === 0) errors.push(`itinerario ${it.id}: sin constelaciones`);
+    for (const sid of it.subjects ?? []) if (!subjectIds.has(sid)) errors.push(`itinerario ${it.id}: constelación desconocida ${sid}`);
+  }
+}
+
+// Si se indica la raíz de FlipyERP (FLIPYERP_ROOT=.../FlipyERP_v1.0.1), las
+// fuentes citadas por los conceptos tienen que existir.
+const flipyRoot = process.env.FLIPYERP_ROOT;
+for (const c of concepts.values()) {
+  for (const [i, r] of (c.resources ?? []).entries()) {
+    const w = `${c.id}.resources[${i}]`;
+    if (!r.title || !r.provider) errors.push(`${w}: falta title o provider`);
+    if (typeof r.url !== 'string' || !r.url.startsWith('https://')) errors.push(`${w}: la url debe ser https`);
+    if (!RESOURCE_KINDS.includes(r.kind)) errors.push(`${w}: kind no válido (${r.kind})`);
+  }
+  for (const src of c.sources ?? []) {
+    if (typeof src !== 'string' || src.startsWith('/') || src.includes('..')) errors.push(`${c.id}: fuente no válida ${src}`);
+    else if (flipyRoot && !fs.existsSync(path.join(flipyRoot, src))) errors.push(`${c.id}: la fuente ${src} no existe en FlipyERP`);
+  }
+}
+if (!flipyRoot) warnings.push('FLIPYERP_ROOT no definido: no se comprueba que existan las fuentes de FlipyERP');
 for (const e of errors) console.log('ERROR', e);
 for (const w of warnings) console.log('AVISO', w);
 console.log('Conceptos por asignatura:', JSON.stringify(perSubject));

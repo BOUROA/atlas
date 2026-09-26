@@ -1,7 +1,7 @@
 /** Subsecciones de la ficha: impacto, bases/¿para qué?, aparece en, historial. */
 import { useMemo, useState } from "react";
 import { Crown, ThumbsDown, ThumbsUp } from "lucide-react";
-import type { StudyEvent } from "../../domain/types";
+import type { Resource, StudyEvent } from "../../domain/types";
 import { prerequisitesDeep, type NeededIn, type Reached } from "../../domain/graph";
 import type { NeededEarly } from "../../domain/tutor/advance";
 import { territory, readiness } from "../../domain/expeditions";
@@ -217,6 +217,64 @@ export function AppearsIn({ conceptId, progress }: { conceptId: string; progress
                 </li>
               );
             })}
+          </ul>
+        </div>
+      )}
+    </Section>
+  );
+}
+
+/* ───────── Recursos (FlipyERP Academy) ───────── */
+
+const RESOURCE_KIND: Record<Resource["kind"], string> = {
+  curso: "Curso",
+  documentacion: "Documentación",
+  repositorio: "Repositorio",
+  articulo: "Artículo",
+};
+
+/**
+ * Recursos externos del concepto (cursos gratuitos, documentación) y ficheros
+ * de FlipyERP en los que se basa. Los cursos externos se estudian fuera; aquí
+ * se comprueba con las preguntas del concepto.
+ */
+export function ResourcesSection({ resources = [], sources = [] }: { resources?: Resource[]; sources?: string[] }) {
+  if (resources.length === 0 && sources.length === 0) return null;
+  return (
+    <Section card eyebrow="Fuera de Atlas" title="Recursos">
+      {resources.length > 0 && (
+        <div className="concept-appears-group">
+          <p className="concept-block-title">
+            <Icons.open size={13} aria-hidden="true" /> Estudia aquí y vuelve a comprobarte
+          </p>
+          <ul className="concept-appears-list">
+            {resources.map((r) => (
+              <li key={r.url + r.title}>
+                <a className="concept-appears-row" href={r.url} target="_blank" rel="noopener noreferrer">
+                  <span>
+                    {r.title} <span className="concept-base-reason">· {r.provider}</span>
+                  </span>
+                  <span className="concept-appears-pct">
+                    {RESOURCE_KIND[r.kind]}
+                    {r.minutes ? ` · ${r.minutes} min` : ""}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {sources.length > 0 && (
+        <div className="concept-appears-group">
+          <p className="concept-block-title">
+            <Icons.notes size={13} aria-hidden="true" /> En el código de FlipyERP
+          </p>
+          <ul className="concept-list">
+            {sources.map((s) => (
+              <li key={s}>
+                <code>{s}</code>
+              </li>
+            ))}
           </ul>
         </div>
       )}

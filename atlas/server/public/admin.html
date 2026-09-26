@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>FlipyERP Academy · Administración</title>
+<style>
+  :root { color-scheme: dark; --ink: #070B18; --card: #0F1528; --card-2: #141B33; --line: #232C47; --text: #E9ECF6;
+    --text-2: #A9B1C9; --text-3: #8189A8; --gold: #F3B64A; --gold-ink: #1C1405; --ember: #F08A6C; --ok: #95D69A; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--text);
+    background: var(--ink); font-size: 14px; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px; border-bottom: 1px solid var(--line); }
+  header h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 24px; margin: 0; }
+  header nav { display: flex; gap: 10px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 24px 28px 60px; display: grid; gap: 24px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
+  h2 { font-size: 15px; margin: 0 0 14px; font-weight: 600; letter-spacing: .02em; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--text-3); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  td small { color: var(--text-3); display: block; margin-top: 2px; }
+  .muted { color: var(--text-3); }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--card-2); border: 1px solid var(--line);
+    font-size: 12px; margin: 0 4px 4px 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px 16px; }
+  label { display: block; font-size: 12px; color: var(--text-2); margin-bottom: 5px; }
+  input, select { width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line); background: #0A1022;
+    color: var(--text); font: inherit; }
+  button, a.btn { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card-2); color: var(--text);
+    font: inherit; cursor: pointer; text-decoration: none; display: inline-block; }
+  button.primary { background: var(--gold); color: var(--gold-ink); border-color: transparent; font-weight: 600; }
+  button.danger { color: var(--ember); }
+  .subjects { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px 14px; margin-top: 10px; }
+  .subjects label { display: flex; gap: 8px; align-items: flex-start; color: var(--text); font-size: 13px; margin: 0; }
+  .subjects input { width: auto; margin-top: 2px; }
+  .result { margin-top: 14px; padding: 12px; border-radius: 10px; background: var(--card-2); border: 1px dashed var(--gold); word-break: break-all; }
+  .error { color: var(--ember); margin-top: 10px; min-height: 1em; }
+  .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  dialog { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 14px; padding: 22px; width: min(640px, 92vw); }
+  dialog::backdrop { background: rgba(3, 5, 12, .7); }
+  .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>FlipyERP Academy · Administración</h1>
+  <nav><a class="btn" href="/">Volver a la academia</a><button id="logout">Salir</button></nav>
+</header>
+<main>
+  <section>
+    <h2>Invitar a una persona</h2>
+    <form id="invite-form">
+      <div class="grid">
+        <div><label for="inv-email">Email</label><input id="inv-email" type="email" required></div>
+        <div><label for="inv-name">Nombre (opcional)</label><input id="inv-name"></div>
+        <div><label for="inv-role">Rol</label><select id="inv-role"></select></div>
+        <div id="inv-org-wrap"><label for="inv-org">Organización</label><select id="inv-org"></select></div>
+        <div><label for="inv-itinerary">Itinerario</label><select id="inv-itinerary"></select></div>
+      </div>
+      <p class="muted" id="inv-itinerary-desc"></p>
+      <div class="muted">Constelaciones extra (o todas, si el itinerario es «A medida»). Los prerrequisitos se añaden solos.</div>
+      <div class="subjects" id="inv-subjects"></div>
+      <div class="actions"><button class="primary" type="submit">Crear invitación</button></div>
+      <div class="error" id="inv-error" role="alert"></div>
+      <div class="result" id="inv-result" hidden></div>
+    </form>
+  </section>
+
+  <section>
+    <h2>Personas</h2>
+    <table>
+      <thead><tr><th>Persona</th><th>Rol</th><th>Itinerario</th><th>Progreso</th><th>Última actividad</th><th></th></tr></thead>
+      <tbody id="users"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Invitaciones pendientes</h2>
+    <table>
+      <thead><tr><th>Email</th><th>Rol</th><th>Itinerario</th><th>Caduca</th></tr></thead>
+      <tbody id="invitations"></tbody>
+    </table>
+  </section>
+
+  <section id="orgs-section" hidden>
+    <h2>Organizaciones</h2>
+    <div id="orgs"></div>
+    <form id="org-form" class="grid" style="margin-top:12px">
+      <div><label for="org-name">Nueva organización</label><input id="org-name" required></div>
+      <div style="align-self:end"><button type="submit">Crear</button></div>
+    </form>
+    <div class="error" id="org-error" role="alert"></div>
+  </section>
+</main>
+
+<dialog id="enroll-dialog">
+  <form method="dialog" id="enroll-form">
+    <h2 id="enroll-title">Cambiar itinerario</h2>
+    <label for="enroll-itinerary">Itinerario</label>
+    <select id="enroll-itinerary"></select>
+    <div class="subjects" id="enroll-subjects"></div>
+    <div class="error" id="enroll-error" role="alert"></div>
+    <div class="actions"><button value="cancel" formnovalidate>Cancelar</button><button class="primary" id="enroll-save" value="save">Guardar</button></div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  /** Crea un elemento; los textos van siempre como textContent (nunca HTML). */
+  function h(tag, props = {}, ...children) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === "class") el.className = v;
+      else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else if (v !== undefined && v !== null && v !== false) el.setAttribute(k, v === true ? "" : v);
+    }
+    for (const c of children.flat()) if (c !== null && c !== undefined && c !== false) el.append(c instanceof Node ? c : String(c));
+    return el;
+  }
+  async function api(method, url, body) {
+    const res = await fetch(url, {
+      method, credentials: "same-origin",
+      headers: body ? { "content-type": "application/json" } : {},
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (res.status === 401) { location.href = "/login?next=/admin"; throw new Error("Sesión caducada"); }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+    return data;
+  }
+  const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : "—");
+  const ROLES = { admin: "Administrador", formador: "Formador", alumno: "Alumno" };
+
+  let data = null;
+  const subjectName = (id) => data.catalog.subjects.find((s) => s.id === id)?.name ?? id;
+  const itineraryName = (id) => (id ? data.catalog.itineraries.find((i) => i.id === id)?.name ?? id : "A medida");
+
+  function itineraryOptions(select, selected) {
+    select.replaceChildren(
+      ...data.catalog.itineraries.map((i) => h("option", { value: i.id, selected: i.id === selected }, i.name)),
+      h("option", { value: "", selected: !selected }, "A medida"),
+    );
+  }
+  function subjectChecks(container, checked = []) {
+    container.replaceChildren(
+      ...data.catalog.subjects.map((s) =>
+        h("label", {}, h("input", { type: "checkbox", value: s.id, checked: checked.includes(s.id) }),
+          h("span", {}, s.name, h("small", { class: "muted" }, ` · nivel ${s.level ?? "?"}`))),
+      ),
+    );
+  }
+  const checkedIn = (container) => [...container.querySelectorAll("input:checked")].map((i) => i.value);
+
+  function render() {
+    const isAdmin = data.actor.role === "admin";
+    const orgName = (id) => data.organizations.find((o) => o.id === id)?.name ?? "—";
+
+    $("inv-role").replaceChildren(
+      ...(isAdmin ? ["alumno", "formador", "admin"] : ["alumno"]).map((r) => h("option", { value: r }, ROLES[r])),
+    );
+    $("inv-org-wrap").hidden = !isAdmin;
+    $("inv-org").replaceChildren(...data.organizations.map((o) => h("option", { value: o.id, selected: o.id === data.actor.organizationId }, o.name)));
+    if (!$("inv-itinerary").options.length) {
+      itineraryOptions($("inv-itinerary"), data.catalog.itineraries[0]?.id);
+      subjectChecks($("inv-subjects"));
+      describeItinerary();
+    }
+
+    $("users").replaceChildren(
+      ...data.users.map((u) =>
+        h("tr", {},
+          h("td", {}, u.name, h("small", {}, u.email), isAdmin ? h("small", {}, orgName(u.organization_id)) : null,
+            u.active ? null : h("small", { style: "color:var(--ember)" }, "Desactivado")),
+          h("td", {}, ROLES[u.role] ?? u.role),
+          h("td", {}, itineraryName(u.itinerary_id),
+            h("small", {}, (u.subject_ids ?? []).map(subjectName).join(" · ") || "Todas las constelaciones")),
+          h("td", {}, `${u.progress.concepts} conceptos`, h("small", {}, `${u.progress.events} repasos · ${u.progress.sessions} sesiones`)),
+          h("td", {}, fmtDate(u.progress.lastActivity), h("small", {}, `Último acceso: ${fmtDate(u.last_login_at)}`)),
+          h("td", {},
+            u.id === data.actor.id || (!isAdmin && u.role !== "alumno") ? null : h("div", { class: "row-actions" },
+              h("button", { onclick: () => openEnroll(u) }, "Itinerario"),
+              h("button", { class: u.active ? "danger" : "", onclick: () => toggleActive(u) }, u.active ? "Desactivar" : "Activar"))),
+        ),
+      ),
+    );
+
+    $("invitations").replaceChildren(
+      ...(data.invitations.length
+        ? data.invitations.map((i) => h("tr", {}, h("td", {}, i.email), h("td", {}, ROLES[i.role]), h("td", {}, itineraryName(i.itinerary_id)), h("td", {}, fmtDate(i.expires_at))))
+        : [h("tr", {}, h("td", { colspan: "4", class: "muted" }, "No hay invitaciones pendientes."))]),
+    );
+
+    $("orgs-section").hidden = !isAdmin;
+    $("orgs").replaceChildren(...data.organizations.map((o) => h("span", { class: "pill" }, o.name)));
+  }
+
+  function describeItinerary() {
+    const it = data.catalog.itineraries.find((i) => i.id === $("inv-itinerary").value);
+    $("inv-itinerary-desc").textContent = it
+      ? `${it.description} Incluye: ${it.subjects.map(subjectName).join(" · ")}.`
+      : "Marca abajo exactamente las constelaciones que quieres asignar.";
+  }
+
+  async function load() {
+    data = await api("GET", "/api/admin/overview");
+    render();
+  }
+
+  $("inv-itinerary").addEventListener("change", describeItinerary);
+  $("invite-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("inv-error").textContent = "";
+    $("inv-result").hidden = true;
+    try {
+      const out = await api("POST", "/api/admin/invitations", {
+        email: $("inv-email").value, name: $("inv-name").value, role: $("inv-role").value,
+        organizationId: $("inv-org").value, itineraryId: $("inv-itinerary").value || null, subjectIds: checkedIn($("inv-subjects")),
+      });
+      const link = h("code", {}, out.url);
+      const copy = h("button", { type: "button", onclick: async () => { await navigator.clipboard.writeText(out.url); copy.textContent = "Copiado"; } }, "Copiar enlace");
+      $("inv-result").replaceChildren(
+        h("div", {}, `Invitación creada. Caduca el ${fmtDate(out.expiresAt)}. Envía este enlace a la persona:`),
+        h("p", {}, link), copy,
+        h("p", { class: "muted" }, `Constelaciones asignadas: ${out.enrollment.subjectIds.map(subjectName).join(" · ")}`),
+      );
+      $("inv-result").hidden = false;
+      $("inv-email").value = "";
+      $("inv-name").value = "";
+      await load();
+    } catch (err) { $("inv-error").textContent = err.message; }
+  });
+
+  let editing = null;
+  function openEnroll(u) {
+    editing = u;
+    $("enroll-title").textContent = `Itinerario de ${u.name}`;
+    $("enroll-error").textContent = "";
+    itineraryOptions($("enroll-itinerary"), u.itinerary_id);
+    const base = data.catalog.itineraries.find((i) => i.id === u.itinerary_id)?.subjects ?? [];
+    subjectChecks($("enroll-subjects"), (u.subject_ids ?? []).filter((id) => !base.includes(id)));
+    $("enroll-dialog").showModal();
+  }
+  $("enroll-save").addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      await api("PUT", `/api/admin/users/${encodeURIComponent(editing.id)}/enrollment`, {
+        itineraryId: $("enroll-itinerary").value || null, subjectIds: checkedIn($("enroll-subjects")),
+      });
+      $("enroll-dialog").close();
+      await load();
+    } catch (err) { $("enroll-error").textContent = err.message; }
+  });
+
+  async function toggleActive(u) {
+    if (u.active && !confirm(`¿Desactivar a ${u.name}? Perderá el acceso, pero su progreso se conserva.`)) return;
+    try {
+      await api("PUT", `/api/admin/users/${encodeURIComponent(u.id)}/active`, { active: !u.active });
+      await load();
+    } catch (err) { alert(err.message); }
+  }
+
+  $("org-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("org-error").textContent = "";
+    try {
+      await api("POST", "/api/admin/organizations", { name: $("org-name").value });
+      $("org-name").value = "";
+      await load();
+    } catch (err) { $("org-error").textContent = err.message; }
+  });
+
+  $("logout").addEventListener("click", async () => {
+    await api("POST", "/api/auth/logout", {}).catch(() => {});
+    location.href = "/login";
+  });
+
+  load().catch((err) => { document.querySelector("main").prepend(h("p", { class: "error" }, err.message)); });
+})();
+</script>
+</body>
+</html>

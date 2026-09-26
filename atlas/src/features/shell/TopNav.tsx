@@ -5,6 +5,7 @@ import { useUserState } from "../../state/store";
 import { openSearch } from "../../state/ui";
 import { Icons, ICON_SIZE, IconButton, Kbd, Ring, cx, num, pct, type IconName } from "../../ui";
 import { Logo } from "./Logo";
+import { AccountMenu } from "./AccountMenu";
 import { SaveIndicator } from "./SaveIndicator";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -40,9 +41,9 @@ export function TopNav() {
         Saltar al contenido
       </a>
       <div className="shell-top-in">
-        <a className="shell-brand" href={href("/hoy")} aria-label="Atlas, ir a Hoy">
+        <a className="shell-brand" href={href("/hoy")} aria-label="FlipyERP Academy, ir a Hoy">
           <Logo />
-          <span>Atlas</span>
+          <span>Academy</span>
         </a>
 
         <nav className="shell-nav" aria-label="Secciones">
@@ -84,6 +85,7 @@ export function TopNav() {
           </a>
           <ThemeToggle />
           <IconButton aria-label="Ajustes" icon={<Icons.settings />} tooltipSide="bottom" tooltipAlign="end" onClick={() => navigate("/ajustes")} className="shell-settings" />
+          <AccountMenu />
           <IconButton aria-label="Buscar (Ctrl K)" icon={<Icons.search />} tooltipSide="bottom" tooltipAlign="end" onClick={openSearch} className="shell-search-icon" />
         </div>
       </div>

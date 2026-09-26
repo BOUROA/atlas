@@ -14,6 +14,7 @@ import { extname, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { networkInterfaces } from "node:os";
 import { createApi } from "./api.mjs";
+import { academyEnabled, createAcademyFromEnv } from "./academy/index.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, "..");
@@ -122,14 +123,21 @@ function serveStatic(req, res) {
   res.end(readFileSync(filePath));
 }
 
-function createRequestHandler() {
+async function createRequestHandler() {
+  // Modo academia (FlipyERP Academy): multiusuario sobre PostgreSQL.
+  if (academyEnabled()) {
+    const { handler: academy } = await createAcademyFromEnv();
+    return (req, res) => {
+      void academy(req, res, () => serveStatic(req, res));
+    };
+  }
   const api = createApi({ dataDir });
   return (req, res) => {
     api(req, res, () => serveStatic(req, res));
   };
 }
 
-function main() {
+async function main() {
   if (!existsSync(distDir)) {
     console.error("Ejecuta npm run build");
     process.exit(1);
@@ -137,11 +145,12 @@ function main() {
   }
 
   const args = parseArgs(process.argv.slice(2));
-  const handler = createRequestHandler();
+  const handler = await createRequestHandler();
 
   const server = http.createServer(handler);
-  server.listen(args.port, () => {
-    console.log(`Atlas listo en http://localhost:${args.port}/`);
+  // En contenedor hay que escuchar en todas las interfaces (ATLAS_HOST=0.0.0.0).
+  server.listen(args.port, process.env.ATLAS_HOST, () => {
+    console.log(`${academyEnabled() ? "FlipyERP Academy" : "Atlas"} listo en http://localhost:${args.port}/`);
   });
 
   if (args.mobile) {
@@ -157,4 +166,7 @@ function main() {
   }
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

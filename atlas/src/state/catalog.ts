@@ -20,7 +20,22 @@ const contents = Object.entries(files)
 export const catalog = new CatalogIndex(buildCatalog(subjectList, contents));
 
 /** Asignaturas del curso actual, en orden de carril (`order`). */
-export const currentSubjects: readonly Subject[] = catalog.subjects.filter((s) => s.status === "current");
+const current: Subject[] = catalog.subjects.filter((s) => s.status === "current");
+export const currentSubjects: readonly Subject[] = current;
+
+/**
+ * FlipyERP Academy: aplica el itinerario del alumno. Las constelaciones
+ * asignadas pasan a "current" (activas en el motor) y el resto a "future"
+ * (visibles como pendientes). Se llama una sola vez, al arrancar y ANTES de
+ * montar la app, porque los derivados leen `status` y `currentSubjects`.
+ * No es un control de acceso: el contenido completo va en el paquete, que el
+ * servidor solo entrega con sesión iniciada.
+ */
+export function applyEnrollment(subjectIds: readonly string[]): void {
+  const enrolled = new Set(subjectIds);
+  for (const s of catalog.subjects) (s as { status: Subject["status"] }).status = enrolled.has(s.id) ? "current" : "future";
+  current.splice(0, current.length, ...catalog.subjects.filter((s) => s.status === "current"));
+}
 
 /** Misiones: exámenes reales de otras universidades. */
 export const expeditions: readonly Expedition[] = (expeditionsJson as unknown as { expeditions: Expedition[] }).expeditions;

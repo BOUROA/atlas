@@ -1,0 +1,577 @@
+{
+  "subjectId": "tenancy",
+  "units": [
+    {
+      "id": "tenancy.t1",
+      "number": 1,
+      "title": "El modelo row-level",
+      "summary": "Todas las empresas del grupo comparten base de datos y tablas; cada fila operativa sabe de qué empresa es. Qué modelos son de empresa y cuáles no."
+    },
+    {
+      "id": "tenancy.t2",
+      "number": 2,
+      "title": "La empresa activa en cada petición",
+      "summary": "Cómo decide FlipyERP con qué empresa trabaja cada petición, qué empresas puede ver cada usuario y cómo se controlan los roles."
+    },
+    {
+      "id": "tenancy.t3",
+      "number": 3,
+      "title": "Defensas contra fugas entre empresas",
+      "summary": "El patrón fail-open que dejaba ver datos de todas las sociedades, el test que impide que vuelva y la protección del servidor MCP."
+    }
+  ],
+  "concepts": [
+    {
+      "id": "ten.row_level",
+      "name": "Multi-tenancy por fila (row-level)",
+      "aliases": ["row-level", "multi-empresa", "multitenancy"],
+      "unitId": "tenancy.t1",
+      "order": 1,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Todas las empresas comparten base de datos y tablas; cada fila operativa lleva una clave foránea a core.Empresa que indica de quién es.",
+      "intuition": "Un único archivador para todo el grupo, pero cada carpeta lleva una etiqueta con el nombre de la sociedad. La seguridad depende de filtrar siempre por esa etiqueta.",
+      "definition": "FlipyERP aplica **multi-tenancy por fila**: no hay una base de datos por empresa, sino una sola, y los modelos operativos (pedidos, facturas, stock…) tienen un campo `empresa` que es una FK a `core.Empresa`. Aislar a una empresa equivale a filtrar **todas** las consultas por esa FK.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Creer que las empresas están en bases de datos separadas: un filtro olvidado expone los datos de las demás.",
+        "Pensar que todos los modelos tienen empresa: el PIM es centralizado."
+      ],
+      "questions": [
+        {
+          "id": "ten.row_level#q1",
+          "kind": "recall",
+          "prompt": "¿Qué tipo de multi-tenancy usa FlipyERP?",
+          "answer": "Por fila (row-level): una sola base de datos compartida en la que cada fila operativa lleva una FK a `core.Empresa`.",
+          "difficulty": 1
+        },
+        {
+          "id": "ten.row_level#q2",
+          "kind": "explain",
+          "prompt": "¿Cuál es el principal riesgo del modelo row-level frente a tener una base de datos por empresa?",
+          "answer": "Que el aislamiento depende de que cada consulta filtre por empresa: basta un filtro olvidado o mal escrito para devolver datos de otras sociedades.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.row_level#q3",
+          "kind": "distinguish",
+          "prompt": "¿Qué ventaja tiene el modelo row-level para un grupo como el de FlipyERP?",
+          "answer": "Un único despliegue y un único esquema que mantener, informes consolidados entre sociedades con consultas normales y datos compartidos (como el catálogo del PIM) sin duplicarlos.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/middleware.py", "core/mixins.py"]
+    },
+    {
+      "id": "ten.empresa_mixin",
+      "name": "EmpresaMixin",
+      "aliases": ["mixin de empresa"],
+      "unitId": "tenancy.t1",
+      "order": 2,
+      "kind": "estructura",
+      "difficulty": 1,
+      "summary": "Modelo abstracto que añade la FK obligatoria `empresa` a core.Empresa a los modelos operativos (pedidos, facturas, stock).",
+      "intuition": "Es la etiqueta de sociedad lista para pegar: un modelo que hereda de él ya queda atado a una empresa.",
+      "definition": "`EmpresaMixin` (en `core/mixins.py`) es un modelo abstracto de Django con `empresa = ForeignKey('core.Empresa', on_delete=CASCADE)` y un `related_name` generado por app y clase. Al ser **obligatoria** (no admite NULL), filtrar por `empresa=None` no devuelve nada: cierra a vacío.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Añadir a mano un campo `empresa` que apunta a otro modelo y darlo por equivalente.",
+        "Olvidar que `on_delete=CASCADE` borra los datos operativos si se borra la empresa: las empresas se desactivan, no se borran."
+      ],
+      "questions": [
+        {
+          "id": "ten.empresa_mixin#q1",
+          "kind": "recall",
+          "prompt": "¿Qué aporta `EmpresaMixin` a un modelo?",
+          "answer": "Una FK obligatoria `empresa` a `core.Empresa`, con `on_delete=CASCADE` y un `related_name` generado por app y clase.",
+          "difficulty": 1
+        },
+        {
+          "id": "ten.empresa_mixin#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué es importante que la FK `empresa` del mixin no admita NULL?",
+          "answer": "Porque así ninguna fila operativa queda sin empresa, y un filtro `empresa=None` no devuelve nada: si falta la empresa activa, la consulta cierra a vacío en vez de abrirse.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.empresa_mixin#q3",
+          "kind": "apply",
+          "prompt": "Vas a crear el modelo `Devolucion` para una sociedad concreta. ¿Qué haces para que quede aislado por empresa?",
+          "answer": "Heredar de `EmpresaMixin` (junto a los mixins de auditoría que correspondan) y filtrar siempre sus consultas por la empresa activa.",
+          "difficulty": 1
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/mixins.py"]
+    },
+    {
+      "id": "ten.pim_central",
+      "name": "PIM centralizado",
+      "aliases": ["modelos sin empresa", "catálogo compartido"],
+      "unitId": "tenancy.t1",
+      "order": 3,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "El catálogo (pim.Producto, pim.Proveedor) es compartido por todo el grupo y no tiene empresa: filtrarlo por empresa es un error, no una defensa.",
+      "intuition": "El catálogo es la biblioteca común del grupo; lo que es de cada sociedad es lo que hace con él (sus pedidos, su stock, sus precios de canal).",
+      "definition": "En FlipyERP el **PIM es centralizado**: modelos como `pim.Producto` y `pim.Proveedor` no tienen FK a `core.Empresa`. Además, hay modelos con un campo llamado `empresa` que **no** apunta a `core.Empresa`: `crm.Cliente.empresa` y `crm.Actividad.empresa` apuntan a `crm.Cuenta`. El nombre del campo no basta para saber si un modelo es de empresa.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Filtrar `pim.Producto` por `request.empresa`: revienta o devuelve siempre vacío.",
+        "Asumir que cualquier campo llamado `empresa` es el tenant."
+      ],
+      "questions": [
+        {
+          "id": "ten.pim_central#q1",
+          "kind": "recall",
+          "prompt": "¿Tiene empresa `pim.Producto`?",
+          "answer": "No: el PIM es centralizado y compartido por todo el grupo; `pim.Producto` y `pim.Proveedor` no tienen FK a `core.Empresa`.",
+          "difficulty": 1
+        },
+        {
+          "id": "ten.pim_central#q2",
+          "kind": "distinguish",
+          "prompt": "`crm.Cliente` tiene un campo `empresa`. ¿Es el tenant?",
+          "answer": "No: `crm.Cliente.empresa` apunta a `crm.Cuenta`, no a `core.Empresa`. Filtrarlo por `request.empresa` sería un error.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.pim_central#q3",
+          "kind": "explain",
+          "prompt": "¿Por qué filtrar un modelo sin empresa por `request.empresa` «para ir sobre seguro» es un bug y no una defensa?",
+          "answer": "Porque el filtro no tiene sentido sobre ese modelo: o la consulta falla, o no casa nunca y devuelve siempre vacío, rompiendo la funcionalidad sin proteger nada.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/tenancy.py"]
+    },
+    {
+      "id": "ten.modelo_es_de_empresa",
+      "name": "modelo_es_de_empresa()",
+      "aliases": ["modelo_es_de_empresa"],
+      "unitId": "tenancy.t1",
+      "order": 4,
+      "kind": "metodo",
+      "difficulty": 3,
+      "summary": "Utilidad de core/tenancy.py que dice si un modelo tiene una FK real a core.Empresa, mirando el destino de la FK y no el nombre del campo.",
+      "intuition": "Cuando el código resuelve modelos en tiempo de ejecución (desde un tipo en la URL o un ContentType), no sabe de antemano si debe acotarlos por empresa. Esta función se lo dice sin dejarse engañar por nombres de campo.",
+      "definition": "`modelo_es_de_empresa(cls)` busca el campo `empresa` del modelo y devuelve `True` solo si es una relación cuyo `related_model` es `core.Empresa`. Se extrajo de `correo/views.py` cuando apareció un segundo consumidor en `archivo/views.py`: ambos resuelven modelos dinámicamente.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Comprobar con `hasattr(modelo, 'empresa')`: da positivo con `crm.Cliente`, cuyo campo apunta a `crm.Cuenta`.",
+        "Duplicar la lógica en cada vista en vez de reutilizar la utilidad."
+      ],
+      "questions": [
+        {
+          "id": "ten.modelo_es_de_empresa#q1",
+          "kind": "recall",
+          "prompt": "¿Qué comprueba exactamente `modelo_es_de_empresa()`?",
+          "answer": "Que el modelo tiene un campo `empresa` que es una relación cuyo modelo destino es `core.Empresa`.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.modelo_es_de_empresa#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué no basta con mirar si el modelo tiene un campo llamado `empresa`?",
+          "answer": "Porque hay modelos cuyo campo `empresa` apunta a otra cosa (por ejemplo `crm.Cliente.empresa` a `crm.Cuenta`); filtrarlos por `request.empresa` fallaría o devolvería vacío siempre.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.modelo_es_de_empresa#q3",
+          "kind": "apply",
+          "prompt": "Estás escribiendo una vista genérica que recibe el nombre de un modelo en la URL y lista sus registros. ¿Cómo aplicas el aislamiento por empresa?",
+          "answer": "Resuelvo el modelo, llamo a `modelo_es_de_empresa(cls)` y, si devuelve `True`, filtro siempre por `request.empresa`; si devuelve `False`, no filtro por empresa porque el modelo es compartido o su campo no es el tenant.",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/tenancy.py"]
+    },
+    {
+      "id": "ten.usuario_empresa",
+      "name": "UsuarioEmpresa y roles",
+      "aliases": ["roles de usuario", "acceso usuario-empresa"],
+      "unitId": "tenancy.t2",
+      "order": 1,
+      "kind": "estructura",
+      "difficulty": 2,
+      "summary": "Vincula cada usuario con las empresas a las que puede acceder, con un rol por empresa: admin, gestor, operario o solo lectura.",
+      "intuition": "Una misma persona puede ser gestora en una sociedad y solo consultar en otra. El rol no es de la persona: es de la pareja persona y empresa.",
+      "definition": "`core.UsuarioEmpresa` une usuario y empresa (única por pareja) con un `rol` entre `admin`, `gestor`, `operario` y `lectura`, y un indicador `activo`. Incluye además un **PIN de supervisor** hasheado: solo un usuario con rol `gestor` o `admin` **y** PIN configurado puede autorizar acciones críticas.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Suponer que un rol vale para todas las empresas del usuario.",
+        "Creer que el rol gestor basta para autorizar una acción crítica: hace falta además el PIN de supervisor."
+      ],
+      "questions": [
+        {
+          "id": "ten.usuario_empresa#q1",
+          "kind": "recall",
+          "prompt": "¿Qué roles puede tener un usuario en una empresa?",
+          "answer": "Administrador (`admin`), gestor (`gestor`), operario (`operario`) y solo lectura (`lectura`).",
+          "difficulty": 1
+        },
+        {
+          "id": "ten.usuario_empresa#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué el rol se guarda en `UsuarioEmpresa` y no en el propio usuario?",
+          "answer": "Porque una persona puede trabajar en varias sociedades con responsabilidades distintas: el rol pertenece a la pareja usuario y empresa.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.usuario_empresa#q3",
+          "kind": "apply",
+          "prompt": "Un gestor intenta autorizar una acción crítica y el sistema se lo impide. ¿Qué le falta?",
+          "answer": "Tener configurado el PIN de supervisor en su `UsuarioEmpresa`: solo un gestor o admin con PIN está autorizado como supervisor.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/models.py"]
+    },
+    {
+      "id": "ten.empresa_middleware",
+      "name": "EmpresaMiddleware",
+      "aliases": ["empresa activa", "request.empresa"],
+      "unitId": "tenancy.t2",
+      "order": 2,
+      "kind": "algoritmo",
+      "difficulty": 3,
+      "summary": "Middleware que, en cada petición, calcula las empresas permitidas del usuario y fija la empresa activa en request.empresa.",
+      "intuition": "Es el portero que, antes de que llegues a cualquier vista, mira tu acreditación, decide en qué sociedad estás trabajando y te pone la etiqueta en la solapa.",
+      "definition": "`core.middleware.EmpresaMiddleware` hace, en cada petición: (1) calcula `request.empresas_permitidas`: todas las activas si es superusuario, o las que tiene con `UsuarioEmpresa` activo; ninguna si no está autenticado. (2) Toma la empresa de la sesión; permite cambiarla con `?empresa=` **solo** entre las permitidas. (3) Si la de la sesión ya no es accesible, usa la primera permitida. (4) Fija `request.empresa`, `request.empresa_codigo` y la empresa del hilo.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Suponer que `request.empresa` siempre tiene valor: es `None` si el usuario no tiene ninguna empresa permitida.",
+        "Aceptar un código de empresa de la URL sin comprobar que está entre las permitidas."
+      ],
+      "questions": [
+        {
+          "id": "ten.empresa_middleware#q1",
+          "kind": "recall",
+          "prompt": "¿Qué empresas puede ver un superusuario y cuáles un usuario normal?",
+          "answer": "El superusuario, todas las empresas activas; el usuario normal, solo las activas en las que tiene un `UsuarioEmpresa` activo.",
+          "difficulty": 1
+        },
+        {
+          "id": "ten.empresa_middleware#q2",
+          "kind": "explain",
+          "prompt": "Un usuario manipula la URL con `?empresa=OTRA` de una sociedad a la que no tiene acceso. ¿Qué ocurre?",
+          "answer": "Nada: el cambio solo se acepta si el código está entre `request.empresas_permitidas`; si no, se mantiene la empresa de la sesión o la primera permitida.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.empresa_middleware#q3",
+          "kind": "apply",
+          "prompt": "¿En qué caso llega a una vista `request.empresa = None` y qué debe hacer la vista?",
+          "answer": "Cuando el usuario no tiene ninguna empresa permitida (o no está autenticado). La vista debe cerrar a vacío o denegar, nunca tratarlo como «sin filtro».",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/middleware.py"]
+    },
+    {
+      "id": "ten.thread_local",
+      "name": "Empresa en el hilo (thread-local)",
+      "aliases": ["get_current_empresa", "thread-local"],
+      "unitId": "tenancy.t2",
+      "order": 3,
+      "kind": "concepto",
+      "difficulty": 3,
+      "summary": "El middleware guarda la empresa activa en un almacenamiento por hilo para el código que no recibe la petición; fuera de una petición no está fijada.",
+      "intuition": "Es una nota pegada al hilo que atiende la petición. Sirve a quien no tiene la petición a mano, pero si el trabajo no viene de una petición, nadie ha pegado la nota.",
+      "definition": "`set_current_empresa()` y `get_current_empresa()` usan un `threading.local()` para exponer la empresa activa al código sin acceso a `request`. La fija `EmpresaMiddleware`, así que **fuera de una petición** (tareas Celery, comandos de gestión) no hay empresa en el hilo: esos procesos deben recibir la empresa de forma explícita. `get_current_empresa_codigo()` recurre a `settings.EMPRESA` si no hay ninguna.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Usar `get_current_empresa()` dentro de una tarea Celery y esperar la empresa del usuario que la lanzó.",
+        "Confiar en el valor por defecto de `settings.EMPRESA` en código que debería trabajar con la empresa activa."
+      ],
+      "questions": [
+        {
+          "id": "ten.thread_local#q1",
+          "kind": "recall",
+          "prompt": "¿Quién fija la empresa del hilo y para qué se usa?",
+          "answer": "La fija `EmpresaMiddleware` en cada petición; la usa el código que no tiene acceso a `request` mediante `get_current_empresa()`.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.thread_local#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué una tarea Celery no puede fiarse de `get_current_empresa()`?",
+          "answer": "Porque se ejecuta en un worker, fuera de una petición: el middleware no ha corrido y el hilo no tiene la empresa del usuario. Hay que pasarle la empresa como parámetro.",
+          "difficulty": 3
+        },
+        {
+          "id": "ten.thread_local#q3",
+          "kind": "apply",
+          "prompt": "Vas a lanzar desde una vista una tarea asíncrona que recalcula el stock. ¿Cómo le haces llegar la empresa?",
+          "answer": "Pasando el id de `request.empresa` como argumento de la tarea y, dentro de ella, cargando la empresa y filtrando explícitamente por ella.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/middleware.py"]
+    },
+    {
+      "id": "ten.role_required",
+      "name": "Decorador role_required",
+      "aliases": ["role_required", "permisos por rol"],
+      "unitId": "tenancy.t2",
+      "order": 4,
+      "kind": "herramienta",
+      "difficulty": 2,
+      "summary": "Decorador de vistas que exige uno de los roles indicados en la empresa activa; el superusuario siempre pasa.",
+      "intuition": "Tras el portero (el middleware), cada sala puede pedir un pase concreto. Este decorador es el control de la puerta de la sala.",
+      "definition": "`@role_required('admin', 'gestor')` (en `core/decorators.py`) deja pasar al superusuario; para el resto exige que exista `request.empresa` y un `UsuarioEmpresa` activo del usuario en esa empresa con uno de los roles indicados. Si no, responde 403. Se coloca **después** de `@login_required`.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Ponerlo sin `@login_required`: la vista no debe depender solo de él para exigir autenticación.",
+        "Creer que comprueba el rol en todas las empresas: solo mira la empresa activa."
+      ],
+      "questions": [
+        {
+          "id": "ten.role_required#q1",
+          "kind": "recall",
+          "prompt": "¿Qué devuelve `role_required` si el rol del usuario no está en la lista permitida?",
+          "answer": "Una respuesta 403 (prohibido) indicando que su rol no tiene permiso para esa acción.",
+          "difficulty": 1
+        },
+        {
+          "id": "ten.role_required#q2",
+          "kind": "explain",
+          "prompt": "Un usuario es gestor en la empresa A y operario en la B. Con la B activa, entra en una vista con `@role_required('gestor')`. ¿Qué pasa y por qué?",
+          "answer": "Recibe un 403: el decorador comprueba el rol en la empresa activa (B), donde es operario; su rol en A no cuenta.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.role_required#q3",
+          "kind": "apply",
+          "prompt": "Escribe los decoradores de una vista de aprobación de facturas que solo pueden usar administradores y gestores.",
+          "answer": "`@login_required` y debajo `@role_required('admin', 'gestor')`, aplicados sobre la función de la vista.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/decorators.py"]
+    },
+    {
+      "id": "ten.fail_open",
+      "name": "Patrón fail-open de tenancy",
+      "aliases": ["fail-open", "if empresa"],
+      "unitId": "tenancy.t3",
+      "order": 1,
+      "kind": "concepto",
+      "difficulty": 3,
+      "summary": "Filtrar por empresa solo «si hay empresa»: con request.empresa a None la consulta queda sin filtrar y sirve los datos de todas las sociedades.",
+      "intuition": "Es una puerta que, si se va la luz, se queda abierta. El código parece prudente, pero su fallo por defecto es enseñarlo todo.",
+      "definition": "El patrón **fail-open** es `qs = Modelo.objects.all()` seguido de `if empresa: qs = qs.filter(empresa=empresa)`. Si `empresa` es `None`, el `if` no se ejecuta y la consulta devuelve **todas** las empresas. En FlipyERP llegó a colarse 51 veces en 10 apps, porque cada aparición aislada parece defensiva. Lo correcto es filtrar **siempre** (la FK no admite NULL, así que `None` cierra a vacío) o cerrar explícitamente con `qs.none()`.",
+      "formulas": [],
+      "example": {
+        "statement": "Corregir una vista que lista pedidos con el patrón fail-open.",
+        "steps": [
+          "Código peligroso: `qs = Pedido.objects.all()` y después `if empresa: qs = qs.filter(empresa=empresa)`.",
+          "Corrección directa: `qs = Pedido.objects.filter(empresa=request.empresa)`, sin condición.",
+          "Si se quiere ser explícito: `if not request.empresa: return Pedido.objects.none()` antes de filtrar."
+        ],
+        "result": "Sin empresa activa, la vista no devuelve ningún pedido en lugar de devolver los de todas las sociedades."
+      },
+      "mistakes": [
+        "Pensar que `if empresa:` es una defensa: es justo lo que abre la puerta.",
+        "Corregirlo en una vista y no buscar el mismo patrón en el resto."
+      ],
+      "questions": [
+        {
+          "id": "ten.fail_open#q1",
+          "kind": "explain",
+          "prompt": "¿Qué ocurre con `if empresa: qs = qs.filter(empresa=empresa)` cuando `empresa` es `None`?",
+          "answer": "El filtro no se aplica y `qs` sigue siendo la consulta completa: se devuelven los datos de todas las empresas.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.fail_open#q2",
+          "kind": "apply",
+          "prompt": "Reescribe de forma segura `qs = Factura.objects.all()` + `if empresa: qs = qs.filter(empresa=empresa)`.",
+          "answer": "`qs = Factura.objects.filter(empresa=empresa)` sin condición (con `None` no devuelve nada), o bien `qs = Factura.objects.none()` si no hay empresa y el filtro en caso contrario.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.fail_open#q3",
+          "kind": "distinguish",
+          "prompt": "¿Por qué `x = []` seguido de `if empresa: x = <consulta filtrada>` no es fail-open?",
+          "answer": "Porque el valor de partida ya es vacío: si no hay empresa, se queda vacío. El problema solo existe cuando el valor previo es la consulta sin filtrar.",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/tests_tenancy_patron.py"]
+    },
+    {
+      "id": "ten.guardia_ast",
+      "name": "Test guardia con AST",
+      "aliases": ["tests_tenancy_patron", "guardia estructural"],
+      "unitId": "tenancy.t3",
+      "order": 2,
+      "kind": "metodo",
+      "difficulty": 4,
+      "summary": "Test que analiza con el módulo ast los ficheros de vistas y API y falla si reaparece el patrón fail-open, sin depender de la revisión humana.",
+      "intuition": "En lugar de confiar en que alguien recuerde la regla al revisar un PR, se convierte la regla en un test que lee el propio código fuente.",
+      "definition": "`core/tests_tenancy_patron.py` recorre los ficheros `views*` y `api*` (excluyendo tests y migraciones), los parsea con `ast` y busca un `if` cuya condición es la empresa, sin `else`, que filtra por `empresa` dentro. Descarta las formas seguras (la variable venía vacía o no existía antes del `if`) y una lista `PERMITIDOS` de filtros opcionales de interfaz. Si encuentra alguno, falla indicando fichero, línea y función.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Añadir una vista a `PERMITIDOS` para que pase el test cuando en realidad sí es el tenant.",
+        "Creer que el test detecta cualquier fuga: solo detecta esta forma concreta del patrón."
+      ],
+      "questions": [
+        {
+          "id": "ten.guardia_ast#q1",
+          "kind": "recall",
+          "prompt": "¿Qué ficheros revisa el test guardia de tenancy?",
+          "answer": "Los ficheros Python cuyo nombre empieza por `views` o `api`, sin contar tests, migraciones ni entornos virtuales.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.guardia_ast#q2",
+          "kind": "explain",
+          "prompt": "¿Qué ventaja tiene un test que lee el código con `ast` frente a una regla escrita en la guía de estilo?",
+          "answer": "Que se aplica en cada ejecución de la batería de tests y en CI, sin depender de que el revisor recuerde la regla; el patrón no puede volver a colarse sin que falle.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.guardia_ast#q3",
+          "kind": "apply",
+          "prompt": "El test falla en una vista nueva tuya donde `empresa` sale de un filtro que elige el usuario en la interfaz, no del tenant. ¿Qué haces?",
+          "answer": "Comprobar primero que la consulta ya está acotada por el tenant antes de ese filtro; si solo acota y nunca abre, se justifica en el PR y se añade la pareja fichero y función a `PERMITIDOS`. Si no lo está, se corrige la vista.",
+          "difficulty": 4
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/tests_tenancy_patron.py"]
+    },
+    {
+      "id": "ten.mcp_default_user",
+      "name": "Usuario MCP por defecto",
+      "aliases": ["mcp_agent", "MCPDefaultUserMiddleware"],
+      "unitId": "tenancy.t3",
+      "order": 3,
+      "kind": "concepto",
+      "difficulty": 3,
+      "summary": "Las peticiones sin autenticar al endpoint /mcp reciben el usuario mcp_agent y la empresa MCP_DEFAULT_EMPRESA; cada uso queda registrado.",
+      "intuition": "El servidor MCP es la puerta por la que entran los agentes de IA. Como no inician sesión como una persona, se les asigna una identidad y una empresa fijas, y se apunta todo lo que hacen.",
+      "definition": "`MCPDefaultUserMiddleware` actúa solo en el endpoint MCP: si la petición no trae usuario autenticado, asigna el usuario `mcp_agent` y la empresa de `settings.MCP_DEFAULT_EMPRESA` (BOUROA por defecto). `MCPUsageMiddleware` registra cada llamada en `MCPToolUsage`: método, herramienta, usuario, empresa, token, IP, duración y resultado. Como la puerta no pide sesión, su protección depende de la capa de red y de los permisos del propio `mcp_agent`.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Dar por hecho que un agente MCP trabaja con la empresa del usuario que lo usa: sin autenticación, trabaja con la empresa por defecto.",
+        "Ampliar los permisos de `mcp_agent` sin pensar que cualquier cliente que alcance el endpoint los hereda."
+      ],
+      "questions": [
+        {
+          "id": "ten.mcp_default_user#q1",
+          "kind": "recall",
+          "prompt": "¿Qué usuario y qué empresa recibe una petición MCP sin autenticar?",
+          "answer": "El usuario `mcp_agent` y la empresa configurada en `settings.MCP_DEFAULT_EMPRESA` (BOUROA por defecto).",
+          "difficulty": 1
+        },
+        {
+          "id": "ten.mcp_default_user#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué es importante el principio de mínimo privilegio para el usuario `mcp_agent`?",
+          "answer": "Porque el endpoint no exige sesión: cualquier cliente que llegue a él actúa con los permisos de `mcp_agent`. Cuanto más limitados, menor el daño si algo falla en la capa de red o un agente se equivoca.",
+          "difficulty": 3
+        },
+        {
+          "id": "ten.mcp_default_user#q3",
+          "kind": "apply",
+          "prompt": "Un agente ha modificado un producto que no debía. ¿Dónde empiezas a investigar?",
+          "answer": "En `MCPToolUsage`: filtrando por herramienta, fecha e IP se ve qué llamada lo hizo, con qué token, cuánto tardó y si tuvo éxito.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/mcp_middleware.py"]
+    },
+    {
+      "id": "ten.mcp_sanitize",
+      "name": "Sanitizador de salida MCP",
+      "aliases": ["mcp_sanitize", "enmascarado de credenciales"],
+      "unitId": "tenancy.t3",
+      "order": 4,
+      "kind": "metodo",
+      "difficulty": 3,
+      "summary": "Envoltorio que enmascara recursivamente claves sensibles (password, secret, token, api_key…) en las filas que devuelven las herramientas MCP.",
+      "intuition": "Aunque la consulta traiga la caja fuerte entera, lo que sale por la ventanilla lleva tapados los números de la combinación.",
+      "definition": "El paquete `django-mcp-server` devolvía **todos** los campos del modelo: `exclude_fields` solo afectaba al esquema de las instrucciones, no a las filas. Así se exponían campos como `Canal.api_config` con `client_secret` o `refresh_token`. `core/mcp_sanitize.py` envuelve `apply_json_mango_query` y sustituye por `***OCULTO***` cualquier clave cuyo nombre contenga patrones como `password`, `secret`, `token`, `api_key` o `credential`, salvo una lista permitida (`client_id`, `vendor_code`, `marketplace_id`). Se instala una sola vez desde `CoreConfig.ready`.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Confiar en `exclude_fields` para ocultar datos: solo afecta al esquema, no a las filas devueltas.",
+        "Añadir un nuevo campo con credenciales cuyo nombre no case con ningún patrón (por ejemplo `clave_privada`)."
+      ],
+      "questions": [
+        {
+          "id": "ten.mcp_sanitize#q1",
+          "kind": "explain",
+          "prompt": "¿Por qué no bastaba con `exclude_fields` para proteger las credenciales?",
+          "answer": "Porque `exclude_fields` solo se aplicaba al esquema JSON de las instrucciones; las filas devueltas por la consulta seguían incluyendo todos los campos del modelo.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.mcp_sanitize#q2",
+          "kind": "recall",
+          "prompt": "¿Qué claves no se enmascaran aunque pudieran parecer sensibles y por qué?",
+          "answer": "`client_id`, `vendor_code` y `marketplace_id`: son identificadores operativos útiles para diagnóstico, no credenciales.",
+          "difficulty": 2
+        },
+        {
+          "id": "ten.mcp_sanitize#q3",
+          "kind": "apply",
+          "prompt": "Añades al modelo de un canal un campo JSON con la clave `clave_privada_firma`. ¿Quedará oculto en MCP? ¿Qué harías?",
+          "answer": "No: ningún patrón casa con «clave_privada». Hay que añadir un patrón (por ejemplo `clave_privada` o `firma`) a `PATRONES_SENSIBLES` y cubrirlo con un test en `tests_mcp_sanitize.py`.",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/mcp_sanitize.py", "core/tests_mcp_sanitize.py"]
+    }
+  ],
+  "relations": [
+    { "source": "ten.empresa_mixin", "target": "ten.row_level", "type": "requires", "reason": "El mixin es la forma de atar un modelo a su empresa." },
+    { "source": "ten.pim_central", "target": "ten.row_level", "type": "requires", "reason": "El PIM es la excepción compartida al modelo row-level." },
+    { "source": "ten.modelo_es_de_empresa", "target": "ten.empresa_mixin", "type": "requires", "reason": "Comprueba si un modelo tiene la FK a core.Empresa que aporta el mixin." },
+    { "source": "ten.modelo_es_de_empresa", "target": "ten.pim_central", "type": "requires", "reason": "Existe para no filtrar por empresa modelos compartidos o con otro campo empresa." },
+    { "source": "ten.usuario_empresa", "target": "ten.row_level", "type": "requires", "reason": "Los accesos se definen sobre las empresas del modelo row-level." },
+    { "source": "ten.empresa_middleware", "target": "ten.usuario_empresa", "type": "requires", "reason": "Las empresas permitidas salen de los UsuarioEmpresa activos." },
+    { "source": "ten.thread_local", "target": "ten.empresa_middleware", "type": "requires", "reason": "El middleware es quien fija la empresa en el hilo." },
+    { "source": "ten.role_required", "target": "ten.empresa_middleware", "type": "requires", "reason": "El decorador comprueba el rol en la empresa activa que fija el middleware." },
+    { "source": "ten.role_required", "target": "ten.usuario_empresa", "type": "requires", "reason": "El rol se lee del UsuarioEmpresa de la empresa activa." },
+    { "source": "ten.fail_open", "target": "ten.empresa_middleware", "type": "requires", "reason": "El fallo aparece cuando request.empresa llega a None." },
+    { "source": "ten.fail_open", "target": "ten.empresa_mixin", "type": "requires", "reason": "La corrección se apoya en que la FK no admite NULL." },
+    { "source": "ten.guardia_ast", "target": "ten.fail_open", "type": "requires", "reason": "El test detecta precisamente el patrón fail-open." },
+    { "source": "ten.mcp_default_user", "target": "ten.empresa_middleware", "type": "requires", "reason": "Asigna usuario y empresa a peticiones que el middleware no puede resolver." },
+    { "source": "ten.mcp_sanitize", "target": "ten.mcp_default_user", "type": "requires", "reason": "Protege lo que devuelve el endpoint MCP a sus clientes." }
+  ]
+}

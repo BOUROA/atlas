@@ -1,60 +1,33 @@
-// Identidad visual de las asignaturas: abreviatura, nombre corto y colores.
-// Los colores viven en tokens.css (--s-<id>, --s-<id>-soft, --s-<id>-fg);
-// aquí solo se construyen las referencias var(...).
+// Identidad visual de las asignaturas (constelaciones): abreviatura, nombre y colores.
+//
+// FlipyERP Academy: todo sale de content/subjects.json (campos `abbr`, `name`,
+// `color` y `colorLight`), en vez de una lista fija. Los colores se inyectan
+// como variables CSS (--s-<id>, --s-<id>-soft, --s-<id>-fg) con las mismas
+// reglas que tokens.css (installSubjectColors, desde main.tsx).
 
-export const SUBJECT_IDS = [
-  "ia",
-  "calculo",
-  "logica",
-  "algebra",
-  "programacion",
-  "algoritmia",
-  "estructuras",
-  "computacion",
-  "operativos",
-  "preprocesamiento",
-] as const;
+import subjectsJson from "../../content/subjects.json";
+import type { Subject } from "../domain/types";
 
-export type KnownSubjectId = (typeof SUBJECT_IDS)[number];
+const SUBJECTS = subjectsJson as Subject[];
 
-export const SUBJECT_ABBR: Record<KnownSubjectId, string> = {
-  ia: "IAC",
-  calculo: "CAL",
-  logica: "LOG",
-  algebra: "ALG",
-  programacion: "FPR",
-  algoritmia: "ALC",
-  estructuras: "EDA",
-  computacion: "TC",
-  operativos: "MOE",
-  preprocesamiento: "PMD",
-};
+export const SUBJECT_IDS: readonly string[] = SUBJECTS.map((s) => s.id);
+export type KnownSubjectId = string;
 
-/** Nombres completos (los mismos de content/subjects.json, en minúscula de frase). */
-export const SUBJECT_NAMES: Record<KnownSubjectId, string> = {
-  ia: "IA e ingeniería del conocimiento",
-  calculo: "Cálculo y métodos numéricos",
-  logica: "Lógica computacional",
-  algebra: "Álgebra y matemática discreta",
-  programacion: "Fundamentos de programación",
-  algoritmia: "Algoritmia y complejidad",
-  estructuras: "Estructuras de datos",
-  computacion: "Teoría de la computación",
-  operativos: "Métodos operativos y estadísticos",
-  preprocesamiento: "Preprocesamiento y modelos de datos",
-};
+const fallbackAbbr = (id: string) => id.normalize("NFD").replace(/[̀-ͯ]/g, "").slice(0, 3).toUpperCase();
 
-export const isKnownSubject = (id: string): id is KnownSubjectId =>
-  (SUBJECT_IDS as readonly string[]).includes(id);
+export const SUBJECT_ABBR: Record<string, string> = Object.fromEntries(SUBJECTS.map((s) => [s.id, s.abbr ?? fallbackAbbr(s.id)]));
+/** Nombres completos (los de content/subjects.json). */
+export const SUBJECT_NAMES: Record<string, string> = Object.fromEntries(SUBJECTS.map((s) => [s.id, s.name]));
 
-/** Abreviatura en versalitas; para asignaturas futuras, las tres primeras letras. */
+export const isKnownSubject = (id: string): id is KnownSubjectId => id in SUBJECT_NAMES;
+
+/** Abreviatura en versalitas; para ids desconocidos, las tres primeras letras. */
 export function subjectAbbr(id: string): string {
-  if (isKnownSubject(id)) return SUBJECT_ABBR[id];
-  return id.normalize("NFD").replace(/[̀-ͯ]/g, "").slice(0, 3).toUpperCase();
+  return SUBJECT_ABBR[id] ?? fallbackAbbr(id);
 }
 
 export function subjectName(id: string): string {
-  return isKnownSubject(id) ? SUBJECT_NAMES[id] : id;
+  return SUBJECT_NAMES[id] ?? id;
 }
 
 /** Color base de la asignatura (puntos, carriles, estrellas). */
@@ -63,3 +36,33 @@ export const subjectColor = (id: string): string => `var(--s-${id}, var(--text-3
 export const subjectSoft = (id: string): string => `var(--s-${id}-soft, var(--hover-2))`;
 /** Color de texto legible sobre las superficies (AA en ambos temas). */
 export const subjectFg = (id: string): string => `var(--s-${id}-fg, var(--text-2))`;
+
+/** Solo ids seguros como nombre de variable CSS. */
+const cssSafe = (id: string) => /^[a-z0-9-]+$/.test(id);
+
+/** Genera las variables CSS de color de cada asignatura (mismas reglas que tokens.css). */
+export function subjectColorsCss(subjects: readonly Subject[] = SUBJECTS): string {
+  const list = subjects.filter((s) => cssSafe(s.id));
+  const dark = list.map((s) => `--s-${s.id}: ${s.color};`).join(" ");
+  const light = list.map((s) => `--s-${s.id}: ${s.colorLight ?? s.color};`).join(" ");
+  const derived = list
+    .map((s) =>
+      `--s-${s.id}-soft: color-mix(in oklab, var(--s-${s.id}) 18%, transparent); ` +
+      `--s-${s.id}-fg: color-mix(in oklab, var(--s-${s.id}) var(--fg-mix), var(--text));`)
+    .join(" ");
+  return [
+    `:root, [data-theme="dark"] { ${dark} }`,
+    `[data-theme="light"] { ${light} }`,
+    `@media (prefers-color-scheme: light) { [data-theme="system"] { ${light} } }`,
+    `:root, [data-theme] { ${derived} }`,
+  ].join("\n");
+}
+
+/** Inyecta las variables de color en el documento (una vez). */
+export function installSubjectColors(): void {
+  if (typeof document === "undefined" || document.getElementById("subject-colors")) return;
+  const style = document.createElement("style");
+  style.id = "subject-colors";
+  style.textContent = subjectColorsCss();
+  document.head.appendChild(style);
+}

@@ -1,8 +1,23 @@
 export type SubjectStatus = "current" | "future";
+/** Público de una constelación en FlipyERP Academy. */
+export type Audience = "todos" | "desarrollo" | "operaciones";
 export type Subject = {
   id: string; name: string; shortName: string;
   year: 1 | 2 | 3 | 4; semester: 1 | 2; status: SubjectStatus;
   color: string; order: number; file: string;
+  // ── FlipyERP Academy (opcionales) ──
+  /** Abreviatura de 3 letras en versalitas; por defecto, las 3 primeras del id. */
+  abbr?: string;
+  /** Color para el tema claro; por defecto, `color`. */
+  colorLight?: string;
+  /** Nivel de entrada: 0 desde cero, 1 básico, 2 medio, 3 avanzado. */
+  level?: 0 | 1 | 2 | 3;
+  /** Bloque temático (fundamentos, herramientas, flipyerp, operaciones, ingenieria-ia). */
+  track?: string;
+  audience?: Audience[];
+  /** Constelaciones que se asignan automáticamente antes que esta. */
+  prerequisites?: string[];
+  description?: string;
 };
 export type Unit = { id: string; number: number; title: string; summary: string };
 export type ConceptKind = "concepto" | "definicion" | "teorema" | "metodo" | "algoritmo" | "estructura" | "herramienta";
@@ -12,11 +27,21 @@ export type Question = { id: string; kind: QuestionKind; prompt: string; answer:
 export type Formula = { label: string; latex: string };
 export type WorkedExample = { statement: string; steps: string[]; result: string };
 export type AlsoIn = { subjectId: string; role: "studied" | "used"; note: string };
+/** Recurso externo (curso gratuito, documentación, repositorio) que complementa un concepto. */
+export type Resource = { title: string; url: string; provider: string; kind: "curso" | "documentacion" | "repositorio" | "articulo"; minutes?: number };
 export type Concept = {
   id: string; name: string; aliases: string[]; unitId: string; order: number;
   kind: ConceptKind; difficulty: Difficulty; summary: string; intuition: string; definition: string;
   formulas: Formula[]; example: WorkedExample | null; mistakes: string[]; questions: Question[];
   alsoIn: AlsoIn[]; syllabus: boolean;
+  // ── FlipyERP Academy (opcionales) ──
+  resources?: Resource[];
+  /**
+   * Ficheros del repositorio de FlipyERP en los que se basa el concepto
+   * (rutas relativas a FlipyERP_v1.0.1/). Sirven para avisar de lecciones que
+   * hay que revisar cuando cambia el código.
+   */
+  sources?: string[];
 };
 export type RelationType = "requires" | "related";
 export type Relation = { source: string; target: string; type: RelationType; reason: string };

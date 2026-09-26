@@ -1,0 +1,347 @@
+{
+  "subjectId": "fundamentos",
+  "units": [
+    {
+      "id": "fundamentos.t1",
+      "number": 1,
+      "title": "Qué es un modelo de lenguaje",
+      "summary": "Cómo funciona un LLM por dentro a nivel práctico: tokens, ventana de contexto y por qué a veces se inventa cosas."
+    },
+    {
+      "id": "fundamentos.t2",
+      "number": 2,
+      "title": "Trabajar bien con Claude",
+      "summary": "Cómo pedirle las cosas a Claude, cómo repartir el trabajo entre tú y la IA y qué datos no debes compartir nunca."
+    }
+  ],
+  "concepts": [
+    {
+      "id": "fund.llm",
+      "name": "Modelo de lenguaje (LLM)",
+      "aliases": ["LLM", "large language model", "modelo de IA generativa"],
+      "unitId": "fundamentos.t1",
+      "order": 1,
+      "kind": "concepto",
+      "difficulty": 1,
+      "summary": "Programa entrenado con enormes cantidades de texto que genera respuestas prediciendo, pieza a pieza, cómo continuar lo que ha leído.",
+      "intuition": "Imagina un autocompletado del móvil que ha leído una biblioteca entera: no busca la respuesta en una base de datos, la **escribe** en el momento a partir de patrones aprendidos. Por eso es tan flexible y por eso también puede equivocarse con total seguridad.",
+      "definition": "Un **modelo de lenguaje grande** (LLM, *large language model*) es una red neuronal entrenada para predecir el siguiente fragmento de texto. Claude, GPT o Gemini son LLM. Además del entrenamiento inicial, se ajustan para seguir instrucciones y ser útiles y seguros.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Pensar que el modelo «consulta internet» o una base de datos al responder. Solo lo hace si tiene una herramienta de búsqueda activada.",
+        "Tratar sus respuestas como si vinieran de una fuente verificada."
+      ],
+      "questions": [
+        {
+          "id": "fund.llm#q1",
+          "kind": "recall",
+          "prompt": "¿Qué hace, en esencia, un modelo de lenguaje cuando responde?",
+          "answer": "Genera el texto pieza a pieza, prediciendo en cada paso cómo continuar a partir de lo que ya ha leído y de los patrones que aprendió al entrenarse.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.llm#q2",
+          "kind": "distinguish",
+          "prompt": "¿En qué se diferencia un LLM de un buscador como Google?",
+          "answer": "El buscador localiza documentos que ya existen y te los enlaza; el LLM redacta una respuesta nueva a partir de lo aprendido, sin citar necesariamente ninguna fuente salvo que use una herramienta de búsqueda.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.llm#q3",
+          "kind": "apply",
+          "prompt": "Un compañero dice: «lo ha dicho Claude, así que es correcto». ¿Qué le contestarías?",
+          "answer": "Que Claude genera respuestas plausibles, no verificadas: es una gran ayuda para redactar, analizar o programar, pero los datos concretos (cifras, normativa, nombres) hay que comprobarlos antes de darlos por buenos.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "resources": [
+        { "title": "Claude 101", "url": "https://anthropic.skilljar.com/", "provider": "Anthropic Academy (gratuito, con certificado)", "kind": "curso" }
+      ]
+    },
+    {
+      "id": "fund.tokens",
+      "name": "Tokens",
+      "aliases": ["token", "tokenización"],
+      "unitId": "fundamentos.t1",
+      "order": 2,
+      "kind": "concepto",
+      "difficulty": 1,
+      "summary": "Unidad en la que el modelo trocea el texto; los límites de longitud y el coste de uso se miden en tokens, no en palabras.",
+      "intuition": "El modelo no lee letras ni palabras enteras, sino trozos: una palabra corta suele ser un token y una larga, varios. Es como pagar un envío por bultos en vez de por objetos.",
+      "definition": "Un **token** es un fragmento de texto (una palabra, parte de ella o un signo) que el modelo procesa como unidad. Tanto lo que envías como lo que responde se cuenta en tokens, y en ellos se expresan el tamaño máximo de una conversación y el precio de uso por API.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Calcular costes o límites contando palabras: en español hay, en general, más tokens que palabras.",
+        "Pegar documentos enormes «por si acaso»: gastan tokens y pueden empeorar la respuesta."
+      ],
+      "questions": [
+        {
+          "id": "fund.tokens#q1",
+          "kind": "recall",
+          "prompt": "¿Qué es un token?",
+          "answer": "Un fragmento de texto (palabra, parte de palabra o signo) que el modelo procesa como unidad.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.tokens#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué importa contar tokens al usar la API de un modelo?",
+          "answer": "Porque el precio se calcula por tokens de entrada y de salida, y el tamaño máximo de lo que el modelo puede manejar también se mide en tokens.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.tokens#q3",
+          "kind": "apply",
+          "prompt": "Vas a pedir a Claude un resumen de un informe de 200 páginas del que solo te interesa un capítulo. ¿Qué harías?",
+          "answer": "Enviar solo el capítulo relevante: reduce tokens (coste y límite) y centra al modelo en lo importante, lo que suele dar una respuesta mejor.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "fund.context",
+      "name": "Ventana de contexto",
+      "aliases": ["contexto", "context window"],
+      "unitId": "fundamentos.t1",
+      "order": 3,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Todo lo que el modelo tiene delante en una conversación: instrucciones, mensajes y documentos. Lo que no está ahí, no lo sabe.",
+      "intuition": "Es la mesa de trabajo del modelo. Puede ser muy grande, pero solo trabaja con lo que hay encima. Si empiezas una conversación nueva, la mesa está vacía salvo que la herramienta aporte memoria o proyectos.",
+      "definition": "La **ventana de contexto** es la cantidad máxima de tokens que el modelo puede considerar a la vez: el mensaje de sistema, el historial de la conversación, los ficheros adjuntos y su propia respuesta. Cuanto más relevante y ordenado sea ese contexto, mejores son los resultados.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Suponer que el modelo recuerda una conversación anterior sin que la herramienta tenga memoria o proyectos activados.",
+        "Llenar el contexto de material irrelevante: diluye lo importante."
+      ],
+      "questions": [
+        {
+          "id": "fund.context#q1",
+          "kind": "recall",
+          "prompt": "¿Qué incluye la ventana de contexto de una conversación?",
+          "answer": "Las instrucciones de sistema, todos los mensajes de la conversación, los documentos adjuntos y la respuesta que el modelo está escribiendo.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.context#q2",
+          "kind": "apply",
+          "prompt": "Ayer explicaste a Claude el formato de los informes de la empresa. Hoy abres un chat nuevo y no lo respeta. ¿Por qué y cómo lo evitas?",
+          "answer": "Un chat nuevo empieza con el contexto vacío. Se evita pegando de nuevo las indicaciones, guardándolas en un proyecto o en las preferencias, o usando la memoria si está activada.",
+          "difficulty": 2
+        },
+        {
+          "id": "fund.context#q3",
+          "kind": "explain",
+          "prompt": "¿Por qué un contexto más corto y relevante puede dar mejores respuestas que uno enorme?",
+          "answer": "Porque el modelo reparte su atención entre todo lo que tiene delante: si solo hay lo necesario, se centra en ello y comete menos errores de interpretación.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "fund.hallucination",
+      "name": "Alucinaciones",
+      "aliases": ["alucinación", "invenciones del modelo"],
+      "unitId": "fundamentos.t1",
+      "order": 4,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Respuestas que suenan convincentes pero son falsas o inventadas: datos, citas, referencias o funciones de código que no existen.",
+      "intuition": "El modelo está optimizado para escribir algo plausible. Cuando no sabe, a veces no se calla: completa el hueco con lo que «suena bien». Por eso el tono seguro no es señal de acierto.",
+      "definition": "Una **alucinación** es una afirmación generada por el modelo que no está respaldada por los datos ni por el contexto. Es más probable con datos muy concretos (cifras, fechas, referencias legales, nombres de funciones o APIs) y con preguntas sobre cosas poco conocidas o recientes.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Confiar en una referencia legal, una cifra o un enlace sin abrirlo.",
+        "Copiar código que usa una función de una librería sin comprobar que existe en esa versión."
+      ],
+      "questions": [
+        {
+          "id": "fund.hallucination#q1",
+          "kind": "recall",
+          "prompt": "¿Qué es una alucinación de un modelo de lenguaje?",
+          "answer": "Una respuesta que parece convincente pero es falsa o inventada, sin respaldo en los datos ni en el contexto.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.hallucination#q2",
+          "kind": "explain",
+          "prompt": "¿En qué tipo de preguntas son más probables las alucinaciones?",
+          "answer": "En las que piden datos muy concretos (cifras, fechas, artículos de una ley, nombres de funciones), en temas poco conocidos y en hechos posteriores al entrenamiento del modelo.",
+          "difficulty": 2
+        },
+        {
+          "id": "fund.hallucination#q3",
+          "kind": "apply",
+          "prompt": "Claude te redacta un correo a un cliente citando el artículo exacto de un reglamento europeo. ¿Qué haces antes de enviarlo?",
+          "answer": "Comprobar la cita en la fuente oficial. Si no puedo verificarla, la quito o la formulo de forma general; la responsabilidad del correo es mía, no del modelo.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true
+    },
+    {
+      "id": "fund.prompt_clear",
+      "name": "Instrucciones claras",
+      "aliases": ["prompting", "prompt", "cómo pedir las cosas"],
+      "unitId": "fundamentos.t2",
+      "order": 1,
+      "kind": "metodo",
+      "difficulty": 1,
+      "summary": "Pedir las cosas como a un compañero nuevo muy capaz: contexto, objetivo, formato esperado y, si ayuda, un ejemplo.",
+      "intuition": "Claude no conoce tu empresa ni tu intención salvo que se las cuentes. La mayoría de las respuestas flojas vienen de peticiones vagas, no de un mal modelo.",
+      "definition": "Un buen **prompt** incluye: el **contexto** (quién eres, para qué es), el **objetivo** concreto, las **restricciones** (tono, longitud, lo que no debe hacer), el **formato** de salida y, cuando sea posible, **ejemplos** de lo que consideras un buen resultado. Si la respuesta no convence, se itera dando indicaciones concretas.",
+      "formulas": [],
+      "example": {
+        "statement": "Mejorar la petición «hazme un correo para un proveedor».",
+        "steps": [
+          "Contexto: «Trabajo en compras de una empresa de distribución; el proveedor lleva dos semanas de retraso con un pedido».",
+          "Objetivo: «Quiero pedir una fecha de entrega firme sin romper la relación».",
+          "Restricciones y formato: «Tono cordial y directo, menos de 120 palabras, con asunto»."
+        ],
+        "result": "Una petición que se puede cumplir a la primera, en vez de un correo genérico que habría que rehacer."
+      },
+      "mistakes": [
+        "Pedir cosas vagas y culpar al modelo del resultado.",
+        "No decir para quién es el texto ni qué formato se espera."
+      ],
+      "questions": [
+        {
+          "id": "fund.prompt_clear#q1",
+          "kind": "recall",
+          "prompt": "¿Qué elementos debería tener una buena petición a Claude?",
+          "answer": "Contexto, objetivo concreto, restricciones (tono, longitud, límites), formato de salida y, si ayuda, ejemplos.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.prompt_clear#q2",
+          "kind": "apply",
+          "prompt": "Reescribe la petición «resúmeme esto» para un informe de ventas que vas a presentar a dirección.",
+          "answer": "Algo como: «Resume este informe de ventas para la dirección: en 5 puntos, con las cifras clave, los productos que más crecen y caen, y una recomendación final. Tono ejecutivo, sin tecnicismos».",
+          "difficulty": 2
+        },
+        {
+          "id": "fund.prompt_clear#q3",
+          "kind": "explain",
+          "prompt": "La primera respuesta no te convence. ¿Qué es mejor: repetir la misma petición o darle indicaciones concretas? ¿Por qué?",
+          "answer": "Dar indicaciones concretas («más corto», «quita la segunda parte», «usa este ejemplo»): el modelo tiene la conversación en su contexto y corrige sobre ella; repetir lo mismo suele dar variaciones del mismo problema.",
+          "difficulty": 1
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "resources": [
+        { "title": "Claude 101", "url": "https://anthropic.skilljar.com/", "provider": "Anthropic Academy (gratuito, con certificado)", "kind": "curso" }
+      ]
+    },
+    {
+      "id": "fund.fluency_4d",
+      "name": "Las 4D de la fluidez con IA",
+      "aliases": ["AI Fluency", "delegación, descripción, discernimiento y diligencia", "4D"],
+      "unitId": "fundamentos.t2",
+      "order": 2,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Marco de Anthropic para trabajar con IA: Delegación, Descripción, Discernimiento y Diligencia.",
+      "intuition": "Usar bien la IA no es solo escribir buenos prompts. Es decidir qué le encargas, explicárselo bien, juzgar lo que devuelve y responsabilizarte del resultado.",
+      "definition": "El marco de **AI Fluency** de Anthropic organiza la colaboración con la IA en cuatro competencias: **Delegación** (qué tareas encargar a la IA y cuáles no), **Descripción** (comunicar bien lo que se quiere), **Discernimiento** (evaluar con criterio lo que produce) y **Diligencia** (usarla de forma responsable, transparente y segura).",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Quedarse solo en la Descripción (el prompt) y olvidar el Discernimiento: revisar lo que devuelve.",
+        "Delegar decisiones que requieren responsabilidad humana, como aprobar un pago o responder a una reclamación legal sin revisión."
+      ],
+      "questions": [
+        {
+          "id": "fund.fluency_4d#q1",
+          "kind": "recall",
+          "prompt": "¿Cuáles son las cuatro D del marco de AI Fluency?",
+          "answer": "Delegación, Descripción, Discernimiento y Diligencia.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.fluency_4d#q2",
+          "kind": "distinguish",
+          "prompt": "¿En qué se diferencian el Discernimiento y la Diligencia?",
+          "answer": "El Discernimiento es evaluar la calidad y la veracidad de lo que produce la IA; la Diligencia es responsabilizarse de cómo se usa: seguridad, transparencia, datos y consecuencias.",
+          "difficulty": 2
+        },
+        {
+          "id": "fund.fluency_4d#q3",
+          "kind": "apply",
+          "prompt": "Te piden contestar 40 reseñas negativas de clientes. ¿Qué parte delegarías en Claude y cuál harías tú?",
+          "answer": "Delegaría clasificar las reseñas por motivo y redactar borradores de respuesta con el tono de la empresa. Yo revisaría cada borrador, decidiría compensaciones o excepciones y respondería personalmente los casos delicados.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "resources": [
+        { "title": "AI Fluency: Framework & Foundations", "url": "https://anthropic.skilljar.com/", "provider": "Anthropic Academy (gratuito, con certificado)", "kind": "curso" }
+      ]
+    },
+    {
+      "id": "fund.data_care",
+      "name": "Qué datos no compartir",
+      "aliases": ["protección de datos con IA", "datos sensibles"],
+      "unitId": "fundamentos.t2",
+      "order": 3,
+      "kind": "metodo",
+      "difficulty": 1,
+      "summary": "Nunca pegues contraseñas, claves de API ni datos personales de clientes o empleados en una herramienta de IA sin autorización.",
+      "intuition": "Todo lo que pegas pasa a formar parte del contexto y sale de tu ordenador hacia el proveedor del servicio. Trátalo como si lo enviaras por correo a una empresa externa.",
+      "definition": "Antes de compartir información con una herramienta de IA, comprueba que no incluye **credenciales** (contraseñas, claves de API, tokens), **datos personales** de clientes o empleados (DNI, direcciones, datos bancarios) ni información confidencial que la empresa no haya autorizado. Si hace falta el ejemplo, se **anonimiza** o se sustituye por datos ficticios.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Pegar un fichero de configuración con claves «para que Claude lo arregle».",
+        "Pegar un listado de clientes reales para preparar una campaña, en lugar de unas pocas filas anonimizadas."
+      ],
+      "questions": [
+        {
+          "id": "fund.data_care#q1",
+          "kind": "recall",
+          "prompt": "Nombra tres tipos de información que nunca debes pegar en una herramienta de IA sin autorización.",
+          "answer": "Credenciales (contraseñas, claves de API, tokens), datos personales de clientes o empleados, e información confidencial de la empresa no autorizada.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.data_care#q2",
+          "kind": "apply",
+          "prompt": "Necesitas que Claude te ayude con una fórmula de Excel sobre un listado de clientes. ¿Cómo lo haces sin exponer datos?",
+          "answer": "Le doy la estructura (nombres de columnas) y unas pocas filas inventadas o anonimizadas; la fórmula resultante la aplico yo al fichero real.",
+          "difficulty": 1
+        },
+        {
+          "id": "fund.data_care#q3",
+          "kind": "explain",
+          "prompt": "¿Por qué hay que tratar lo que pegas en un chat de IA como si lo enviaras a una empresa externa?",
+          "answer": "Porque ese texto sale de tu equipo y lo procesa el proveedor del servicio: pasa a su infraestructura y queda sujeto a sus condiciones de uso y retención.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true
+    }
+  ],
+  "relations": [
+    { "source": "fund.tokens", "target": "fund.llm", "type": "requires", "reason": "Los tokens son la unidad con la que trabaja un modelo de lenguaje." },
+    { "source": "fund.context", "target": "fund.tokens", "type": "requires", "reason": "El tamaño de la ventana de contexto se mide en tokens." },
+    { "source": "fund.hallucination", "target": "fund.llm", "type": "requires", "reason": "Las alucinaciones nacen de cómo genera texto un modelo de lenguaje." },
+    { "source": "fund.prompt_clear", "target": "fund.context", "type": "requires", "reason": "Una buena petición consiste en darle al modelo el contexto que necesita." },
+    { "source": "fund.fluency_4d", "target": "fund.prompt_clear", "type": "requires", "reason": "La Descripción de las 4D es escribir buenas instrucciones." },
+    { "source": "fund.fluency_4d", "target": "fund.hallucination", "type": "requires", "reason": "El Discernimiento consiste en detectar errores como las alucinaciones." },
+    { "source": "fund.data_care", "target": "fund.context", "type": "requires", "reason": "Lo que pegas pasa al contexto y sale hacia el proveedor." },
+    { "source": "fund.data_care", "target": "fund.fluency_4d", "type": "related", "reason": "Proteger los datos es parte de la Diligencia." }
+  ]
+}
