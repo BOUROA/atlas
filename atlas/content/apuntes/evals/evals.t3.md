@@ -48,7 +48,7 @@ Un agente clasifica las consultas de clientes y propone la respuesta. Tienes un 
 
 Se lee así: 22 casos siguen bien, 4 pasan de mal a bien, 2 pasan de bien a mal y 2 siguen mal. La mejora neta de 2 casos sale de 6 cambios: 4 a favor y 2 en contra. Y los 2 que empeoran son críticos: una devolución fuera de plazo que la v4 acepta, con lo que el agente promete un reembolso que la política no permite, y una factura rectificativa mal clasificada, que acaba en la cola equivocada.
 
-La moraleja: la media sube y aun así la v4 no debe activarse sin arreglar esos dos. Lo que toca es una v5 que los corrija y volver a lanzar la batería completa, no solo esos dos casos, porque el arreglo puede romper otros.
+La moraleja: la media sube y aun así la v4 no debe activarse sin arreglar esos dos. Lo que toca es una v5 que los corrija y volver a lanzar el conjunto de referencia completo, no solo esos dos casos, porque el arreglo puede romper otros.
 
 Queda la duda del ruido. Dos casos sobre treinta son 6,7 puntos, y basta que un par de casos dudosos cambien de lado por azar para producir una diferencia así. Por eso se repite: si un caso sale bien en unas ejecuciones y mal en otras con la misma versión, es inestable, y no cuenta como mejora ni como regresión hasta entender por qué. Lo que sí pesa es un caso que falla siempre con la candidata y nunca con la activa.
 
@@ -66,7 +66,7 @@ Queda la duda del ruido. Dos casos sobre treinta son 6,7 puntos, y basta que un 
 
 ## Salida estructurada y validación
 
-Cuando la respuesta la va a usar otro programa, se pide en **formato estructurado**, normalmente JSON que cumple un **esquema**: qué campos hay, de qué tipo es cada uno y cuáles son obligatorios. Hay dos niveles. El primero es **forzarlo en la API**, con salidas estructuradas (*structured outputs*) o `response_format` con esquema, que garantizan el formato. El segundo es **pedirlo en el prompt y validarlo** después. En los dos casos el código comprueba la salida antes de usarla y tiene un **plan B** si no cumple: reintentar, cambiar de modelo o dejar el caso para revisión. Y cuenta las salidas inválidas, porque su tasa es una métrica en sí misma.
+Cuando la respuesta la va a usar otro programa, se pide en **formato estructurado**, normalmente JSON que cumple un **esquema**: qué campos hay, de qué tipo es cada uno y cuáles son obligatorios. Hay dos niveles. El primero es **forzarlo en la API**, con salidas estructuradas (*structured outputs*) o `response_format` con esquema, que garantizan el formato cuando el proveedor lo aplica, salvo respuestas cortadas por el máximo de tokens o endpoints que no lo respetan; por eso sigue haciendo falta validar. El segundo es **pedirlo en el prompt y validarlo** después. En los dos casos el código comprueba la salida antes de usarla y tiene un **plan B** si no cumple: reintentar, cambiar de modelo o dejar el caso para revisión. Y cuenta las salidas inválidas, porque su tasa es una métrica en sí misma.
 
 Validar no es comprobar que el texto se deja leer como JSON. Es comprobar que están los campos obligatorios, que cada uno tiene el tipo correcto (el precio es un número, las viñetas son una lista) y que los valores están dentro de lo permitido, como una categoría de una lista cerrada. Un JSON impecable sin el campo `descripcion` es una salida inválida. Y ni siquiera el esquema forzado garantiza el contenido: una descripción bien formada puede hablar de otro producto, y eso ya es cosa de los criterios del tema 2.
 
@@ -129,7 +129,7 @@ Compara dos avisos posibles. «Gasto IA alto» obliga a quien lo recibe a invest
 **Cambiar un prompt o un modelo con seguridad**
 
 1. Crea una versión nueva, sin tocar la activa.
-2. Lanza la misma batería de casos con las dos versiones, en las mismas condiciones.
+2. Lanza el mismo conjunto de referencia con las dos versiones, en las mismas condiciones.
 3. Revisa los casos que empeoran, uno a uno, antes de mirar la media.
 4. Si las diferencias son pequeñas, repite las ejecuciones.
 5. Activa la versión nueva.
@@ -160,17 +160,17 @@ Compara dos avisos posibles. «Gasto IA alto» obliga a quien lo recibe a invest
 
 Quieren pasar el agente de soporte a otro modelo. Hacerlo es trivial: basta con cambiar el `modelo` de la `ConfiguracionModuloIA` del módulo `soporte`, sin tocar código. Precisamente por eso es arriesgado: no hay `AiPromptVersion` detrás ni ningún eval previo, y el cambio afecta a todos los borradores desde ese momento.
 
-Empieza por la línea base. Con lo que ya guarda `DraftRespuestaIA`, calcula por intención la tasa de borradores enviados sin cambios y la de rechazados, filtrando por el `modelo_usado` actual y dejando fuera los que se enviaron por autoaprobación, que no son señal humana (lo viste en el tema 2).
+Empieza por la línea base. Con lo que ya guarda `DraftRespuestaIA`, calcula por intención la tasa de borradores enviados sin cambios y la de rechazados, filtrando por el `modelo_usado` actual y dejando fuera los que se enviaron por autoaprobación, que no son señal humana (lo viste en el tema 2). Es la referencia para el seguimiento posterior, no el eval.
 
-Después, el eval antes del cambio. Toma borradores reales, sobre todo editados y rechazados, estratificados por intención y con la versión buena revisada por una persona. Genera con el modelo nuevo las respuestas a esos mismos tickets, sin enviar nada, y compáralas con la rúbrica del tema 2 caso a caso, con su tabla de transiciones. Presta atención a los casos delicados, como las devoluciones fuera de plazo.
+Después, el eval antes del cambio. Arma el conjunto con tickets reales estratificados por intención: editados y rechazados, con la versión buena revisada por una persona, pero también enviados sin cambios, que son los casos que hoy funcionan y los únicos que te avisan si el modelo nuevo rompe algo. Genera ahora las respuestas a esos mismos tickets con el modelo actual y con el nuevo, en las mismas condiciones y sin enviar nada; no compares con los borradores antiguos, que se generaron en otras condiciones. Compáralas con la rúbrica del tema 2 caso a caso, con la tabla de transiciones. Presta atención a los casos delicados, como las devoluciones fuera de plazo.
 
-Si pasa, haz el cambio y apunta qué modelo había antes y cuándo cambiaste: es tu única «versión». Los días siguientes, compara la tasa de enviados sin cambios antes y después filtrando por `modelo_usado`, que es lo que lo hace posible, y hazlo por intención, porque la mezcla de consultas cambia de una semana a otra. Si empeora, volver atrás es poner de nuevo el modelo anterior en la configuración: inmediato y sin desplegar.
+Si pasa, haz el cambio y apunta qué modelo había antes y cuándo cambiaste: es tu única «versión». Ya con el cambio activo, haz el seguimiento: compara la tasa de enviados sin cambios antes y después filtrando por `modelo_usado`, que es lo que lo hace posible, y hazlo por intención, porque la mezcla de consultas cambia de una semana a otra. Si empeora, volver atrás es poner de nuevo el modelo anterior en la configuración: inmediato y sin desplegar.
 
 ### Caso 2 · Un 7 % de JSON inválidos
 
 Un agente nuevo que genera fichas lee la respuesta con `parsear_json_llm`, y en el 7 % de los casos recibe `None`: 70 fichas de 1000 al día. De momento, esas fichas se descartan sin más.
 
-El diagnóstico empieza por las salidas, no por el prompt. Abre una muestra de las 70 en la traza (tema 1) y clasifícalas: respuestas cortadas por el máximo de tokens, texto antes o después del JSON, campos con otro nombre, tipos equivocados. Cada causa tiene su arreglo, y a veces una sola explica casi todo.
+El diagnóstico empieza por las salidas, no por el prompt. Abre una muestra de las 70 en la traza (tema 1); si el agente no guarda la respuesta cruda del modelo, guardarla es el primer paso. Luego clasifícalas: respuestas cortadas por el máximo de tokens, texto antes o después del JSON, campos con otro nombre, tipos equivocados. Cada causa tiene su arreglo, y a veces una sola explica casi todo.
 
 El plan, por capas. Primero, forzar el esquema en la API donde el proveedor lo permita, como hace `batch_processor.py` con `JSON_SCHEMA_FICHA`. Segundo, validar campos y tipos después de leer el JSON, porque `parsear_json_llm` solo dice si hay un objeto, no si está completo. Tercero, un único reintento para las que no pasen: con las cifras del ejemplo, de 70 quedan 14. Cuarto, una cola de revisión para esas 14, el 1,4 %, en lugar de descartarlas. Quinto, contar las dos tasas, la del primer intento y la final, y poner una alerta cuando la del primer intento se salga de lo habitual: es la primera señal de que un cambio de modelo o de prompt ha estropeado el formato.
 

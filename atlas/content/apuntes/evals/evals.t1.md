@@ -192,7 +192,7 @@ Un usuario comenta que el chat «tarda muchísimo» en contestar a algunas pregu
 
 Primero, localiza la conversación y lee su traza en `AiMensaje`. Como la latencia de cada llamada no se guarda, no puedes saber cuánto tardó cada paso; lo que sí puedes ver es cuántas parejas `tool_use`/`tool_result` hubo y qué herramientas se usaron. Una respuesta que necesitó muchas vueltas, cerca del límite de diez, va a ser lenta aunque cada llamada sea rápida, y eso ya orienta: quizá falta una herramienta que devuelva de golpe lo que el agente reconstruye en varios pasos, o el prompt no le dice cuándo parar.
 
-Segundo, arregla el hueco: guarda la `duracion` que `ChatService` ya calcula en el campo `duracion_segundos`, que existe. Con unos días de datos, mira la mediana y el p95 de las llamadas al modelo y compáralos con los de la duración total. Si la mediana por llamada es normal y la duración total es alta, el problema es el número de vueltas; si el p95 por llamada se dispara, el problema está en el proveedor o en entradas muy largas. No uses la media para decidirlo.
+Segundo, arregla el hueco: guarda la `duracion` que `ChatService` ya calcula en el campo `duracion_segundos`, que existe. Con unos días de datos, mira la mediana y el p95 de las llamadas al modelo y compáralos con los de la duración total. Para tenerla, guárdala también o, mientras tanto, estímala con la diferencia entre el `created_at` del mensaje del usuario y el del mensaje final del asistente en `AiMensaje`. Si la mediana por llamada es normal y la duración total es alta, el problema es el número de vueltas; si el p95 por llamada se dispara, el problema está en el proveedor o en entradas muy largas. No uses la media para decidirlo.
 
 ### Caso 2 · La factura sube y los informes no cuadran
 

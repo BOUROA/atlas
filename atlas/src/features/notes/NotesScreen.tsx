@@ -22,6 +22,7 @@ const CALLOUT_CLASS: Record<string, string> = {
   "idea clave": "is-idea",
   "error típico": "is-error",
   "truco de examen": "is-truco",
+  truco: "is-truco",
   ojo: "is-ojo",
 };
 
