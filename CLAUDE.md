@@ -66,7 +66,7 @@ migra, health check y rollback.
 
 - Servidor: Hetzner 88.99.212.58 (el de FlipyERP, `/opt/flipyerp`), Ubuntu 24.04,
   nginx 1.24 (sin `http2 on;`). **Root deshabilitado y fail2ban activo**: entrar
-  como `flipy@88.99.212.58` (el alias `flipy` de `~/.ssh/config` usa root y falla;
+  como `flipy@88.99.212.58` (o el alias `flipy` de `~/.ssh/config`;
   unos pocos intentos fallidos banean la IP). La clave `id_ed25519` tiene
   passphrase y está en el ssh-agent de Windows: usar
   `/c/Windows/System32/OpenSSH/ssh.exe`, no el ssh de Git Bash.
