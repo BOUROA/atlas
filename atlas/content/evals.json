@@ -20,6 +20,242 @@
       "summary": "Usar lo observado y lo evaluado para cambiar prompts y modelos con seguridad y enterarse a tiempo cuando algo se tuerce."
     }
   ],
-  "concepts": [],
-  "relations": []
+  "concepts": [
+    {
+      "id": "evo.traza",
+      "name": "Traza de una ejecución",
+      "aliases": ["traza", "trace", "registro de ejecución"],
+      "unitId": "evals.t1",
+      "order": 1,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Registro ordenado de todo lo que pasa en una ejecución del agente: qué entra, qué pide el modelo, qué herramientas llama, qué devuelven y qué responde.",
+      "intuition": "Es la caja negra de un avión: si algo sale mal, no basta con saber que el vuelo acabó mal; necesitas la secuencia completa de decisiones para entender por qué.",
+      "definition": "Un agente no hace una sola llamada al modelo: encadena turnos en los que el modelo razona, pide una herramienta, recibe el resultado y decide el siguiente paso. La **traza** guarda cada uno de esos pasos, en orden y enlazados entre sí (por ejemplo, cada resultado de herramienta con la petición que lo originó). Sin traza solo ves la respuesta final y no puedes saber si el fallo vino del prompt, de una herramienta o de un dato.\n\n**En FlipyERP:** el chat guarda cada paso como un `AiMensaje` (`ai/models.py`) con su `rol`; las llamadas a herramientas llevan `tool_name`, `tool_use_id` y `tool_input`. `ChatService` (`ai/services/chat_service.py`) los va creando en cada vuelta del bucle, hasta `MAX_TOOL_ITERATIONS = 10`.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Guardar solo la pregunta y la respuesta final: se pierde por qué el agente llegó ahí.",
+        "No enlazar cada resultado de herramienta con la llamada que lo pidió: con varias herramientas a la vez la traza se vuelve ilegible."
+      ],
+      "questions": [
+        {
+          "id": "evo.traza#q1",
+          "kind": "recall",
+          "prompt": "¿Qué pasos de una ejecución debería recoger la traza de un agente?",
+          "answer": "La entrada, cada llamada al modelo, cada herramienta que pide (con sus argumentos), lo que devuelve cada herramienta y la respuesta final, en orden.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.traza#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué no basta con guardar la respuesta final para depurar un agente?",
+          "answer": "Porque el fallo puede estar en cualquier paso intermedio: un prompt mal interpretado, una herramienta que devolvió un dato erróneo o una decisión equivocada del modelo. Sin los pasos no puedes localizarlo.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.traza#q3",
+          "kind": "apply",
+          "prompt": "En el chat de FlipyERP, ¿qué campo de `AiMensaje` permite saber a qué llamada de herramienta corresponde un resultado?",
+          "answer": "`tool_use_id`: la petición de herramienta y su resultado comparten ese identificador.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/models.py", "ai/services/chat_service.py"],
+      "resources": [
+        {
+          "title": "Building effective agents",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "provider": "Anthropic Engineering",
+          "kind": "articulo"
+        }
+      ]
+    },
+    {
+      "id": "evo.tokens_coste",
+      "name": "Tokens y coste por llamada",
+      "aliases": ["coste LLM", "consumo de tokens", "token usage"],
+      "unitId": "evals.t1",
+      "order": 2,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Cada llamada consume tokens de entrada y de salida con precios distintos; registrarlos por llamada es la única forma de saber cuánto cuesta cada agente.",
+      "intuition": "Como una factura de la luz desglosada por aparato: el total del mes no te dice qué conviene apagar; el desglose, sí.",
+      "definition": "La API devuelve en cada respuesta cuántos tokens de entrada y de salida ha usado. El coste es los tokens de entrada por su precio más los de salida por el suyo (la salida suele ser varias veces más cara). Registrarlo **por llamada**, con el modelo y el módulo que la hizo, permite atribuir el gasto, detectar prompts que crecen sin control y comparar modelos.\n\n**En FlipyERP:** el coste va a `AiCosteLog` (`ai/models.py`), con `modelo_llm`, `modulo`, `tokens_input`, `tokens_output` y `coste_estimado_usd`. `AiCosteLog.calcular_coste` usa una tabla de precios en el código y, si el modelo no aparece, recurre a `ModeloIA` o al precio de Sonnet. `AnthropicService.completar` (`ai/services/anthropic_client.py`) solo crea el registro si recibe `tarea_id`: las llamadas sin tarea no dejan coste.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Mirar solo el total mensual del proveedor: no dice qué agente o qué prompt gasta.",
+        "Calcular el coste con un único precio por token: entrada y salida tienen precios distintos.",
+        "Dar por hecho que todas las llamadas quedan registradas sin comprobar los caminos que no lo hacen."
+      ],
+      "questions": [
+        {
+          "id": "evo.tokens_coste#q1",
+          "kind": "recall",
+          "prompt": "¿Qué dos cantidades de tokens hay que registrar de cada llamada y por qué por separado?",
+          "answer": "Los tokens de entrada y los de salida, porque tienen precios distintos (la salida suele costar bastante más).",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.tokens_coste#q2",
+          "kind": "explain",
+          "prompt": "¿Qué ganas registrando el coste por llamada y por módulo en vez de mirar la factura mensual?",
+          "answer": "Saber qué agente, qué módulo o qué prompt concentra el gasto, detectar a tiempo un prompt que ha crecido y comparar el coste real de dos modelos para la misma tarea.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.tokens_coste#q3",
+          "kind": "apply",
+          "prompt": "Una llamada a `AnthropicService.completar` se hace sin `tarea_id`. ¿Qué pasa con su coste en FlipyERP?",
+          "answer": "Se calcula pero no se guarda: el registro en `AiCosteLog` solo se crea cuando hay `tarea_id`, así que esa llamada no aparece en los informes de coste.",
+          "difficulty": 3
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/models.py", "ai/services/anthropic_client.py"]
+    },
+    {
+      "id": "evo.latencia",
+      "name": "Latencia y duración",
+      "aliases": ["latencia", "tiempo de respuesta", "duración"],
+      "unitId": "evals.t1",
+      "order": 3,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Cuánto tarda cada llamada y cada ejecución completa; en un agente la duración total suma varias llamadas al modelo y a herramientas.",
+      "intuition": "En un restaurante no importa solo lo que tarda el cocinero en un plato, sino cuánto espera el cliente desde que pide hasta que come, con todas las idas y vueltas.",
+      "definition": "Hay dos medidas útiles: la **latencia de cada llamada** al modelo o a una herramienta, y la **duración de la ejecución completa** que percibe la persona. En un agente la segunda crece con cada vuelta del bucle, así que conviene guardar ambas para saber qué paso es el lento. Se analizan con percentiles (p50, p95), no con la media, porque unos pocos casos lentos son los que molestan.\n\n**En FlipyERP:** `AiTarea` y `AiMensaje` (`ai/models.py`) tienen un campo `duracion_segundos`. `ChatService` (`ai/services/chat_service.py`) calcula la duración de cada llamada (`duracion = time.time() - inicio`) pero no la guarda en ningún campo, así que la latencia del chat no queda registrada.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Medir solo la media: esconde los casos lentos, que son los que ve el usuario.",
+        "Medir la ejecución completa sin desglose: no sabes si tarda el modelo o una herramienta."
+      ],
+      "questions": [
+        {
+          "id": "evo.latencia#q1",
+          "kind": "recall",
+          "prompt": "¿Qué dos duraciones conviene registrar en un agente?",
+          "answer": "La latencia de cada llamada (al modelo o a una herramienta) y la duración total de la ejecución que percibe el usuario.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.latencia#q2",
+          "kind": "distinguish",
+          "prompt": "¿Por qué se usan percentiles como el p95 en lugar de la media para la latencia?",
+          "answer": "Porque la media apenas se mueve con unos pocos casos muy lentos, y son justamente esos los que sufre el usuario; el p95 dice cuánto tarda el 5 % más lento.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.latencia#q3",
+          "kind": "apply",
+          "prompt": "En el chat de FlipyERP, ¿puedes consultar cuánto tardó cada llamada al modelo? ¿Por qué?",
+          "answer": "No: `ChatService` calcula la duración de cada llamada, pero nunca la asigna a `duracion_segundos` de `AiMensaje`, así que se pierde.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/models.py", "ai/services/chat_service.py"]
+    },
+    {
+      "id": "evo.auditoria_herramientas",
+      "name": "Auditar lo que hace el agente",
+      "aliases": ["auditoría de herramientas", "tool audit", "registro de herramientas"],
+      "unitId": "evals.t1",
+      "order": 4,
+      "kind": "metodo",
+      "difficulty": 3,
+      "summary": "Registrar cada herramienta que usa el agente, quién la pidió, con qué argumentos y si de verdad funcionó, sobre todo cuando escribe datos.",
+      "intuition": "El registro de entradas de un edificio: no basta con saber que alguien entró; hay que saber quién, cuándo, a qué planta y si salió.",
+      "definition": "Las herramientas son la parte del agente que **actúa** sobre el mundo: consultas, escrituras, comandos. Auditarlas es registrar de cada llamada la herramienta, el usuario y la empresa, los argumentos, la duración y si tuvo éxito. «Éxito» debe significar que la herramienta hizo lo que tenía que hacer, no solo que la petición llegó.\n\n**En FlipyERP:** `MCPUsageMiddleware` (`core/mcp_middleware.py`) guarda un `MCPToolUsage` (`core/models.py`) por petición MCP con usuario, empresa, `duration_ms` y `success`, pero `success` se calcula como `200 <= status_code < 400` y no se guardan los argumentos. Las escrituras de `SystemWriteToolset` (`core/mcp_write.py`) exigen rol admin o gestor y se auditan como `AiTarea` con `agente='mcp_write'` y `duracion_segundos=0`.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Tomar el código HTTP como prueba de éxito: un protocolo como JSON-RPC puede devolver 200 con un error dentro.",
+        "No guardar los argumentos: sabes que se llamó a la herramienta, pero no qué hizo.",
+        "Auditar igual lecturas y escrituras: las escrituras necesitan más detalle y control de permisos."
+      ],
+      "questions": [
+        {
+          "id": "evo.auditoria_herramientas#q1",
+          "kind": "recall",
+          "prompt": "¿Qué datos mínimos debe registrar la auditoría de cada llamada a una herramienta?",
+          "answer": "Qué herramienta, quién la pidió (usuario y empresa), con qué argumentos, cuánto tardó y si realmente tuvo éxito.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.auditoria_herramientas#q2",
+          "kind": "apply",
+          "prompt": "¿Por qué `MCPToolUsage` puede marcar como éxito una llamada cuya herramienta falló?",
+          "answer": "Porque `success` sale del código HTTP (`200 <= status_code < 400`), y en MCP, que usa JSON-RPC, un error de la herramienta puede viajar dentro de una respuesta con código 200.",
+          "difficulty": 3
+        },
+        {
+          "id": "evo.auditoria_herramientas#q3",
+          "kind": "explain",
+          "prompt": "¿Por qué las herramientas que escriben datos necesitan más control que las de lectura?",
+          "answer": "Porque cambian el estado del sistema: un error o un abuso tiene efectos reales. Por eso en FlipyERP las escrituras exigen rol admin o gestor y dejan un registro propio.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["core/mcp_middleware.py", "core/models.py", "core/mcp_write.py"]
+    },
+    {
+      "id": "evo.errores_proveedor",
+      "name": "Errores del proveedor, reintentos y fallback",
+      "aliases": ["reintentos", "retry", "fallback de modelo", "rate limit"],
+      "unitId": "evals.t1",
+      "order": 5,
+      "kind": "metodo",
+      "difficulty": 3,
+      "summary": "Las APIs de modelos fallan por límites de uso, saturación o cortes: hay que distinguir el error, reintentar con espera y, si no, pasar a otro modelo.",
+      "intuition": "Si la línea de un proveedor comunica, vuelves a llamar al rato; si sigue sin cogerlo, llamas a otro. Y apuntas cuántas veces pasó.",
+      "definition": "Los errores típicos son de **límite de uso** (429), de **sobrecarga** (529) y **fallos transitorios** de red o del servidor. Los transitorios se reintentan con espera creciente (*backoff*); los de la petición (400) no, porque volverán a fallar. Si los reintentos se agotan, un **fallback** pasa la tarea a otro modelo o proveedor. Todo ello debe quedar registrado: un fallback silencioso cambia la calidad y el coste sin que nadie lo sepa.\n\n**En FlipyERP:** `LLMRouter` (`ai/services/llm_router.py`) elige proveedor según la configuración y `ROUTING_TAREAS`, y si el primero falla lo intenta con otro. La cabecera de `ai/services/anthropic_client.py` anuncia «Retry automatico con backoff», pero el fichero no implementa reintentos propios: dependen de los que traiga el SDK por defecto.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Reintentar cualquier error: un 400, que es una petición mal formada, fallará igual cada vez.",
+        "Reintentar sin espera: empeora la saturación que causó el error.",
+        "Hacer fallback sin registrarlo: la respuesta la dio otro modelo y nadie lo sabe."
+      ],
+      "questions": [
+        {
+          "id": "evo.errores_proveedor#q1",
+          "kind": "distinguish",
+          "prompt": "¿Qué errores de una API de modelos tiene sentido reintentar y cuáles no?",
+          "answer": "Se reintentan los transitorios: límite de uso (429), sobrecarga (529) y fallos de red o del servidor (5xx). No se reintenta un 400, porque la petición está mal y fallará igual.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.errores_proveedor#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué un fallback a otro modelo debe quedar registrado?",
+          "answer": "Porque cambia quién responde: la calidad, el formato y el coste pueden ser distintos, y sin registro no puedes explicar por qué una respuesta salió peor o más cara.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.errores_proveedor#q3",
+          "kind": "apply",
+          "prompt": "La cabecera de `anthropic_client.py` dice «Retry automatico con backoff». ¿Qué harías antes de confiar en ello?",
+          "answer": "Comprobar el código: en ese fichero no hay bucle de reintentos, así que el comportamiento real es el que traiga el SDK por defecto. El comentario de un fichero no sustituye a mirar qué hace.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/services/llm_router.py", "ai/services/anthropic_client.py"]
+    }
+  ],
+  "relations": [
+    { "source": "evo.latencia", "target": "evo.traza", "type": "requires", "reason": "La duración de cada paso se lee en la traza." },
+    { "source": "evo.auditoria_herramientas", "target": "evo.traza", "type": "requires", "reason": "Auditar herramientas es registrar una parte concreta de la traza." },
+    { "source": "evo.errores_proveedor", "target": "evo.traza", "type": "requires", "reason": "Un error o un fallback solo se ve si queda en la traza." }
+  ]
 }
