@@ -15,26 +15,34 @@ Internet ─► nginx :443 academy.flipyerp.com ─► node 127.0.0.1:8090 ─�
 - Node.js 22.13 o superior (el servidor de FlipyERP no lo necesitaba hasta ahora).
 - PostgreSQL y nginx: los que ya usa FlipyERP.
 
-## Primera instalación (una sola vez, como root)
+## Primera instalación (una sola vez)
 
-### 1. Node.js 22
+En el servidor root está deshabilitado: se entra como `ssh flipy@88.99.212.58`
+y cada comando privilegiado va con `sudo` (pide la contraseña de `flipy`).
+
+### 1. Node.js 22 de sistema
+
+El servicio usa `/usr/bin/node`. El Node de `flipy` (nvm, en su home) no sirve:
+el usuario `academy` no puede leer `/home/flipy`. Instalarlo no cambia el Node
+de `flipy`, porque nvm va primero en su PATH.
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-apt-get install -y nodejs
-node --version   # v22.x
+curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
+sudo bash /tmp/nodesource_setup.sh
+sudo apt-get install -y nodejs
+/usr/bin/node --version   # v22.x
 ```
 
 ### 2. Usuario del sistema y código
 
 ```bash
-adduser --system --group --no-create-home --home /opt/academy --shell /bin/bash academy
-install -d -o academy -g academy /opt/academy
+sudo adduser --system --group --no-create-home --home /opt/academy --shell /bin/bash academy
+sudo install -d -o academy -g academy /opt/academy
 sudo -u academy git clone -b main https://github.com/BOUROA/atlas.git /opt/academy
 ```
 
-> Si el repositorio es privado, usa una *deploy key* de solo lectura para el
-> usuario `academy`, igual que en FlipyERP.
+> El repositorio es público. Si pasa a privado, usa una *deploy key* de solo
+> lectura para el usuario `academy`, igual que en FlipyERP.
 
 ### 3. Base de datos propia
 
@@ -49,30 +57,29 @@ sudo -u postgres createdb -O academy academy
 ### 4. Configuración
 
 ```bash
-install -o root -g academy -m 640 /opt/academy/deploy/academy.env.example /opt/academy/academy.env
+sudo install -o root -g academy -m 640 /opt/academy/deploy/academy.env.example /opt/academy/academy.env
 ```
 
 ### 5. Permiso para reiniciar solo este servicio
 
 ```bash
-echo 'academy ALL=(root) NOPASSWD: /usr/bin/systemctl restart flipyerp-academy' > /etc/sudoers.d/academy
-chmod 440 /etc/sudoers.d/academy
-visudo -c
+echo 'academy ALL=(root) NOPASSWD: /usr/bin/systemctl restart flipyerp-academy' | sudo tee /etc/sudoers.d/academy
+sudo chmod 440 /etc/sudoers.d/academy
+sudo visudo -c
 ```
 
 ### 6. Servicio systemd
 
 ```bash
-cp /opt/academy/deploy/flipyerp-academy.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable flipyerp-academy
+sudo cp /opt/academy/deploy/flipyerp-academy.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable flipyerp-academy
 ```
 
 ### 7. Primer build, migraciones y arranque
 
 ```bash
-sudo -iu academy
-cd /opt/academy && FORCE=1 bash deploy/deploy.sh
+sudo -iu academy bash -c 'cd /opt/academy && FORCE=1 bash deploy/deploy.sh'
 ```
 
 El script instala, pasa los tests, valida el contenido contra
@@ -80,12 +87,24 @@ El script instala, pasa los tests, valida el contenido contra
 
 ### 8. nginx y certificado
 
+La primera vez aún no hay certificado, y `nginx-academy.conf` lo exige: si se
+activa tal cual, `nginx -t` falla. Por eso se hace en dos tiempos: primero un
+vhost provisional solo `:80` para que certbot encuentre el `server_name`, y
+después el fichero completo. Cada recarga va detrás de `nginx -t`, para no
+tumbar FlipyERP si algo está mal.
+
 ```bash
-cp /opt/academy/deploy/nginx-academy.conf /etc/nginx/sites-available/academy
-# La primera vez aún no hay certificado: se obtiene con el bloque :80 solo.
-certbot certonly --nginx -d academy.flipyerp.com
-ln -s /etc/nginx/sites-available/academy /etc/nginx/sites-enabled/academy
-nginx -t && systemctl reload nginx
+# a) Vhost provisional solo :80
+sudo cp /opt/academy/deploy/nginx-academy-http.conf /etc/nginx/sites-available/academy
+sudo ln -s /etc/nginx/sites-available/academy /etc/nginx/sites-enabled/academy
+sudo nginx -t && sudo systemctl reload nginx
+
+# b) Certificado (el plugin nginx también se encarga de las renovaciones)
+sudo certbot certonly --nginx -d academy.flipyerp.com
+
+# c) Vhost definitivo con HTTPS
+sudo cp /opt/academy/deploy/nginx-academy.conf /etc/nginx/sites-available/academy
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ### 9. Tu usuario administrador
@@ -95,6 +114,7 @@ sudo -iu academy
 cd /opt/academy/atlas
 set -a; . /opt/academy/academy.env; set +a
 node server/academy/cli.mjs bootstrap --org "Grupo Troviscal" --email tu@correo --name "Tu nombre"
+exit
 ```
 
 La contraseña se pide por consola: nunca como argumento, para que no quede en
@@ -106,7 +126,7 @@ cabecera (o `/admin`) invita a las demás personas.
 ## Despliegues siguientes
 
 ```bash
-ssh academy@<servidor> "bash /opt/academy/deploy/deploy.sh"
+ssh -t flipy@88.99.212.58 "sudo -iu academy bash /opt/academy/deploy/deploy.sh"
 ```
 
 Qué hace, en orden:
@@ -122,8 +142,8 @@ Qué hace, en orden:
 
 | Tarea | Comando |
 |---|---|
-| Estado del servicio | `systemctl status flipyerp-academy` |
-| Logs | `journalctl -u flipyerp-academy -f` |
+| Estado del servicio | `sudo systemctl status flipyerp-academy` |
+| Logs | `sudo journalctl -u flipyerp-academy -f` |
 | Log de despliegues | `/opt/academy/logs/deploy.log` |
 | Copia manual de la BD | `sudo -u academy pg_dump academy -Fc -f /opt/academy/backups/manual.dump` |
 | Restablecer una contraseña | `node server/academy/cli.mjs reset-password --email x@y` (con el `.env` cargado) |
