@@ -251,11 +251,309 @@
       "alsoIn": [],
       "syllabus": true,
       "sources": ["ai/services/llm_router.py", "ai/services/anthropic_client.py"]
+    },
+    {
+      "id": "evo.eval",
+      "name": "Qué es un eval",
+      "aliases": ["eval", "evaluación", "evaluation"],
+      "unitId": "evals.t2",
+      "order": 6,
+      "kind": "concepto",
+      "difficulty": 1,
+      "summary": "Prueba repetible que mide la calidad de las salidas de un modelo o agente: unos casos, un criterio para puntuarlos y una puntuación agregada.",
+      "intuition": "Un examen con plantilla de corrección: las mismas preguntas y los mismos criterios cada vez, para comparar de forma justa a varios alumnos, o a un mismo alumno antes y después.",
+      "definition": "Un **eval** tiene tres piezas: **casos** (entradas representativas, a veces con la salida esperada), un **criterio** que decide si cada salida es buena, o cuánto, y una **puntuación** agregada (porcentaje de aciertos, nota media…). Lo que lo distingue de probar a mano es que es **repetible**: se puede volver a lanzar tras cualquier cambio y comparar resultados. Los criterios de éxito se definen antes de construirlo: qué tiene que hacer bien el agente y cuánto es suficiente.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Llamar eval a probar unos cuantos ejemplos a ojo: si no es repetible, no sirve para comparar.",
+        "Construir el eval sin definir antes qué significa que una salida sea buena."
+      ],
+      "questions": [
+        {
+          "id": "evo.eval#q1",
+          "kind": "recall",
+          "prompt": "¿Cuáles son las tres piezas de un eval?",
+          "answer": "Los casos (entradas, a veces con la salida esperada), el criterio que puntúa cada salida y la puntuación agregada.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.eval#q2",
+          "kind": "distinguish",
+          "prompt": "¿En qué se diferencia un eval de probar el agente a mano con unos ejemplos?",
+          "answer": "En que el eval es repetible y tiene un criterio fijo: se lanza igual tras cada cambio y se comparan números. La prueba a mano depende de quién mira y de qué ejemplos elige ese día.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.eval#q3",
+          "kind": "explain",
+          "prompt": "¿Por qué conviene definir los criterios de éxito antes de construir el eval?",
+          "answer": "Porque deciden qué casos incluir y cómo puntuar; si se definen después, se tiende a medir lo que es fácil de medir y no lo que importa.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "resources": [
+        {
+          "title": "Define success criteria and build evaluations",
+          "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+          "provider": "Anthropic (documentación oficial)",
+          "kind": "documentacion"
+        },
+        {
+          "title": "Demystifying evals for AI agents",
+          "url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "provider": "Anthropic Engineering",
+          "kind": "articulo"
+        }
+      ]
+    },
+    {
+      "id": "evo.golden_set",
+      "name": "Conjunto de referencia y muestreo",
+      "aliases": ["golden set", "dataset de evaluación", "conjunto dorado"],
+      "unitId": "evals.t2",
+      "order": 7,
+      "kind": "estructura",
+      "difficulty": 2,
+      "summary": "Colección fija de casos, revisada por personas, que representa bien el trabajo real del agente y sobre la que se repite el eval.",
+      "intuition": "Los platos de prueba de una cocina: siempre los mismos, elegidos para cubrir lo fácil, lo difícil y lo raro, y así saber si la receta nueva es mejor.",
+      "definition": "El **conjunto de referencia** (*golden set*) son los casos del eval. Debe ser **representativo** (parecerse a lo que llega de verdad), **cubrir los casos difíciles y raros** y estar **revisado por personas** cuando incluye la respuesta esperada. Para construirlo a partir de datos reales se usa **muestreo estratificado**: se toman casos de cada grupo relevante (estado, categoría, cliente…) en vez de los primeros o al azar, que dejaría fuera los grupos pequeños. Se mantiene estable para poder comparar; si cambia, se versiona.\n\n**En FlipyERP:** `pim/services/qa_fugas.py` tiene `muestra_estratificada`, que toma un número fijo de productos por estado del catálogo para revisarlos, en lugar de una muestra al azar.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Usar solo casos fáciles o los primeros que salen: el eval da buena nota y el agente falla en producción.",
+        "Cambiar el conjunto entre dos ejecuciones y comparar las notas como si fueran equivalentes."
+      ],
+      "questions": [
+        {
+          "id": "evo.golden_set#q1",
+          "kind": "recall",
+          "prompt": "¿Qué tres propiedades debe tener un buen conjunto de referencia?",
+          "answer": "Ser representativo del trabajo real, cubrir los casos difíciles y raros, y estar revisado por personas cuando incluye la respuesta esperada.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.golden_set#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué se usa muestreo estratificado en lugar de una muestra al azar?",
+          "answer": "Porque al azar los grupos pequeños pueden no salir nunca; estratificando se toman casos de cada grupo y el eval los cubre todos.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.golden_set#q3",
+          "kind": "apply",
+          "prompt": "Si amplías el conjunto de referencia con 50 casos nuevos, ¿puedes comparar la nota nueva con la de la semana pasada?",
+          "answer": "No directamente: el conjunto ha cambiado. Hay que versionarlo y comparar las dos versiones del agente sobre el mismo conjunto.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["pim/services/qa_fugas.py"]
+    },
+    {
+      "id": "evo.criterios",
+      "name": "Criterios de evaluación",
+      "aliases": ["métricas de evaluación", "rúbrica", "criterio de éxito"],
+      "unitId": "evals.t2",
+      "order": 8,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "La regla que decide si una salida es buena: coincidencia exacta, comprobaciones deterministas en código o una rúbrica que aplica una persona o un modelo.",
+      "intuition": "Corregir un examen tipo test, uno de problemas y una redacción: el primero con plantilla, el segundo comprobando el resultado y el tercero con una rúbrica.",
+      "definition": "De más barato y fiable a más flexible: 1) **coincidencia exacta** con la respuesta esperada (clasificaciones, extracción de un campo); 2) **reglas deterministas** en código (el JSON cumple el esquema, el importe cuadra, no aparece una palabra prohibida); 3) **rúbrica** con criterios escritos que aplica una persona o un modelo (tono, utilidad, fidelidad a las fuentes). Conviene usar el criterio más simple que mida lo que importa y reservar la rúbrica para lo que el código no puede comprobar.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Usar un LLM como juez para algo que una regla en código comprobaría mejor y gratis.",
+        "Escribir rúbricas vagas, como «que sea buena»: cada evaluador las interpreta distinto."
+      ],
+      "questions": [
+        {
+          "id": "evo.criterios#q1",
+          "kind": "recall",
+          "prompt": "Ordena de más barato a más flexible los tres tipos de criterio.",
+          "answer": "Coincidencia exacta, reglas deterministas en código y rúbrica aplicada por una persona o un modelo.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.criterios#q2",
+          "kind": "apply",
+          "prompt": "Un agente extrae el NIF de una factura. ¿Qué criterio usarías?",
+          "answer": "Coincidencia exacta con el NIF esperado, tras normalizar mayúsculas y espacios, más una regla de formato; no hace falta una rúbrica.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.criterios#q3",
+          "kind": "explain",
+          "prompt": "¿Qué hace que una rúbrica sea útil?",
+          "answer": "Que sus criterios sean concretos y comprobables (por ejemplo, «cita el número de pedido», «no promete plazos»), de forma que dos evaluadores lleguen a la misma nota.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "resources": [
+        {
+          "title": "Define success criteria and build evaluations",
+          "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+          "provider": "Anthropic (documentación oficial)",
+          "kind": "documentacion"
+        }
+      ]
+    },
+    {
+      "id": "evo.llm_juez",
+      "name": "LLM como juez",
+      "aliases": ["LLM-as-judge", "juez LLM", "evaluación con modelo"],
+      "unitId": "evals.t2",
+      "order": 9,
+      "kind": "metodo",
+      "difficulty": 3,
+      "summary": "Usar un modelo para puntuar las salidas de otro con una rúbrica: escala donde no llegan las personas, pero hay que comprobar que coincide con ellas.",
+      "intuition": "Un corrector ayudante: corrige rápido cientos de exámenes con la rúbrica del profesor, pero el profesor revisa una muestra para ver si corrige como él.",
+      "definition": "Un **juez LLM** recibe la entrada, la salida a evaluar y una rúbrica, y devuelve una puntuación o una etiqueta, mejor en un formato estructurado y con un motivo breve. Funciona mejor con preguntas concretas y cerradas («¿la descripción menciona algo que no está en la ficha? sí o no») que con notas abstractas del 1 al 10. Antes de fiarse hay que **calibrarlo**: comparar sus veredictos con los de personas en una muestra y medir cuánto coinciden.\n\n**En FlipyERP:** `pim/services/qa_fugas.py` usa un modelo pequeño (Haiku) como juez en `es_fuga_descripcion` y `clasificar_producto`, y el comando `revisar_enriquecimiento_ia --validar-descripciones` (`pim/management/commands/revisar_enriquecimiento_ia.py`) pide al modelo un JSON con `coherente` (verdadero o falso) y `motivo`. Los dos se lanzan a mano; no forman parte de un eval automático.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Fiarse del juez sin compararlo con personas: puede tener sesgos, como preferir respuestas largas.",
+        "Pedir una nota de 1 a 10 sin criterios: el juez da notas poco consistentes.",
+        "Usar el mismo modelo y el mismo prompt para generar la salida y para juzgarla."
+      ],
+      "questions": [
+        {
+          "id": "evo.llm_juez#q1",
+          "kind": "recall",
+          "prompt": "¿Qué recibe y qué devuelve un juez LLM?",
+          "answer": "Recibe la entrada, la salida que hay que evaluar y la rúbrica; devuelve una puntuación o etiqueta, mejor en formato estructurado y con un motivo breve.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.llm_juez#q2",
+          "kind": "explain",
+          "prompt": "¿Qué significa calibrar un juez LLM y por qué es necesario?",
+          "answer": "Comparar sus veredictos con los de personas en una muestra y medir la coincidencia. Sin eso no sabes si el juez mide lo que crees o tiene sesgos propios.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.llm_juez#q3",
+          "kind": "apply",
+          "prompt": "`revisar_enriquecimiento_ia` pide al juez un JSON con `coherente` (sí o no) y `motivo`. ¿Por qué es mejor que pedir una nota del 1 al 10?",
+          "answer": "Porque es una pregunta cerrada con respuesta estructurada: da resultados más consistentes entre ejecuciones, se agrega fácil (porcentaje de incoherentes) y el motivo permite revisar los casos dudosos.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["pim/services/qa_fugas.py", "pim/management/commands/revisar_enriquecimiento_ia.py"],
+      "resources": [
+        {
+          "title": "Define success criteria and build evaluations",
+          "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+          "provider": "Anthropic (documentación oficial)",
+          "kind": "documentacion"
+        }
+      ]
+    },
+    {
+      "id": "evo.senal_humana",
+      "name": "Señal humana como eval",
+      "aliases": ["feedback humano", "revisión humana", "human feedback"],
+      "unitId": "evals.t2",
+      "order": 10,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Lo que hacen las personas con las salidas del agente (aprobar, rechazar, editar) es una evaluación gratuita y continua si se guarda de forma aprovechable.",
+      "intuition": "Las correcciones en rojo que un jefe hace a los borradores de un becario: si las guardas, sabes exactamente en qué falla y si mejora.",
+      "definition": "Cuando una persona revisa lo que propone un agente deja **señal**: aprueba, rechaza o edita. Si se guarda la propuesta original junto a la versión final, se puede medir la tasa de aprobación sin cambios, cuánto se edita y en qué tipo de casos; y los casos editados son muy buenos candidatos para el conjunto de referencia. Es señal real y continua, pero sesgada: solo cubre lo que la gente revisa, y como lo revisa.\n\n**En FlipyERP:** `DraftRespuestaIA` (`soporte/models.py`) guarda `cuerpo_propuesto` y `cuerpo_editado` y un estado (`aprobado`, `rechazado`, `enviado`…). Esa información ya existe, pero no se aprovecha como métrica de calidad.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Guardar solo la versión final: se pierde qué cambió la persona.",
+        "Tomar la tasa de aprobación como verdad absoluta: quien revisa con prisa aprueba cosas mejorables."
+      ],
+      "questions": [
+        {
+          "id": "evo.senal_humana#q1",
+          "kind": "recall",
+          "prompt": "¿Qué tres acciones de una persona sobre una propuesta del agente son señal de evaluación?",
+          "answer": "Aprobarla tal cual, rechazarla o editarla antes de usarla.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.senal_humana#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué hay que guardar la propuesta original además de la versión editada?",
+          "answer": "Porque la diferencia entre las dos es la señal: dice qué corrigió la persona, cuánto y en qué casos. Con la versión final sola no se puede medir.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.senal_humana#q3",
+          "kind": "apply",
+          "prompt": "Con `DraftRespuestaIA`, ¿qué métrica sencilla podrías calcular hoy sin tocar el agente?",
+          "answer": "El porcentaje de borradores aprobados o enviados sin cambios frente a los editados o rechazados, comparando `cuerpo_propuesto` con `cuerpo_editado` y mirando el estado.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["soporte/models.py"]
+    },
+    {
+      "id": "evo.tests_vs_evals",
+      "name": "Tests con el LLM simulado frente a evals",
+      "aliases": ["tests unitarios", "mock del LLM", "tests vs evals"],
+      "unitId": "evals.t2",
+      "order": 11,
+      "kind": "concepto",
+      "difficulty": 2,
+      "summary": "Los tests con el modelo simulado comprueban la fontanería del código; los evals, con el modelo real, comprueban la calidad de las respuestas. Hacen falta los dos.",
+      "intuition": "Probar que el grifo, las tuberías y el desagüe funcionan no te dice si el agua es potable; para eso hay que analizar el agua.",
+      "definition": "Un **test** sustituye al modelo por una respuesta fija (*mock*) y comprueba que el código hace lo correcto con ella: lee el JSON, pasa al plan B si la respuesta es mala, guarda los registros. Es rápido, gratis y determinista, y se ejecuta en cada commit. Un **eval** llama al modelo real con casos reales y mide si las respuestas son buenas; es más lento, cuesta dinero y se lanza al cambiar el prompt o el modelo. Un test en verde no dice nada de la calidad de las respuestas.\n\n**En FlipyERP:** los tests de `ai/tests_router_agentes.py` usan `unittest.mock.patch` para simular al modelo y comprueban, por ejemplo, que se limpian los bloques de código de la salida o que una respuesta degenerada activa el plan B. No hay evals que midan la calidad de las respuestas.",
+      "formulas": [],
+      "example": null,
+      "mistakes": [
+        "Pensar que unos tests en verde garantizan que el agente responde bien.",
+        "Meter llamadas al modelo real en los tests de cada commit: son lentos, caros y sus resultados varían."
+      ],
+      "questions": [
+        {
+          "id": "evo.tests_vs_evals#q1",
+          "kind": "distinguish",
+          "prompt": "¿Qué comprueba un test con el LLM simulado y qué comprueba un eval?",
+          "answer": "El test comprueba que el código maneja bien una respuesta dada (lectura, plan B, registros); el eval comprueba, con el modelo real, si las respuestas son buenas.",
+          "difficulty": 1
+        },
+        {
+          "id": "evo.tests_vs_evals#q2",
+          "kind": "explain",
+          "prompt": "¿Por qué los tests de cada commit no deberían llamar al modelo real?",
+          "answer": "Porque serían lentos, costarían dinero y sus resultados variarían entre ejecuciones, así que fallarían sin que el código haya cambiado.",
+          "difficulty": 2
+        },
+        {
+          "id": "evo.tests_vs_evals#q3",
+          "kind": "apply",
+          "prompt": "Los tests de `ai/tests_router_agentes.py` están en verde. ¿Qué puedes afirmar y qué no?",
+          "answer": "Que el router y la lectura de la salida manejan bien las respuestas simuladas. No que los agentes respondan bien con el modelo real: eso lo mediría un eval, que hoy no existe.",
+          "difficulty": 2
+        }
+      ],
+      "alsoIn": [],
+      "syllabus": true,
+      "sources": ["ai/tests_router_agentes.py"]
     }
   ],
   "relations": [
     { "source": "evo.latencia", "target": "evo.traza", "type": "requires", "reason": "La duración de cada paso se lee en la traza." },
     { "source": "evo.auditoria_herramientas", "target": "evo.traza", "type": "requires", "reason": "Auditar herramientas es registrar una parte concreta de la traza." },
-    { "source": "evo.errores_proveedor", "target": "evo.traza", "type": "requires", "reason": "Un error o un fallback solo se ve si queda en la traza." }
+    { "source": "evo.errores_proveedor", "target": "evo.traza", "type": "requires", "reason": "Un error o un fallback solo se ve si queda en la traza." },
+    { "source": "evo.golden_set", "target": "evo.eval", "type": "requires", "reason": "El conjunto de referencia son los casos del eval." },
+    { "source": "evo.criterios", "target": "evo.eval", "type": "requires", "reason": "Un criterio es la pieza del eval que decide si una salida es buena." },
+    { "source": "evo.llm_juez", "target": "evo.criterios", "type": "requires", "reason": "El juez aplica una rúbrica escrita como criterio." },
+    { "source": "evo.senal_humana", "target": "evo.eval", "type": "requires", "reason": "La revisión humana es un eval hecho por personas." },
+    { "source": "evo.tests_vs_evals", "target": "evo.eval", "type": "requires", "reason": "Se distinguen a partir de qué mide un eval." }
   ]
 }
