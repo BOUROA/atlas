@@ -83,7 +83,7 @@ for (const file of files) {
   });
   const dup = sections.filter((s, i) => sections.indexOf(s) !== i);
   if (dup.length) err(`secciones ## repetidas: ${[...new Set(dup)].join(', ')}`);
-  for (const need of ['Chuleta', 'Ejercicios resueltos', 'Antes del control']) {
+  for (const need of ['Chuleta', 'Casos prácticos', 'Antes de seguir']) {
     if (!sections.includes(need)) warn(`falta la sección «## ${need}»`);
   }
 
