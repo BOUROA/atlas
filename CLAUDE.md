@@ -58,7 +58,10 @@ desarrolla FlipyERP y para formar a empleados nuevos con itinerarios por nivel
   (con `sources`, incluidos los huecos actuales). Diseño y plan en
   `atlas/docs/superpowers/`; `tests/evals-content.test.ts` fija su estructura.
 - Ids de concepto: `^[a-z]+\.[a-z0-9_]+$`; ≥3 preguntas por concepto si tiene alguna;
-  sin `$` sueltos (es KaTeX). Guía de apuntes: `docs/apuntes-guia.md`.
+  sin `$` sueltos (es KaTeX). Apuntes largos por tema en
+  `content/apuntes/<asignatura>/<unidad>.md` según `docs/apuntes-guia.md` (adaptada a la
+  academia: sin código, `Chuleta`, `Casos prácticos`, `Antes de seguir`), validados con
+  `node scripts/validate-notes.cjs` (0 errores, 0 avisos). Hechos: los 3 temas de evals.
 
 ## Despliegue (`deploy/`)
 
@@ -112,7 +115,8 @@ admin, así que no hubo que migrar a nadie.
 
 Siguiente, en este orden:
 
-1. Contenido: apuntes largos por tema, constelaciones de herramientas
+1. Contenido: apuntes largos de Fundamentos y Multi-empresa (los de evals están
+   hechos, pendientes de desplegar), constelaciones de herramientas
    (Git/GitHub, Python/Django) y de operaciones (Vendor Central, GPSR,
    supresión de búsqueda). Bloque 1 de evals hecho y desplegado en producción (2026-09-26, c694b36).
 2. Después: prueba de nivel inicial, misiones ligadas a PRs de BOUROA/FlipyERP,
